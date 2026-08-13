@@ -44,7 +44,7 @@ class ChatApiService {
     late http.StreamedResponse response;
     try {
       response = await _client.send(request).timeout(
-            const Duration(seconds: 30),
+            const Duration(seconds: 90),
             onTimeout: () => throw TimeoutException(
               'Сервер не отвечает. Проверь, что бэкенд запущен на $baseUrl',
             ),
@@ -77,7 +77,8 @@ class ChatApiService {
       yield ChatStreamEvent(
         token: '',
         done: true,
-        error: _extractErrorMessage(body) ?? 'Сервер вернул ошибку ${response.statusCode}',
+        error: _extractErrorMessage(body) ??
+            'Сервер вернул ошибку ${response.statusCode}',
       );
       return;
     }
