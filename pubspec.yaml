@@ -1,0 +1,58 @@
+name: ai_last_v
+description: "AI чат (Gemma 4 E2B через локальный Ollama + FastAPI) с эффектом глазморфизма, адаптивный для мобильных, планшетов, десктопа и веба."
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.2
+  shared_preferences: ^2.3.2
+  flutter_secure_storage: ^9.2.2
+  uuid: ^4.5.1
+  intl: ^0.19.0
+  file_picker: ^8.1.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.1
+  flutter_native_splash: ^2.4.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icon/
+
+# Иконка приложения на всех платформах — генерируется командой:
+#   dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  min_sdk_android: 21
+  web:
+    generate: true
+    image_path: "assets/icon/app_icon.png"
+    background_color: "#0B0F1E"
+    theme_color: "#6C5CE7"
+  windows:
+    generate: true
+    image_path: "assets/icon/app_icon.png"
+  macos:
+    generate: true
+    image_path: "assets/icon/app_icon.png"
+
+# Сплэш-экран (заставка при запуске) — генерируется командой:
+#   dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#0B0F1E"
+  image: "assets/icon/splash_logo.png"
+  android_12:
+    color: "#0B0F1E"
+    image: "assets/icon/splash_logo.png"
+  web: true
