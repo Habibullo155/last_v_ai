@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../models/chat_message.dart';
@@ -8,7 +9,15 @@ import 'typing_dots.dart';
 class MessageBubble extends StatelessWidget {
   final ChatMessage message;
   final VoidCallback? onDelete;
-  const MessageBubble({super.key, required this.message, this.onDelete});
+  final VoidCallback? onReport;
+  final VoidCallback? onSpeak;
+  const MessageBubble({
+    super.key,
+    required this.message,
+    this.onDelete,
+    this.onReport,
+    this.onSpeak,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +71,8 @@ class MessageBubble extends StatelessWidget {
       ),
     );
 
-    final bubbleWithGestures = onDelete == null || message.isStreaming
+    final hasMenu = !message.isStreaming;
+    final bubbleWithGestures = !hasMenu
         ? bubble
         : GestureDetector(
             onLongPress: () => _showMessageMenu(context),
@@ -94,13 +104,50 @@ class MessageBubble extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => SafeArea(
-        child: ListTile(
-          leading: const Icon(Icons.delete_outline_rounded, color: Color(0xFFFFB4B4)),
-          title: const Text('Удалить сообщение', style: TextStyle(color: Colors.white)),
-          onTap: () {
-            Navigator.of(context).pop();
-            onDelete?.call();
-          },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.copy_rounded, color: Colors.white70),
+              title: const Text('Скопировать текст', style: TextStyle(color: Colors.white)),
+              onTap: () async {
+                Navigator.of(context).pop();
+                await Clipboard.setData(ClipboardData(text: message.content));
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Скопировано'), duration: Duration(seconds: 1)),
+                  );
+                }
+              },
+            ),
+            if (onSpeak != null)
+              ListTile(
+                leading: const Icon(Icons.volume_up_rounded, color: Colors.white70),
+                title: const Text('Прочитать вслух', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  onSpeak?.call();
+                },
+              ),
+            if (onReport != null)
+              ListTile(
+                leading: const Icon(Icons.flag_outlined, color: Color(0xFFFFD166)),
+                title: const Text('Пожаловаться на ответ', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  onReport?.call();
+                },
+              ),
+            if (onDelete != null)
+              ListTile(
+                leading: const Icon(Icons.delete_outline_rounded, color: Color(0xFFFFB4B4)),
+                title: const Text('Удалить сообщение', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  onDelete?.call();
+                },
+              ),
+          ],
         ),
       ),
     );

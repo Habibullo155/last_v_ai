@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../models/chat_message.dart';
 import '../state/auth_store.dart';
 import '../state/chat_store.dart';
+import '../state/theme_store.dart';
+import '../state/voice_store.dart';
 import '../utils/responsive.dart';
 import '../widgets/app_background.dart';
 import '../widgets/backend_status_pill.dart';
@@ -10,16 +12,26 @@ import '../widgets/chat_input_bar.dart';
 import '../widgets/conversation_sidebar.dart';
 import '../widgets/glass_panel.dart';
 import '../widgets/message_bubble.dart';
+import '../widgets/report_dialog.dart';
 import 'admin_home_screen.dart';
 import 'profile_screen.dart';
 import 'settings_screen.dart';
 import 'support_screen.dart';
+import 'voice_settings_screen.dart';
 import 'wellbeing_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   final ChatStore store;
   final AuthStore authStore;
-  const ChatScreen({super.key, required this.store, required this.authStore});
+  final ThemeStore themeStore;
+  final VoiceStore voiceStore;
+  const ChatScreen({
+    super.key,
+    required this.store,
+    required this.authStore,
+    required this.themeStore,
+    required this.voiceStore,
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -44,6 +56,31 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollToBottom();
     await widget.store.sendMessage(text);
     _scrollToBottom();
+    _maybeAutoReadLastResponse();
+  }
+
+  /// Озвучивает последний ответ ассистента, если включена автоозвучка в
+  /// настройках голоса — вызывается сразу после того, как стриминг ответа
+  /// закончился (и на обычную отправку, и на перегенерацию).
+  void _maybeAutoReadLastResponse() {
+    final voice = widget.voiceStore;
+    if (!voice.settings.autoReadEnabled || !voice.isVoiceFeatureEnabled) return;
+    final convo = widget.store.active;
+    if (convo == null || convo.messages.isEmpty) return;
+    final last = convo.messages.last;
+    if (last.role == MessageRole.assistant && !last.isError && last.content.trim().isNotEmpty) {
+      voice.speak(last.content);
+    }
+  }
+
+  /// Ищет ближайшее сообщение пользователя ПЕРЕД ответом ассистента с
+  /// индексом [assistantIndex] — это и есть вопрос, на который отвечала
+  /// модель, нужен для жалобы (чтобы разбирающий видел вопрос и ответ вместе).
+  String _precedingUserMessage(List<ChatMessage> messages, int assistantIndex) {
+    for (var i = assistantIndex - 1; i >= 0; i--) {
+      if (messages[i].role == MessageRole.user) return messages[i].content;
+    }
+    return '(вопрос не найден)';
   }
 
   @override
@@ -122,6 +159,18 @@ class _ChatScreenState extends State<ChatScreen> {
                           itemBuilder: (context, i) => MessageBubble(
                             message: messages[i],
                             onDelete: () => widget.store.deleteMessage(messages[i].id),
+                            onReport: messages[i].role == MessageRole.assistant
+                                ? () => showReportDialog(
+                                      context,
+                                      authStore: widget.authStore,
+                                      userMessage: _precedingUserMessage(messages, i),
+                                      aiResponse: messages[i].content,
+                                    )
+                                : null,
+                            onSpeak: messages[i].role == MessageRole.assistant &&
+                                    widget.voiceStore.isVoiceFeatureEnabled
+                                ? () => widget.voiceStore.speak(messages[i].content)
+                                : null,
                           ),
                         ),
                 ),
@@ -138,6 +187,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       onPressed: () async {
                         await widget.store.regenerateLastResponse();
                         _scrollToBottom();
+                        _maybeAutoReadLastResponse();
                       },
                       icon: Icon(Icons.refresh_rounded, size: 16, color: Colors.white.withOpacity(0.6)),
                       label: Text(
@@ -156,6 +206,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: ChatInputBar(
                   enabled: !widget.store.isSending,
                   onSend: _handleSend,
+                  voiceStore: widget.voiceStore,
                 ),
               ),
             ),
@@ -227,8 +278,17 @@ class _ChatScreenState extends State<ChatScreen> {
           case 'settings':
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => SettingsScreen(authStore: widget.authStore, chatStore: widget.store),
+                builder: (_) => SettingsScreen(
+                  authStore: widget.authStore,
+                  chatStore: widget.store,
+                  themeStore: widget.themeStore,
+                ),
               ),
+            );
+            break;
+          case 'voice':
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => VoiceSettingsScreen(voiceStore: widget.voiceStore)),
             );
             break;
           case 'support':
@@ -247,6 +307,7 @@ class _ChatScreenState extends State<ChatScreen> {
         _menuItem('profile', Icons.account_circle_outlined, 'Личный кабинет'),
         _menuItem('wellbeing', Icons.self_improvement_rounded, 'Самочувствие'),
         _menuItem('settings', Icons.settings_outlined, 'Настройки'),
+        _menuItem('voice', Icons.record_voice_over_rounded, 'Голос'),
         _menuItem('support', Icons.support_agent_rounded, 'Поддержка'),
         if (isAdmin) _menuItem('admin', Icons.admin_panel_settings_rounded, 'Админ-панель'),
       ],

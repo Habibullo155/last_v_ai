@@ -73,6 +73,7 @@ class ConversationSidebar extends StatelessWidget {
                     return _ConversationTile(
                       convo: convo,
                       isActive: isActive,
+                      isGenerating: store.isSendingIn(convo.id),
                       onTap: () {
                         store.selectConversation(convo.id);
                         onSelected?.call();
@@ -132,6 +133,7 @@ class _NewChatButton extends StatelessWidget {
 class _ConversationTile extends StatelessWidget {
   final ChatConversation convo;
   final bool isActive;
+  final bool isGenerating;
   final VoidCallback onTap;
   final VoidCallback onDelete;
   final ValueChanged<String> onRename;
@@ -139,6 +141,7 @@ class _ConversationTile extends StatelessWidget {
   const _ConversationTile({
     required this.convo,
     required this.isActive,
+    required this.isGenerating,
     required this.onTap,
     required this.onDelete,
     required this.onRename,
@@ -283,15 +286,29 @@ class _ConversationTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      convo.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontWeight: FontWeight.w500,
-                        fontSize: 13.5,
-                      ),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            convo.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.9),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13.5,
+                            ),
+                          ),
+                        ),
+                        if (isGenerating) ...[
+                          const SizedBox(width: 6),
+                          const SizedBox(
+                            width: 8,
+                            height: 8,
+                            child: CircularProgressIndicator(strokeWidth: 1.5, color: Color(0xFF00D9C0)),
+                          ),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: 2),
                     Text(

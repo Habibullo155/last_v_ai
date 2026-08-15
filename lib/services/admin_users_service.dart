@@ -30,6 +30,36 @@ class AdminUsersService {
     return list.map((e) => AdminUser.fromJson(e as Map<String, dynamic>)).toList();
   }
 
+  Future<AdminUser> createUser({
+    required String baseUrl,
+    required String token,
+    required String email,
+    required String password,
+    String role = 'user',
+    String tariff = 'free',
+  }) async {
+    final res = await _client
+        .post(
+          Uri.parse('$baseUrl/api/admin/users'),
+          headers: _headers(token),
+          body: jsonEncode({'email': email, 'password': password, 'role': role, 'tariff': tariff}),
+        )
+        .timeout(const Duration(seconds: 15));
+    if (res.statusCode >= 400) {
+      throw AdminUsersException(_extractError(res.body) ?? 'Не удалось создать пользователя.');
+    }
+    return AdminUser.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
+  }
+
+  Future<void> deleteUser({required String baseUrl, required String token, required int userId}) async {
+    final res = await _client
+        .delete(Uri.parse('$baseUrl/api/admin/users/$userId'), headers: _headers(token))
+        .timeout(const Duration(seconds: 15));
+    if (res.statusCode >= 400) {
+      throw AdminUsersException(_extractError(res.body) ?? 'Не удалось удалить пользователя.');
+    }
+  }
+
   /// Один общий метод обновления — конкретные поля передаются опционально,
   /// сервер сам разберётся, что менять (соответствует UserAdminUpdate на бэкенде).
   Future<AdminUser> updateUser({

@@ -29,6 +29,7 @@ class _AuthScreenState extends State<AuthScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
     if (email.isEmpty || password.isEmpty) return;
+    if (_isRegisterMode && password.length < 8) return;
 
     final ok = _isRegisterMode
         ? await widget.store.register(email, password)
@@ -116,8 +117,13 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
             ),
+            onChanged: _isRegisterMode ? (_) => setState(() {}) : null,
             onSubmitted: (_) => store.isBusy ? null : _submit(),
           ),
+          if (_isRegisterMode) ...[
+            const SizedBox(height: 8),
+            _buildPasswordHint(),
+          ],
           if (store.lastError != null) ...[
             const SizedBox(height: 14),
             Text(
@@ -155,6 +161,7 @@ class _AuthScreenState extends State<AuthScreen> {
     TextInputType? keyboardType,
     bool obscureText = false,
     Widget? suffixIcon,
+    ValueChanged<String>? onChanged,
     ValueChanged<String>? onSubmitted,
   }) {
     return Container(
@@ -167,6 +174,7 @@ class _AuthScreenState extends State<AuthScreen> {
         controller: controller,
         keyboardType: keyboardType,
         obscureText: obscureText,
+        onChanged: onChanged,
         onSubmitted: onSubmitted,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
@@ -178,6 +186,33 @@ class _AuthScreenState extends State<AuthScreen> {
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
         ),
       ),
+    );
+  }
+
+  /// Живая подсказка про минимальную длину пароля (8 символов — то же
+  /// правило, что и на сервере, schemas.py:UserRegister). Без этого
+  /// единственная обратная связь была — ошибка сервера уже ПОСЛЕ отправки
+  /// формы, что неудобно и непонятно на этапе ввода.
+  Widget _buildPasswordHint() {
+    final length = _passwordController.text.length;
+    const minLength = 8;
+    final isValid = length >= minLength;
+    return Row(
+      children: [
+        Icon(
+          isValid ? Icons.check_circle_rounded : Icons.circle_outlined,
+          size: 14,
+          color: isValid ? const Color(0xFF00E6A0) : Colors.white.withOpacity(0.35),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          isValid ? 'Длина пароля подходит' : 'Минимум $minLength символов (введено: $length)',
+          style: TextStyle(
+            color: isValid ? const Color(0xFF00E6A0) : Colors.white.withOpacity(0.45),
+            fontSize: 12,
+          ),
+        ),
+      ],
     );
   }
 }

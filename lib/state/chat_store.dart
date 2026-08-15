@@ -33,8 +33,25 @@ class ChatStore extends ChangeNotifier {
 
   final List<ChatConversation> conversations = [];
   String? activeConversationId;
-  bool isSending = false;
   BackendStatus backendStatus = BackendStatus.unknown;
+
+  /// ID чатов, для которых ПРЯМО СЕЙЧАС идёт генерация ответа. Раньше здесь
+  /// было одно глобальное поле isSending: пока ИИ отвечал в одном чате,
+  /// поле ввода блокировалось во ВСЕХ чатах — переключиться и написать в
+  /// другой было невозможно, хотя генерация там даже не начиналась. Теперь
+  /// это набор конкретных id, и запросы к разным чатам идут независимо и
+  /// могут выполняться параллельно.
+  final Set<String> _sendingConversationIds = {};
+
+  /// Отправляется ли сообщение в ТЕКУЩЕМ активном чате — используется для
+  /// блокировки поля ввода на экране. Не показывает состояние других чатов.
+  bool get isSending =>
+      activeConversationId != null && _sendingConversationIds.contains(activeConversationId);
+
+  /// В отличие от [isSending] (только активный чат) — проверяет ЛЮБОЙ чат
+  /// по id, используется в сайдбаре, чтобы показать, что конкретный чат
+  /// ещё генерирует ответ, даже если сейчас открыт другой.
+  bool isSendingIn(String conversationId) => _sendingConversationIds.contains(conversationId);
 
   /// Store не хранит токен сам — его источник правды AuthStore. ChatScreen
   /// подставляет сюда функцию, возвращающую актуальный токен на момент
@@ -138,7 +155,7 @@ class ChatStore extends ChangeNotifier {
 
   Future<void> sendMessage(String text) async {
     final convo = active;
-    if (convo == null || text.trim().isEmpty || isSending) return;
+    if (convo == null || text.trim().isEmpty || _sendingConversationIds.contains(convo.id)) return;
 
     final userMsg = ChatMessage(
       id: _uuid.v4(),
@@ -161,7 +178,7 @@ class ChatStore extends ChangeNotifier {
   /// повторной отправки вопроса пользователем.
   Future<void> regenerateLastResponse() async {
     final convo = active;
-    if (convo == null || isSending || convo.messages.isEmpty) return;
+    if (convo == null || _sendingConversationIds.contains(convo.id) || convo.messages.isEmpty) return;
 
     if (convo.messages.last.role == MessageRole.assistant) {
       convo.messages.removeLast();
@@ -184,7 +201,7 @@ class ChatStore extends ChangeNotifier {
     );
     convo.messages.add(assistantMsg);
     convo.updatedAt = DateTime.now();
-    isSending = true;
+    _sendingConversationIds.add(convo.id);
     notifyListeners();
 
     try {
@@ -228,7 +245,7 @@ class ChatStore extends ChangeNotifier {
       }
     } finally {
       assistantMsg.isStreaming = false;
-      isSending = false;
+      _sendingConversationIds.remove(convo.id);
       convo.updatedAt = DateTime.now();
       _reorderActiveToTop();
       await _persist();

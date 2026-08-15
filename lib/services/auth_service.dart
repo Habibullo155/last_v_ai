@@ -91,6 +91,43 @@ class AuthService {
     }
   }
 
+  /// Необратимое удаление своего аккаунта — требует подтверждения паролем
+  /// на сервере (см. backend/routers_auth.py). Бросает AuthException с
+  /// понятным сообщением, если пароль неверный или сервер недоступен.
+  Future<void> deleteAccount({
+    required String baseUrl,
+    required String token,
+    required String password,
+  }) async {
+    http.Response res;
+    try {
+      res = await _client
+          .delete(
+            Uri.parse('$baseUrl/api/auth/me'),
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({'password': password}),
+          )
+          .timeout(const Duration(seconds: 15));
+    } catch (e) {
+      throw AuthException('Не удалось связаться с сервером.\n$e');
+    }
+
+    if (res.statusCode >= 400) {
+      Map<String, dynamic> data;
+      try {
+        data = jsonDecode(res.body) as Map<String, dynamic>;
+      } catch (_) {
+        throw AuthException('Не удалось удалить аккаунт (код ${res.statusCode}).');
+      }
+      throw AuthException(_extractErrorMessage(data));
+    }
+
+    await clearToken();
+  }
+
   /// FastAPI отдаёт ошибки в двух разных формах:
   /// - {"detail": "текст"} — наши собственные HTTPException;
   /// - {"detail": [{"msg": "...", "loc": [...]}, ...]} — автоматическая

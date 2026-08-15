@@ -4,6 +4,8 @@ import 'screens/auth_screen.dart';
 import 'screens/chat_screen.dart';
 import 'state/auth_store.dart';
 import 'state/chat_store.dart';
+import 'state/theme_store.dart';
+import 'state/voice_store.dart';
 
 class GlassChatApp extends StatefulWidget {
   const GlassChatApp({super.key});
@@ -14,14 +16,20 @@ class GlassChatApp extends StatefulWidget {
 
 class _GlassChatAppState extends State<GlassChatApp> {
   final AuthStore _authStore = AuthStore();
+  final ThemeStore _themeStore = ThemeStore();
   ChatStore? _chatStore;
+  VoiceStore? _voiceStore;
 
   @override
   void initState() {
     super.initState();
     _authStore.addListener(_onAuthChanged);
     _authStore.restoreSession();
+    _themeStore.addListener(_onThemeChanged);
+    _themeStore.load();
   }
+
+  void _onThemeChanged() => setState(() {});
 
   void _onAuthChanged() {
     if (_authStore.status == AuthStatus.authenticated) {
@@ -33,6 +41,8 @@ class _GlassChatAppState extends State<GlassChatApp> {
       // Разлогинились — не тащим чужую сессию чата дальше.
       _chatStore?.dispose();
       _chatStore = null;
+      _voiceStore?.dispose();
+      _voiceStore = null;
     }
     setState(() {});
   }
@@ -44,13 +54,19 @@ class _GlassChatAppState extends State<GlassChatApp> {
     );
     store.init(userId);
     _chatStore = store;
+
+    final voice = VoiceStore();
+    voice.init(store.baseUrl);
+    _voiceStore = voice;
   }
 
   @override
   void dispose() {
     _authStore.removeListener(_onAuthChanged);
     _authStore.dispose();
+    _themeStore.removeListener(_onThemeChanged);
     _chatStore?.dispose();
+    _voiceStore?.dispose();
     super.dispose();
   }
 
@@ -59,16 +75,32 @@ class _GlassChatAppState extends State<GlassChatApp> {
     return MaterialApp(
       title: 'AI Glass Chat',
       debugShowCheckedModeBanner: false,
+      themeMode: _themeStore.themeMode,
+
+      // Светлая тема
       theme: ThemeData(
         useMaterial3: true,
-        fontFamily: 'Roboto', // В главном конструкторе это работает без ошибок
-        scaffoldBackgroundColor: const Color(0xFF0B0F1E),
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: const Color(0xFFF7F9FC),
+        fontFamily: 'Roboto',
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF6C5CE7),
-          brightness:
-              Brightness.dark, // Автоматически генерирует темную палитру
+          brightness: Brightness.light,
         ),
       ),
+
+      // Тёмная тема
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF0B0F1E),
+        fontFamily: 'Roboto',
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6C5CE7),
+          brightness: Brightness.dark,
+        ),
+      ),
+
       home: _buildHome(),
     );
   }
@@ -82,8 +114,15 @@ class _GlassChatAppState extends State<GlassChatApp> {
         return AuthScreen(store: _authStore);
       case AuthStatus.authenticated:
         final chatStore = _chatStore;
-        if (chatStore == null) return const _LoadingScreen();
-        return ChatScreen(store: chatStore, authStore: _authStore);
+        final voiceStore = _voiceStore;
+        if (chatStore == null || voiceStore == null)
+          return const _LoadingScreen();
+        return ChatScreen(
+          store: chatStore,
+          authStore: _authStore,
+          themeStore: _themeStore,
+          voiceStore: voiceStore,
+        );
     }
   }
 }

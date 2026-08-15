@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../state/voice_store.dart';
 import 'glass_panel.dart';
 
 class ChatInputBar extends StatefulWidget {
   final bool enabled;
   final ValueChanged<String> onSend;
+  final VoiceStore? voiceStore;
 
-  const ChatInputBar({super.key, required this.enabled, required this.onSend});
+  const ChatInputBar({super.key, required this.enabled, required this.onSend, this.voiceStore});
 
   @override
   State<ChatInputBar> createState() => _ChatInputBarState();
@@ -29,6 +31,22 @@ class _ChatInputBarState extends State<ChatInputBar> {
     _focusNode.requestFocus();
   }
 
+  Future<void> _toggleListening() async {
+    final voice = widget.voiceStore;
+    if (voice == null) return;
+    if (voice.isListening) {
+      await voice.stopListening();
+      return;
+    }
+    HapticFeedback.lightImpact();
+    await voice.startListening(
+      onResult: (text) {
+        _controller.text = text;
+        _controller.selection = TextSelection.collapsed(offset: text.length);
+      },
+    );
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -39,6 +57,9 @@ class _ChatInputBarState extends State<ChatInputBar> {
 
   @override
   Widget build(BuildContext context) {
+    final voice = widget.voiceStore;
+    final showMic = voice != null && voice.isVoiceFeatureEnabled && voice.isSttAvailable;
+
     return GlassPanel(
       opacity: 0.12,
       borderRadius: BorderRadius.circular(28),
@@ -77,8 +98,50 @@ class _ChatInputBarState extends State<ChatInputBar> {
               ),
             ),
           ),
+          if (showMic) ...[
+            AnimatedBuilder(
+              animation: voice,
+              builder: (context, _) => _MicButton(
+                isListening: voice.isListening,
+                enabled: widget.enabled,
+                onTap: _toggleListening,
+              ),
+            ),
+            const SizedBox(width: 6),
+          ],
           _SendButton(enabled: widget.enabled, onTap: _submit),
         ],
+      ),
+    );
+  }
+}
+
+class _MicButton extends StatelessWidget {
+  final bool isListening;
+  final bool enabled;
+  final VoidCallback onTap;
+  const _MicButton({required this.isListening, required this.enabled, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: enabled ? onTap : null,
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isListening ? const Color(0xFFFF6B6B).withOpacity(0.25) : Colors.white.withOpacity(0.06),
+          ),
+          child: Icon(
+            isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
+            color: isListening ? const Color(0xFFFF6B6B) : Colors.white.withOpacity(0.7),
+            size: 20,
+          ),
+        ),
       ),
     );
   }

@@ -37,8 +37,7 @@ class AuthStore extends ChangeNotifier {
       return;
     }
 
-    final freshUser =
-        await _authService.fetchMe(baseUrl: baseUrl, token: storedToken);
+    final freshUser = await _authService.fetchMe(baseUrl: baseUrl, token: storedToken);
     if (freshUser == null) {
       // Токен истёк/недействителен, или сервер сейчас недоступен —
       // в обоих случаях просим войти заново, это безопаснее, чем
@@ -54,11 +53,10 @@ class AuthStore extends ChangeNotifier {
   }
 
   Future<bool> register(String email, String password) =>
-      _attempt(() => _authService.register(
-          baseUrl: baseUrl, email: email, password: password));
+      _attempt(() => _authService.register(baseUrl: baseUrl, email: email, password: password));
 
-  Future<bool> login(String email, String password) => _attempt(() =>
-      _authService.login(baseUrl: baseUrl, email: email, password: password));
+  Future<bool> login(String email, String password) =>
+      _attempt(() => _authService.login(baseUrl: baseUrl, email: email, password: password));
 
   Future<bool> _attempt(Future<auth_svc.AuthResult> Function() action) async {
     isBusy = true;
@@ -88,6 +86,31 @@ class AuthStore extends ChangeNotifier {
     user = null;
     status = AuthStatus.unauthenticated;
     notifyListeners();
+  }
+
+  /// Необратимо удаляет аккаунт пользователя (требует пароль — см.
+  /// backend/routers_auth.py). Возвращает null при успехе, иначе — текст
+  /// ошибки для показа в UI (например "неверный пароль").
+  Future<String?> deleteAccount(String password) async {
+    final currentToken = token;
+    if (currentToken == null) return 'Сессия не найдена. Войди заново.';
+
+    isBusy = true;
+    notifyListeners();
+    try {
+      await _authService.deleteAccount(baseUrl: baseUrl, token: currentToken, password: password);
+      token = null;
+      user = null;
+      status = AuthStatus.unauthenticated;
+      return null;
+    } on auth_svc.AuthException catch (e) {
+      return e.message;
+    } catch (e) {
+      return 'Непредвиденная ошибка: $e';
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
   }
 
   @override

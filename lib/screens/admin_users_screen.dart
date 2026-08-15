@@ -83,6 +83,11 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                         style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
                       ),
                     ),
+                    IconButton(
+                      tooltip: 'Добавить пользователя',
+                      icon: const Icon(Icons.person_add_alt_1_rounded, color: Colors.white),
+                      onPressed: _showCreateUserSheet,
+                    ),
                   ],
                 ),
               ),
@@ -308,6 +313,24 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             if (idx != -1) _users[idx] = updated;
           });
         },
+        onDeleted: () {
+          setState(() => _users.removeWhere((u) => u.id == user.id));
+        },
+      ),
+    );
+  }
+
+  Future<void> _showCreateUserSheet() async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _CreateUserSheet(
+        authStore: widget.authStore,
+        service: _service,
+        onCreated: (created) {
+          setState(() => _users = [created, ..._users]);
+        },
       ),
     );
   }
@@ -318,11 +341,13 @@ class _EditUserSheet extends StatefulWidget {
   final AuthStore authStore;
   final AdminUsersService service;
   final ValueChanged<AdminUser> onChanged;
+  final VoidCallback onDeleted;
 
   const _EditUserSheet({
     required this.user,
     required this.authStore,
     required this.service,
+    required this.onDeleted,
     required this.onChanged,
   });
 
@@ -334,6 +359,8 @@ class _EditUserSheetState extends State<_EditUserSheet> {
   late final TextEditingController _tariffController;
   bool _isBusy = false;
   String? _error;
+
+  bool get _isSelf => widget.user.id == widget.authStore.user?.id;
 
   @override
   void initState() {
@@ -372,6 +399,74 @@ class _EditUserSheetState extends State<_EditUserSheet> {
         clearTariffExpiry: clearTariffExpiry,
       );
       widget.onChanged(updated);
+      if (mounted) Navigator.of(context).pop();
+    } on AdminUsersException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  Future<void> _confirmAndDelete() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GlassPanel(
+          opacity: 0.18,
+          borderRadius: BorderRadius.circular(20),
+          padding: const EdgeInsets.all(20),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 360),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Удалить пользователя?',
+                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '${widget.user.email} будет удалён(а) безвозвратно, вместе с '
+                  'его обращениями в поддержку и историей расхода токенов. '
+                  'Загруженные им документы для RAG останутся (просто станут '
+                  'без автора).',
+                  style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, height: 1.4),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: Text('Отмена', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                    ),
+                    const SizedBox(width: 8),
+                    FilledButton(
+                      style: FilledButton.styleFrom(backgroundColor: const Color(0xFFFF6B6B)),
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text('Удалить'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    if (confirmed != true) return;
+
+    final token = widget.authStore.token;
+    if (token == null) return;
+    setState(() {
+      _isBusy = true;
+      _error = null;
+    });
+    try {
+      await widget.service.deleteUser(baseUrl: widget.authStore.baseUrl, token: token, userId: widget.user.id);
+      widget.onDeleted();
       if (mounted) Navigator.of(context).pop();
     } on AdminUsersException catch (e) {
       if (mounted) setState(() => _error = e.message);
@@ -480,6 +575,24 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                 ],
               ),
 
+              const SizedBox(height: 20),
+              _isSelf
+                  ? Text(
+                      'Нельзя удалить свой же аккаунт, пока ты им пользуешься.',
+                      style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 12),
+                    )
+                  : SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _isBusy ? null : _confirmAndDelete,
+                        icon: const Icon(Icons.delete_outline_rounded, size: 18, color: Color(0xFFFFB4B4)),
+                        label: const Text('Удалить пользователя', style: TextStyle(color: Color(0xFFFFB4B4))),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: const Color(0xFFFF6B6B).withOpacity(0.4)),
+                        ),
+                      ),
+                    ),
+
               if (_error != null) ...[
                 const SizedBox(height: 14),
                 Text(_error!, style: const TextStyle(color: Color(0xFFFFB4B4), fontSize: 13)),
@@ -491,6 +604,166 @@ class _EditUserSheetState extends State<_EditUserSheet> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _CreateUserSheet extends StatefulWidget {
+  final AuthStore authStore;
+  final AdminUsersService service;
+  final ValueChanged<AdminUser> onCreated;
+
+  const _CreateUserSheet({
+    required this.authStore,
+    required this.service,
+    required this.onCreated,
+  });
+
+  @override
+  State<_CreateUserSheet> createState() => _CreateUserSheetState();
+}
+
+class _CreateUserSheetState extends State<_CreateUserSheet> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _tariffController = TextEditingController(text: 'free');
+  String _role = 'user';
+  bool _isBusy = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _tariffController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    if (email.isEmpty || password.isEmpty) {
+      setState(() => _error = 'Заполни email и пароль.');
+      return;
+    }
+
+    final token = widget.authStore.token;
+    if (token == null) return;
+    setState(() {
+      _isBusy = true;
+      _error = null;
+    });
+    try {
+      final created = await widget.service.createUser(
+        baseUrl: widget.authStore.baseUrl,
+        token: token,
+        email: email,
+        password: password,
+        role: _role,
+        tariff: _tariffController.text.trim().isEmpty ? 'free' : _tariffController.text.trim(),
+      );
+      widget.onCreated(created);
+      if (mounted) Navigator.of(context).pop();
+    } on AdminUsersException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: GlassPanel(
+        opacity: 0.18,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        padding: const EdgeInsets.all(20),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Новый пользователь',
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Создаётся сразу с указанным паролем — сам человек регистрироваться не должен.',
+                style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+              ),
+              const SizedBox(height: 16),
+              _field(_emailController, 'Email', keyboardType: TextInputType.emailAddress),
+              const SizedBox(height: 10),
+              _field(_passwordController, 'Пароль (минимум 8 символов)', obscure: true),
+              const SizedBox(height: 10),
+              _field(_tariffController, 'Тариф (free / pro / unlimited)'),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Text('Роль:', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13)),
+                  const SizedBox(width: 10),
+                  ChoiceChip(
+                    label: const Text('Пользователь'),
+                    selected: _role == 'user',
+                    onSelected: (_) => setState(() => _role = 'user'),
+                    selectedColor: const Color(0xFF6C5CE7),
+                    labelStyle: TextStyle(color: _role == 'user' ? Colors.white : Colors.white70, fontSize: 12.5),
+                    backgroundColor: Colors.white.withOpacity(0.06),
+                  ),
+                  const SizedBox(width: 8),
+                  ChoiceChip(
+                    label: const Text('Админ'),
+                    selected: _role == 'admin',
+                    onSelected: (_) => setState(() => _role = 'admin'),
+                    selectedColor: const Color(0xFF6C5CE7),
+                    labelStyle: TextStyle(color: _role == 'admin' ? Colors.white : Colors.white70, fontSize: 12.5),
+                    backgroundColor: Colors.white.withOpacity(0.06),
+                  ),
+                ],
+              ),
+              if (_error != null) ...[
+                const SizedBox(height: 12),
+                Text(_error!, style: const TextStyle(color: Color(0xFFFFB4B4), fontSize: 13)),
+              ],
+              const SizedBox(height: 18),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(backgroundColor: const Color(0xFF6C5CE7)),
+                  onPressed: _isBusy ? null : _submit,
+                  child: _isBusy
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        )
+                      : const Text('Создать'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _field(TextEditingController controller, String hint, {bool obscure = false, TextInputType? keyboardType}) {
+    return TextField(
+      controller: controller,
+      obscureText: obscure,
+      keyboardType: keyboardType,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.08),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        hintText: hint,
+        hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
       ),
     );
   }
