@@ -7,6 +7,7 @@ import '../state/auth_store.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 import 'admin_documents_screen.dart';
+import 'admin_pronunciation_screen.dart';
 import 'admin_reports_screen.dart';
 import 'admin_support_screen.dart';
 import 'admin_users_screen.dart';
@@ -155,6 +156,15 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                   MaterialPageRoute(builder: (_) => AdminSupportScreen(authStore: widget.authStore)),
                                 )
                                 .then((_) => _load()),
+                          ),
+                          const SizedBox(height: 12),
+                          _AdminTile(
+                            icon: Icons.spellcheck_rounded,
+                            title: 'Словарь произношения',
+                            subtitle: 'Как озвучка должна "читать" конкретные слова — для всех пользователей',
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => AdminPronunciationScreen(authStore: widget.authStore)),
+                            ),
                           ),
                         ],
                       ),

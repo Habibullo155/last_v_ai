@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../state/chat_store.dart';
+import '../theme/app_text_color.dart';
 import 'glass_panel.dart';
 
 /// Только индикатор состояния сервера — без возможности его сменить.
@@ -22,7 +23,7 @@ class BackendStatusPill extends StatelessWidget {
           BackendStatus.online => (const Color(0xFF00E6A0), 'Сервер онлайн'),
           BackendStatus.offline => (const Color(0xFFFF6B6B), 'Сервер недоступен'),
           BackendStatus.checking => (const Color(0xFFFFD166), 'Проверка…'),
-          BackendStatus.unknown => (Colors.white38, 'Неизвестно'),
+          BackendStatus.unknown => (context.onSurfaceFaded(0.38), 'Неизвестно'),
         };
         return InkWell(
           borderRadius: BorderRadius.circular(20),
@@ -49,7 +50,7 @@ class BackendStatusPill extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: context.onSurfaceFaded(0.8),
                     fontSize: 12.5,
                   ),
                 ),

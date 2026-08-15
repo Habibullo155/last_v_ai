@@ -1,0 +1,171 @@
+import 'package:flutter/material.dart';
+
+import '../widgets/app_background.dart';
+import '../widgets/glass_panel.dart';
+
+class _GroundingStep {
+  final int count;
+  final String sense;
+  final String prompt;
+  const _GroundingStep(this.count, this.sense, this.prompt);
+}
+
+const _steps = [
+  _GroundingStep(5, 'Зрение', 'Назови 5 вещей, которые видишь вокруг себя'),
+  _GroundingStep(4, 'Осязание', 'Назови 4 вещи, которые можешь потрогать'),
+  _GroundingStep(3, 'Слух', 'Назови 3 звука, которые слышишь прямо сейчас'),
+  _GroundingStep(2, 'Обоняние', 'Назови 2 запаха, которые чувствуешь'),
+  _GroundingStep(1, 'Вкус', 'Назови 1 вкус, который чувствуешь или помнишь'),
+];
+
+/// Техника заземления "5-4-3-2-1" — известный приём переключения внимания
+/// на органы чувств при тревоге. Не диагностика и не замена профессиональной
+/// помощи, просто способ на минуту вернуть внимание в настоящий момент.
+class GroundingExerciseScreen extends StatefulWidget {
+  const GroundingExerciseScreen({super.key});
+
+  @override
+  State<GroundingExerciseScreen> createState() => _GroundingExerciseScreenState();
+}
+
+class _GroundingExerciseScreenState extends State<GroundingExerciseScreen> {
+  int _stepIndex = 0;
+
+  void _next() {
+    if (_stepIndex < _steps.length - 1) {
+      setState(() => _stepIndex++);
+    } else {
+      setState(() => _stepIndex = -1); // финальный экран "готово"
+    }
+  }
+
+  void _restart() => setState(() => _stepIndex = 0);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: AppBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                    const Text(
+                      'Техника заземления',
+                      style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 440),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: _stepIndex == -1 ? _buildDone() : _buildStep(_steps[_stepIndex]),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStep(_GroundingStep step) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(_steps.length, (i) {
+            final active = i == _stepIndex;
+            final done = i < _stepIndex;
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              width: active ? 22 : 8,
+              height: 8,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                color: done || active ? const Color(0xFF6C5CE7) : Colors.white.withOpacity(0.15),
+              ),
+            );
+          }),
+        ),
+        const SizedBox(height: 32),
+        Text(
+          '${step.count}',
+          style: const TextStyle(color: Colors.white, fontSize: 56, fontWeight: FontWeight.w700),
+        ),
+        Text(
+          step.sense.toUpperCase(),
+          style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 12, letterSpacing: 1.5),
+        ),
+        const SizedBox(height: 20),
+        GlassPanel(
+          opacity: 0.08,
+          borderRadius: BorderRadius.circular(18),
+          padding: const EdgeInsets.all(20),
+          child: Text(
+            step.prompt,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.4),
+          ),
+        ),
+        const SizedBox(height: 32),
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(28),
+            onTap: _next,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(28),
+                gradient: const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
+              ),
+              child: Text(
+                _stepIndex < _steps.length - 1 ? 'Дальше' : 'Готово',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDone() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(Icons.check_circle_rounded, color: Color(0xFF00E6A0), size: 56),
+        const SizedBox(height: 16),
+        const Text(
+          'Готово',
+          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Можно повторить в любой момент.',
+          style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13),
+        ),
+        const SizedBox(height: 24),
+        TextButton(
+          onPressed: _restart,
+          child: const Text('Начать заново'),
+        ),
+      ],
+    );
+  }
+}

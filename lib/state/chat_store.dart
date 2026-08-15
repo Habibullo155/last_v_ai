@@ -153,6 +153,24 @@ class ChatStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Редактирует своё же отправленное сообщение и переспрашивает заново —
+  /// как в ChatGPT/Gemini: всё, что шло ПОСЛЕ отредактированного сообщения
+  /// (включая старый ответ модели на него), удаляется, а на его месте
+  /// генерируется новый ответ на исправленный текст.
+  Future<void> editAndResend(String messageId, String newText) async {
+    final convo = active;
+    if (convo == null || newText.trim().isEmpty || _sendingConversationIds.contains(convo.id)) return;
+
+    final index = convo.messages.indexWhere((m) => m.id == messageId);
+    if (index == -1 || convo.messages[index].role != MessageRole.user) return;
+
+    // Обрезаем всё начиная с редактируемого сообщения (включительно) —
+    // дальше sendMessage() добавит новое пользовательское сообщение и
+    // сгенерирует свежий ответ, как на обычную отправку.
+    convo.messages.removeRange(index, convo.messages.length);
+    await sendMessage(newText);
+  }
+
   Future<void> sendMessage(String text) async {
     final convo = active;
     if (convo == null || text.trim().isEmpty || _sendingConversationIds.contains(convo.id)) return;

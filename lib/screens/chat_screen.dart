@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../models/chat_message.dart';
 import '../state/auth_store.dart';
@@ -15,6 +16,7 @@ import '../widgets/message_bubble.dart';
 import '../widgets/report_dialog.dart';
 import 'admin_home_screen.dart';
 import 'profile_screen.dart';
+import 'purchase_screen.dart';
 import 'settings_screen.dart';
 import 'support_screen.dart';
 import 'voice_settings_screen.dart';
@@ -64,7 +66,7 @@ class _ChatScreenState extends State<ChatScreen> {
   /// закончился (и на обычную отправку, и на перегенерацию).
   void _maybeAutoReadLastResponse() {
     final voice = widget.voiceStore;
-    if (!voice.settings.autoReadEnabled || !voice.isVoiceFeatureEnabled) return;
+    if (!voice.settings.autoReadEnabled || !voice.isVoiceAvailable) return;
     final convo = widget.store.active;
     if (convo == null || convo.messages.isEmpty) return;
     final last = convo.messages.last;
@@ -81,6 +83,16 @@ class _ChatScreenState extends State<ChatScreen> {
       if (messages[i].role == MessageRole.user) return messages[i].content;
     }
     return '(вопрос не найден)';
+  }
+
+  Future<void> _copyLastResponse(BuildContext context, List<ChatMessage> messages) async {
+    if (messages.isEmpty) return;
+    await Clipboard.setData(ClipboardData(text: messages.last.content));
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Скопировано'), duration: Duration(seconds: 1)),
+      );
+    }
   }
 
   @override
@@ -159,6 +171,13 @@ class _ChatScreenState extends State<ChatScreen> {
                           itemBuilder: (context, i) => MessageBubble(
                             message: messages[i],
                             onDelete: () => widget.store.deleteMessage(messages[i].id),
+                            onEdit: messages[i].role == MessageRole.user
+                                ? (newText) async {
+                                    await widget.store.editAndResend(messages[i].id, newText);
+                                    _scrollToBottom();
+                                    _maybeAutoReadLastResponse();
+                                  }
+                                : null,
                             onReport: messages[i].role == MessageRole.assistant
                                 ? () => showReportDialog(
                                       context,
@@ -168,7 +187,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     )
                                 : null,
                             onSpeak: messages[i].role == MessageRole.assistant &&
-                                    widget.voiceStore.isVoiceFeatureEnabled
+                                    widget.voiceStore.isVoiceAvailable
                                 ? () => widget.voiceStore.speak(messages[i].content)
                                 : null,
                           ),
@@ -183,17 +202,25 @@ class _ChatScreenState extends State<ChatScreen> {
                   constraints: BoxConstraints(maxWidth: maxWidth),
                   child: Align(
                     alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      onPressed: () async {
-                        await widget.store.regenerateLastResponse();
-                        _scrollToBottom();
-                        _maybeAutoReadLastResponse();
-                      },
-                      icon: Icon(Icons.refresh_rounded, size: 16, color: Colors.white.withOpacity(0.6)),
-                      label: Text(
-                        'Перегенерировать ответ',
-                        style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5),
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _ActionButton(
+                          icon: Icons.copy_rounded,
+                          label: 'Копировать',
+                          onTap: () => _copyLastResponse(context, messages),
+                        ),
+                        const SizedBox(width: 4),
+                        _ActionButton(
+                          icon: Icons.refresh_rounded,
+                          label: 'Перегенерировать',
+                          onTap: () async {
+                            await widget.store.regenerateLastResponse();
+                            _scrollToBottom();
+                            _maybeAutoReadLastResponse();
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -275,6 +302,11 @@ class _ChatScreenState extends State<ChatScreen> {
               MaterialPageRoute(builder: (_) => WellbeingScreen(userId: userId)),
             );
             break;
+          case 'purchase':
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => PurchaseScreen(authStore: widget.authStore)),
+            );
+            break;
           case 'settings':
             Navigator.of(context).push(
               MaterialPageRoute(
@@ -306,6 +338,7 @@ class _ChatScreenState extends State<ChatScreen> {
       itemBuilder: (context) => [
         _menuItem('profile', Icons.account_circle_outlined, 'Личный кабинет'),
         _menuItem('wellbeing', Icons.self_improvement_rounded, 'Самочувствие'),
+        _menuItem('purchase', Icons.workspace_premium_rounded, 'Подписка'),
         _menuItem('settings', Icons.settings_outlined, 'Настройки'),
         _menuItem('voice', Icons.record_voice_over_rounded, 'Голос'),
         _menuItem('support', Icons.support_agent_rounded, 'Поддержка'),
@@ -361,7 +394,7 @@ class _EmptyState extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Icon(Icons.auto_awesome_rounded,
+              child: const Icon(Icons.spa_rounded,
                   color: Colors.white, size: 34),
             ),
             const SizedBox(height: 20),
@@ -410,6 +443,38 @@ class _SuggestionChip extends StatelessWidget {
               text,
               style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 13),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Маленькая кнопка с иконкой и подписью для ряда действий под последним
+/// ответом ассистента (копировать / перегенерировать) — как в Gemini/ChatGPT,
+/// а не спрятано в меню по долгому нажатию.
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  const _ActionButton({required this.icon, required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 15, color: Colors.white.withOpacity(0.6)),
+              const SizedBox(width: 5),
+              Text(label, style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5)),
+            ],
           ),
         ),
       ),

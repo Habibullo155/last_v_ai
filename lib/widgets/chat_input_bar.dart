@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../state/voice_store.dart';
+import '../theme/app_text_color.dart';
 import 'glass_panel.dart';
 
 class ChatInputBar extends StatefulWidget {
@@ -58,7 +59,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
   @override
   Widget build(BuildContext context) {
     final voice = widget.voiceStore;
-    final showMic = voice != null && voice.isVoiceFeatureEnabled && voice.isSttAvailable;
+    final showMic = voice != null && voice.isVoiceAvailable && voice.isSttAvailable;
 
     return GlassPanel(
       opacity: 0.12,
@@ -84,14 +85,14 @@ class _ChatInputBarState extends State<ChatInputBar> {
                 maxLines: 6,
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => _submit(),
-                style: const TextStyle(color: Colors.white, fontSize: 15),
+                style: TextStyle(color: context.onSurface, fontSize: 15),
                 cursorColor: const Color(0xFF00D9C0),
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: widget.enabled
                       ? 'Напиши сообщение…'
                       : 'Ожидание ответа модели…',
-                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.4)),
+                  hintStyle: TextStyle(color: context.onSurfaceFaded(0.4)),
                   contentPadding:
                       const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
                 ),
@@ -134,11 +135,11 @@ class _MicButton extends StatelessWidget {
           height: 40,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isListening ? const Color(0xFFFF6B6B).withOpacity(0.25) : Colors.white.withOpacity(0.06),
+            color: isListening ? const Color(0xFFFF6B6B).withOpacity(0.25) : context.onSurfaceFaded(0.06),
           ),
           child: Icon(
             isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
-            color: isListening ? const Color(0xFFFF6B6B) : Colors.white.withOpacity(0.7),
+            color: isListening ? const Color(0xFFFF6B6B) : context.onSurfaceFaded(0.7),
             size: 20,
           ),
         ),
@@ -167,7 +168,7 @@ class _SendButton extends StatelessWidget {
             gradient: LinearGradient(
               colors: enabled
                   ? [const Color(0xFF6C5CE7), const Color(0xFF00D9C0)]
-                  : [Colors.white24, Colors.white10],
+                  : [context.onSurfaceFaded(0.24), context.onSurfaceFaded(0.10)],
             ),
           ),
           child: Icon(

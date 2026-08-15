@@ -6,6 +6,8 @@ import '../models/wellbeing_checkin.dart';
 import '../services/wellbeing_service.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
+import 'breathing_exercise_screen.dart';
+import 'grounding_exercise_screen.dart';
 
 const _uuid = Uuid();
 
@@ -183,6 +185,29 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
             ],
           ),
         ),
+        const SizedBox(height: 20),
+        Text(
+          'ИНСТРУМЕНТЫ',
+          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 10),
+        _buildToolTile(
+          icon: Icons.air_rounded,
+          title: 'Дыхательное упражнение',
+          subtitle: '«Квадратное» дыхание — 4 фазы по 4 секунды',
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const BreathingExerciseScreen()),
+          ),
+        ),
+        const SizedBox(height: 10),
+        _buildToolTile(
+          icon: Icons.grid_view_rounded,
+          title: 'Техника заземления 5-4-3-2-1',
+          subtitle: 'Переключить внимание на органы чувств',
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const GroundingExerciseScreen()),
+          ),
+        ),
         if (_history.isNotEmpty) ...[
           const SizedBox(height: 20),
           Text(
@@ -220,6 +245,54 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
         const SizedBox(height: 20),
         _buildAttributionFooter(),
       ],
+    );
+  }
+
+  Widget _buildToolTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return GlassPanel(
+      opacity: 0.08,
+      borderRadius: BorderRadius.circular(16),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(colors: [Color(0xFF6FB1DE), Color(0xFF4DD0C4)]),
+                  ),
+                  child: Icon(icon, color: Colors.white, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13.5)),
+                      const SizedBox(height: 2),
+                      Text(subtitle, style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 12)),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right_rounded, color: Colors.white.withOpacity(0.3)),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 

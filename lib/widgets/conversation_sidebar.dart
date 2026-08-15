@@ -22,7 +22,7 @@ class ConversationSidebar extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.auto_awesome_rounded,
+              Icon(Icons.spa_rounded,
                   color: Colors.white.withOpacity(0.85), size: 20),
               const SizedBox(width: 8),
               Text(
