@@ -76,31 +76,26 @@ class _GlassChatAppState extends State<GlassChatApp> {
       title: 'AI Glass Chat',
       debugShowCheckedModeBanner: false,
       themeMode: _themeStore.themeMode,
-
-      // Светлая тема
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,
         scaffoldBackgroundColor: const Color(0xFFF7F9FC),
-        fontFamily: 'Roboto',
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF6C5CE7),
           brightness: Brightness.light,
         ),
+        fontFamily: 'Roboto', // Теперь параметр находится на своем месте
       ),
-
-      // Тёмная тема
       darkTheme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
         scaffoldBackgroundColor: const Color(0xFF0B0F1E),
-        fontFamily: 'Roboto',
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF6C5CE7),
           brightness: Brightness.dark,
         ),
+        fontFamily: 'Roboto', // Теперь параметр находится на своем месте
       ),
-
       home: _buildHome(),
     );
   }
