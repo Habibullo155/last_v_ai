@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../models/cloud_voice.dart';
 import '../state/voice_store.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
@@ -208,7 +209,17 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
             ],
           ),
         ),
-        if (voice.availableVoices.isEmpty) ...[
+        if (voice.isCloudTtsAvailable) ...[
+          const SizedBox(height: 20),
+          _sectionLabel('ГОЛОС'),
+          Text(
+            'Облачная озвучка (Google Cloud TTS) — звучит естественнее, чем '
+            'голос устройства.',
+            style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.5),
+          ),
+          const SizedBox(height: 10),
+          ...cloudVoicesFor(voice.ttsProvider).map((v) => _buildCloudVoiceTile(voice, v)),
+        ] else if (voice.availableVoices.isEmpty) ...[
           const SizedBox(height: 16),
           Text(
             'Голоса ещё не загрузились или недоступны на этом устройстве.',
@@ -246,6 +257,47 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
         const SizedBox(height: 10),
         _buildPronunciationEditor(voice),
       ],
+    );
+  }
+
+  Widget _buildCloudVoiceTile(VoiceStore voice, CloudVoice v) {
+    final selected = v.name == voice.settings.cloudVoiceName;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: GlassPanel(
+        opacity: selected ? 0.14 : 0.07,
+        blurred: false, // список из нескольких голосов — см. message_bubble.dart
+        borderRadius: BorderRadius.circular(14),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: () => voice.updateSettings(voice.settings.copyWith(cloudVoiceName: v.name)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              child: Row(
+                children: [
+                  Icon(
+                    v.isFemale ? Icons.face_3_rounded : Icons.face_6_rounded,
+                    color: Colors.white.withOpacity(0.6),
+                    size: 18,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(v.label, style: const TextStyle(color: Colors.white, fontSize: 13.5)),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.play_circle_outline_rounded, color: Colors.white.withOpacity(0.6), size: 20),
+                    tooltip: 'Прослушать',
+                    onPressed: () => voice.previewCloudVoice(v.name),
+                  ),
+                  if (selected) const Icon(Icons.check_circle_rounded, color: Color(0xFF00E6A0), size: 18),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 

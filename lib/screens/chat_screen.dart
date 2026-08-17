@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../models/chat_message.dart';
 import '../state/auth_store.dart';
@@ -83,16 +82,6 @@ class _ChatScreenState extends State<ChatScreen> {
       if (messages[i].role == MessageRole.user) return messages[i].content;
     }
     return '(вопрос не найден)';
-  }
-
-  Future<void> _copyLastResponse(BuildContext context, List<ChatMessage> messages) async {
-    if (messages.isEmpty) return;
-    await Clipboard.setData(ClipboardData(text: messages.last.content));
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Скопировано'), duration: Duration(seconds: 1)),
-      );
-    }
   }
 
   @override
@@ -190,42 +179,43 @@ class _ChatScreenState extends State<ChatScreen> {
                                     widget.voiceStore.isVoiceAvailable
                                 ? () => widget.voiceStore.speak(messages[i].content)
                                 : null,
+                            // Дизлайк — не просто отметка, а тот же поток,
+                            // что и явная жалоба: спрашиваем причину и
+                            // отправляем админам на разбор. Лайк — просто
+                            // локальная пометка, без обращения к серверу.
+                            onRate: messages[i].role == MessageRole.assistant && !messages[i].isStreaming
+                                ? (liked) {
+                                    if (liked) {
+                                      widget.store.rateMessage(messages[i].id, true);
+                                    } else {
+                                      widget.store.rateMessage(messages[i].id, false);
+                                      showReportDialog(
+                                        context,
+                                        authStore: widget.authStore,
+                                        userMessage: _precedingUserMessage(messages, i),
+                                        aiResponse: messages[i].content,
+                                      );
+                                    }
+                                  }
+                                : null,
+                            // Перегенерация доступна только для самого
+                            // последнего ответа ассистента — так же, как
+                            // было и раньше, просто теперь кнопка живёт в
+                            // самом пузыре, а не отдельным рядом под списком.
+                            onRegenerate: messages[i].role == MessageRole.assistant &&
+                                    i == messages.length - 1 &&
+                                    canRegenerate
+                                ? () async {
+                                    await widget.store.regenerateLastResponse();
+                                    _scrollToBottom();
+                                    _maybeAutoReadLastResponse();
+                                  }
+                                : null,
                           ),
                         ),
                 ),
               ),
             ),
-            if (canRegenerate) ...[
-              const SizedBox(height: 8),
-              Center(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: maxWidth),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _ActionButton(
-                          icon: Icons.copy_rounded,
-                          label: 'Копировать',
-                          onTap: () => _copyLastResponse(context, messages),
-                        ),
-                        const SizedBox(width: 4),
-                        _ActionButton(
-                          icon: Icons.refresh_rounded,
-                          label: 'Перегенерировать',
-                          onTap: () async {
-                            await widget.store.regenerateLastResponse();
-                            _scrollToBottom();
-                            _maybeAutoReadLastResponse();
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
             const SizedBox(height: 12),
             Center(
               child: ConstrainedBox(
@@ -299,7 +289,7 @@ class _ChatScreenState extends State<ChatScreen> {
             final userId = widget.authStore.user?.id.toString();
             if (userId == null) return;
             Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => WellbeingScreen(userId: userId)),
+              MaterialPageRoute(builder: (_) => WellbeingScreen(userId: userId, voiceStore: widget.voiceStore)),
             );
             break;
           case 'purchase':
@@ -443,38 +433,6 @@ class _SuggestionChip extends StatelessWidget {
               text,
               style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 13),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Маленькая кнопка с иконкой и подписью для ряда действий под последним
-/// ответом ассистента (копировать / перегенерировать) — как в Gemini/ChatGPT,
-/// а не спрятано в меню по долгому нажатию.
-class _ActionButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  const _ActionButton({required this.icon, required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(10),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 15, color: Colors.white.withOpacity(0.6)),
-              const SizedBox(width: 5),
-              Text(label, style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5)),
-            ],
           ),
         ),
       ),

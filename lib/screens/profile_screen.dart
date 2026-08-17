@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../models/app_user.dart';
 import '../state/auth_store.dart';
+import '../utils/auth_navigation.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
@@ -88,7 +89,7 @@ class ProfileScreen extends StatelessWidget {
           _divider(),
           _row('Аккаунт создан', DateFormat.yMMMd().format(user.createdAt)),
           const SizedBox(height: 28),
-          _LogoutButton(onTap: authStore.logout),
+          _LogoutButton(onTap: () => confirmAndLogout(context, authStore)),
         ],
       ),
     );

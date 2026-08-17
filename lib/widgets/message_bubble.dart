@@ -13,6 +13,8 @@ class MessageBubble extends StatelessWidget {
   final VoidCallback? onReport;
   final VoidCallback? onSpeak;
   final ValueChanged<String>? onEdit;
+  final ValueChanged<bool>? onRate;
+  final VoidCallback? onRegenerate;
   const MessageBubble({
     super.key,
     required this.message,
@@ -20,6 +22,8 @@ class MessageBubble extends StatelessWidget {
     this.onReport,
     this.onSpeak,
     this.onEdit,
+    this.onRate,
+    this.onRegenerate,
   });
 
   @override
@@ -75,6 +79,31 @@ class MessageBubble extends StatelessWidget {
                 if (!message.isStreaming) ...[
                   const SizedBox(width: 8),
                   _CopyIconButton(text: message.content),
+                  if (onRate != null) ...[
+                    const SizedBox(width: 4),
+                    _RateIconButton(
+                      icon: Icons.thumb_up_outlined,
+                      activeIcon: Icons.thumb_up_rounded,
+                      active: message.liked == true,
+                      onTap: () => onRate!(true),
+                    ),
+                    const SizedBox(width: 2),
+                    _RateIconButton(
+                      icon: Icons.thumb_down_outlined,
+                      activeIcon: Icons.thumb_down_rounded,
+                      active: message.liked == false,
+                      onTap: () => onRate!(false),
+                    ),
+                  ],
+                  if (onRegenerate != null) ...[
+                    const SizedBox(width: 2),
+                    _RateIconButton(
+                      icon: Icons.refresh_rounded,
+                      activeIcon: Icons.refresh_rounded,
+                      active: false,
+                      onTap: onRegenerate!,
+                    ),
+                  ],
                 ],
               ],
             ),
@@ -302,6 +331,41 @@ class _CopyIconButton extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(2),
           child: Icon(Icons.copy_rounded, size: 13, color: context.onSurfaceFaded(0.38)),
+        ),
+      ),
+    );
+  }
+}
+
+/// Маленькая иконка-кнопка для лайка/дизлайка/перегенерации — рядом с
+/// иконкой копирования, а не спрятана в меню и не отдельным рядом под
+/// всем списком сообщений.
+class _RateIconButton extends StatelessWidget {
+  final IconData icon;
+  final IconData activeIcon;
+  final bool active;
+  final VoidCallback onTap;
+  const _RateIconButton({
+    required this.icon,
+    required this.activeIcon,
+    required this.active,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(2),
+          child: Icon(
+            active ? activeIcon : icon,
+            size: 13,
+            color: active ? const Color(0xFF6C5CE7) : context.onSurfaceFaded(0.38),
+          ),
         ),
       ),
     );

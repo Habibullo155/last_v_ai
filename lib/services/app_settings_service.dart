@@ -9,22 +9,40 @@ class AppSettingsException implements Exception {
   String toString() => message;
 }
 
+class PublicAppSettings {
+  final bool voiceEnabled;
+  final bool cloudTtsEnabled;
+  final String? ttsProvider; // "google" | "yandex" | null
+  const PublicAppSettings({
+    required this.voiceEnabled,
+    required this.cloudTtsEnabled,
+    required this.ttsProvider,
+  });
+}
+
 class AppSettingsService {
   final http.Client _client = http.Client();
 
-  /// Если сервер недоступен — не блокируем голосовые функции ими: они
-  /// работают полностью на устройстве (STT/TTS не проходят через бэкенд),
-  /// сам факт недоступности сервера не повод их прятать.
-  Future<bool> isVoiceEnabled(String baseUrl) async {
+  /// Если сервер недоступен — не блокируем голосовые функции ими: базовый
+  /// голос на устройстве работает независимо от бэкенда, а облачную
+  /// озвучку в этом случае просто считаем недоступной (она физически не
+  /// может работать без сервера — это не то же самое, что "выключена").
+  Future<PublicAppSettings> getPublicSettings(String baseUrl) async {
     try {
       final res = await _client
           .get(Uri.parse('$baseUrl/api/settings/public'))
           .timeout(const Duration(seconds: 8));
-      if (res.statusCode != 200) return true;
+      if (res.statusCode != 200) {
+        return const PublicAppSettings(voiceEnabled: true, cloudTtsEnabled: false, ttsProvider: null);
+      }
       final data = jsonDecode(res.body) as Map<String, dynamic>;
-      return data['voice_enabled'] as bool? ?? true;
+      return PublicAppSettings(
+        voiceEnabled: data['voice_enabled'] as bool? ?? true,
+        cloudTtsEnabled: data['cloud_tts_enabled'] as bool? ?? false,
+        ttsProvider: data['tts_provider'] as String?,
+      );
     } catch (_) {
-      return true;
+      return const PublicAppSettings(voiceEnabled: true, cloudTtsEnabled: false, ttsProvider: null);
     }
   }
 

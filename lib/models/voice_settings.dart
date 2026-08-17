@@ -1,11 +1,16 @@
 class VoiceSettings {
   final bool autoReadEnabled;
   final bool voiceUiEnabled; // личный выбор пользователя — скрыть голосовые кнопки
-  final double rate; // 0.0–1.0, нормализованная шкала flutter_tts
-  final double pitch; // 0.5–2.0
-  final String? voiceName;
+  final double rate; // 0.0–1.0, нормализованная шкала flutter_tts (только голос на устройстве)
+  final double pitch; // 0.5–2.0 (только голос на устройстве)
+  final String? voiceName; // голос на устройстве (flutter_tts), если облако недоступно
   final String? voiceLocale;
   final String? sttLocaleId;
+
+  /// Выбор из 4 фиксированных облачных голосов (Google Cloud TTS) — см.
+  /// models/cloud_voice.dart. Используется только когда облачная озвучка
+  /// вообще доступна (сервер настроен) — иначе играет голос на устройстве.
+  final String cloudVoiceName;
 
   /// Словарь произношения: слово (как его пишет пользователь) → как это
   /// нужно "прочитать" движку синтеза речи. Применяется к тексту перед
@@ -21,6 +26,7 @@ class VoiceSettings {
     this.voiceName,
     this.voiceLocale,
     this.sttLocaleId,
+    this.cloudVoiceName = 'ru-RU-Chirp3-HD-Aoede',
     this.pronunciationOverrides = const {},
   });
 
@@ -32,6 +38,7 @@ class VoiceSettings {
     String? voiceName,
     String? voiceLocale,
     String? sttLocaleId,
+    String? cloudVoiceName,
     Map<String, String>? pronunciationOverrides,
     bool clearVoice = false,
   }) {
@@ -43,6 +50,7 @@ class VoiceSettings {
       voiceName: clearVoice ? null : (voiceName ?? this.voiceName),
       voiceLocale: clearVoice ? null : (voiceLocale ?? this.voiceLocale),
       sttLocaleId: sttLocaleId ?? this.sttLocaleId,
+      cloudVoiceName: cloudVoiceName ?? this.cloudVoiceName,
       pronunciationOverrides: pronunciationOverrides ?? this.pronunciationOverrides,
     );
   }
@@ -70,6 +78,7 @@ class VoiceSettings {
         'voiceName': voiceName,
         'voiceLocale': voiceLocale,
         'sttLocaleId': sttLocaleId,
+        'cloudVoiceName': cloudVoiceName,
         'pronunciationOverrides': pronunciationOverrides,
       };
 
@@ -83,6 +92,7 @@ class VoiceSettings {
       voiceName: json['voiceName'] as String?,
       voiceLocale: json['voiceLocale'] as String?,
       sttLocaleId: json['sttLocaleId'] as String?,
+      cloudVoiceName: json['cloudVoiceName'] as String? ?? 'ru-RU-Chirp3-HD-Aoede',
       pronunciationOverrides: rawOverrides is Map
           ? rawOverrides.map((k, v) => MapEntry(k.toString(), v.toString()))
           : const {},

@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
+import '../state/voice_store.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
@@ -21,8 +24,16 @@ const _steps = [
 /// Техника заземления "5-4-3-2-1" — известный приём переключения внимания
 /// на органы чувств при тревоге. Не диагностика и не замена профессиональной
 /// помощи, просто способ на минуту вернуть внимание в настоящий момент.
+///
+/// Если доступен голос — шаг переключается сам, как только человек что-то
+/// произнёс (распознавание речи, без анализа тона/эмоций — см. обсуждение
+/// в истории чата, почему анализ "плачущего голоса" не делаем: это
+/// ненадёжно технически и рискованно именно там, где цена ошибки высокая).
+/// Кнопка "Дальше" остаётся всегда — на случай, если микрофон недоступен
+/// или человек предпочитает жать сам.
 class GroundingExerciseScreen extends StatefulWidget {
-  const GroundingExerciseScreen({super.key});
+  final VoiceStore? voiceStore;
+  const GroundingExerciseScreen({super.key, this.voiceStore});
 
   @override
   State<GroundingExerciseScreen> createState() => _GroundingExerciseScreenState();
@@ -30,16 +41,64 @@ class GroundingExerciseScreen extends StatefulWidget {
 
 class _GroundingExerciseScreenState extends State<GroundingExerciseScreen> {
   int _stepIndex = 0;
+  Timer? _silenceTimer;
+  bool _heardSomething = false;
+
+  bool get _voiceAvailable {
+    final v = widget.voiceStore;
+    return v != null && v.isVoiceAvailable && v.isSttAvailable;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _startListeningForStep();
+  }
+
+  void _startListeningForStep() {
+    if (!_voiceAvailable) return;
+    _heardSomething = false;
+    widget.voiceStore!.startListening(
+      onResult: (text) {
+        if (text.trim().isEmpty) return;
+        _heardSomething = true;
+        // Debounce: каждое новое слово откладывает переход — считаем, что
+        // человек договорил, если после последнего распознанного слова
+        // прошло 1.8 секунды тишины, а не пытаемся угадать это по смыслу
+        // или тону сказанного.
+        _silenceTimer?.cancel();
+        _silenceTimer = Timer(const Duration(milliseconds: 1800), () {
+          if (mounted && _heardSomething) _next();
+        });
+      },
+    );
+  }
+
+  void _stopListening() {
+    _silenceTimer?.cancel();
+    widget.voiceStore?.stopListening();
+  }
 
   void _next() {
+    _stopListening();
     if (_stepIndex < _steps.length - 1) {
       setState(() => _stepIndex++);
+      _startListeningForStep();
     } else {
       setState(() => _stepIndex = -1); // финальный экран "готово"
     }
   }
 
-  void _restart() => setState(() => _stepIndex = 0);
+  void _restart() {
+    setState(() => _stepIndex = 0);
+    _startListeningForStep();
+  }
+
+  @override
+  void dispose() {
+    _stopListening();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +114,10 @@ class _GroundingExerciseScreenState extends State<GroundingExerciseScreen> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () {
+                        _stopListening();
+                        Navigator.of(context).pop();
+                      },
                     ),
                     const Text(
                       'Техника заземления',
@@ -122,7 +184,24 @@ class _GroundingExerciseScreenState extends State<GroundingExerciseScreen> {
             style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.4),
           ),
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: 16),
+        if (_voiceAvailable)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(
+                width: 12,
+                height: 12,
+                child: CircularProgressIndicator(strokeWidth: 1.5, color: Color(0xFF00D9C0)),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Слушаю — переключусь сам, когда договоришь',
+                style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+              ),
+            ],
+          ),
+        const SizedBox(height: 20),
         Material(
           color: Colors.transparent,
           child: InkWell(
@@ -159,6 +238,22 @@ class _GroundingExerciseScreenState extends State<GroundingExerciseScreen> {
         Text(
           'Можно повторить в любой момент.',
           style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13),
+        ),
+        const SizedBox(height: 20),
+        // Универсальная приписка — НЕ по итогам какого-то анализа
+        // (мы ничего не анализируем), просто напоминание, что есть куда
+        // обратиться, если техника не помогает.
+        GlassPanel(
+          opacity: 0.07,
+          borderRadius: BorderRadius.circular(14),
+          padding: const EdgeInsets.all(14),
+          child: Text(
+            'Если тревога не отступает — это нормально, что одной техники '
+            'может быть недостаточно. Можно поговорить с близким человеком '
+            'или специалистом.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 12, height: 1.4),
+          ),
         ),
         const SizedBox(height: 24),
         TextButton(

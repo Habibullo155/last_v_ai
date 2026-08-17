@@ -1,5 +1,6 @@
 enum MessageRole { user, assistant, system }
 
+/// null — не оценено, true — лайк, false — дизлайк.
 class ChatMessage {
   final String id;
   final MessageRole role;
@@ -7,6 +8,7 @@ class ChatMessage {
   final DateTime createdAt;
   bool isStreaming;
   bool isError;
+  bool? liked;
 
   ChatMessage({
     required this.id,
@@ -15,6 +17,7 @@ class ChatMessage {
     DateTime? createdAt,
     this.isStreaming = false,
     this.isError = false,
+    this.liked,
   }) : createdAt = createdAt ?? DateTime.now();
 
   String get roleKey => switch (role) {
@@ -28,6 +31,7 @@ class ChatMessage {
         'role': roleKey,
         'content': content,
         'createdAt': createdAt.toIso8601String(),
+        'liked': liked,
       };
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
@@ -42,6 +46,7 @@ class ChatMessage {
       content: json['content'] as String? ?? '',
       createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ??
           DateTime.now(),
+      liked: json['liked'] as bool?,
     );
   }
 }

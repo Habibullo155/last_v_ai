@@ -4,10 +4,13 @@ import 'package:uuid/uuid.dart';
 
 import '../models/wellbeing_checkin.dart';
 import '../services/wellbeing_service.dart';
+import '../state/voice_store.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 import 'breathing_exercise_screen.dart';
+import 'gratitude_journal_screen.dart';
 import 'grounding_exercise_screen.dart';
+import 'situational_help_screen.dart';
 
 const _uuid = Uuid();
 
@@ -35,7 +38,8 @@ enum _Mode { history, testing, result }
 
 class WellbeingScreen extends StatefulWidget {
   final String userId;
-  const WellbeingScreen({super.key, required this.userId});
+  final VoiceStore? voiceStore;
+  const WellbeingScreen({super.key, required this.userId, this.voiceStore});
 
   @override
   State<WellbeingScreen> createState() => _WellbeingScreenState();
@@ -186,6 +190,15 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
           ),
         ),
         const SizedBox(height: 20),
+        _buildToolTile(
+          icon: Icons.support_rounded,
+          title: 'Ситуативная помощь',
+          subtitle: 'Тревога, плохое настроение, не могу уснуть — быстрые подсказки под ситуацию',
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => SituationalHelpScreen(userId: widget.userId, voiceStore: widget.voiceStore)),
+          ),
+        ),
+        const SizedBox(height: 20),
         Text(
           'ИНСТРУМЕНТЫ',
           style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
@@ -205,7 +218,16 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
           title: 'Техника заземления 5-4-3-2-1',
           subtitle: 'Переключить внимание на органы чувств',
           onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const GroundingExerciseScreen()),
+            MaterialPageRoute(builder: (_) => GroundingExerciseScreen(voiceStore: widget.voiceStore)),
+          ),
+        ),
+        const SizedBox(height: 10),
+        _buildToolTile(
+          icon: Icons.auto_awesome_rounded,
+          title: 'Дневник благодарности',
+          subtitle: 'Три вещи, за которые сегодня благодарен(на) — только на этом устройстве',
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => GratitudeJournalScreen(userId: widget.userId)),
           ),
         ),
         if (_history.isNotEmpty) ...[

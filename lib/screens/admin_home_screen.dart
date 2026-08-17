@@ -53,10 +53,10 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       // Тихо оставляем предыдущие цифры (или пусто) — это дашборд, а не
       // критичная функция; плитки навигации ниже работают в любом случае.
     }
-    final voiceEnabled = await _appSettingsService.isVoiceEnabled(widget.authStore.baseUrl);
+    final publicSettings = await _appSettingsService.getPublicSettings(widget.authStore.baseUrl);
     if (mounted) {
       setState(() {
-        _voiceEnabled = voiceEnabled;
+        _voiceEnabled = publicSettings.voiceEnabled;
         _isLoading = false;
       });
     }

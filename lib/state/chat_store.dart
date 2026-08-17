@@ -153,6 +153,19 @@ class ChatStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Ставит/снимает лайк-дизлайк на ответ. Повторный тап по уже
+  /// выставленной оценке снимает её (toggle), а не переключает на
+  /// противоположную — так интуитивнее.
+  void rateMessage(String messageId, bool liked) {
+    final convo = active;
+    if (convo == null) return;
+    final message = convo.messages.where((m) => m.id == messageId).firstOrNull;
+    if (message == null) return;
+    message.liked = message.liked == liked ? null : liked;
+    unawaited(_persist());
+    notifyListeners();
+  }
+
   /// Редактирует своё же отправленное сообщение и переспрашивает заново —
   /// как в ChatGPT/Gemini: всё, что шло ПОСЛЕ отредактированного сообщения
   /// (включая старый ответ модели на него), удаляется, а на его месте

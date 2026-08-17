@@ -16,7 +16,7 @@ class GlassChatApp extends StatefulWidget {
 
 class _GlassChatAppState extends State<GlassChatApp> {
   final AuthStore _authStore = AuthStore();
-  final ThemeStore _themeStore = ThemeStore();
+  final ThemeStore _themeStore = ThemeStore.instance;
   ChatStore? _chatStore;
   VoiceStore? _voiceStore;
 
@@ -56,7 +56,7 @@ class _GlassChatAppState extends State<GlassChatApp> {
     _chatStore = store;
 
     final voice = VoiceStore();
-    voice.init(store.baseUrl);
+    voice.init(store.baseUrl, authToken: _authStore.token);
     _voiceStore = voice;
   }
 
@@ -75,26 +75,17 @@ class _GlassChatAppState extends State<GlassChatApp> {
     return MaterialApp(
       title: 'AI Glass Chat',
       debugShowCheckedModeBanner: false,
-      themeMode: _themeStore.themeMode,
       theme: ThemeData(
         useMaterial3: true,
-        brightness: Brightness.light,
-        scaffoldBackgroundColor: const Color(0xFFF7F9FC),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6C5CE7),
-          brightness: Brightness.light,
-        ),
-        fontFamily: 'Roboto', // Теперь параметр находится на своем месте
-      ),
-      darkTheme: ThemeData(
-        useMaterial3: true,
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF0B0F1E),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF6C5CE7),
           brightness: Brightness.dark,
+          // Optional: Override background directly in the scheme
+          surface: const Color(0xFF0B0F1E),
         ),
-        fontFamily: 'Roboto', // Теперь параметр находится на своем месте
+        scaffoldBackgroundColor: const Color(0xFF0B0F1E),
+        fontFamily: 'Roboto',
       ),
       home: _buildHome(),
     );
