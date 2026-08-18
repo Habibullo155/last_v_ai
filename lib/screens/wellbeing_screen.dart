@@ -6,10 +6,13 @@ import '../models/wellbeing_checkin.dart';
 import '../services/wellbeing_service.dart';
 import '../state/voice_store.dart';
 import '../widgets/app_background.dart';
+import '../widgets/crisis_resources_panel.dart';
 import '../widgets/glass_panel.dart';
 import 'breathing_exercise_screen.dart';
+import 'gad7_screen.dart';
 import 'gratitude_journal_screen.dart';
 import 'grounding_exercise_screen.dart';
+import 'phq9_screen.dart';
 import 'situational_help_screen.dart';
 
 const _uuid = Uuid();
@@ -228,6 +231,34 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
           subtitle: 'Три вещи, за которые сегодня благодарен(на) — только на этом устройстве',
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(builder: (_) => GratitudeJournalScreen(userId: widget.userId)),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Text(
+          'ОПРОСНИКИ (СКРИНИНГ)',
+          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Официальные, свободно распространяемые инструменты (Pfizer). Не диагностика.',
+          style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11.5),
+        ),
+        const SizedBox(height: 10),
+        _buildToolTile(
+          icon: Icons.psychology_outlined,
+          title: 'PHQ-9 — депрессивные симптомы',
+          subtitle: '9 вопросов, 2-3 минуты',
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => Phq9Screen(userId: widget.userId)),
+          ),
+        ),
+        const SizedBox(height: 10),
+        _buildToolTile(
+          icon: Icons.waves_rounded,
+          title: 'GAD-7 — тревожные симптомы',
+          subtitle: '7 вопросов, 1-2 минуты',
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => Gad7Screen(userId: widget.userId)),
           ),
         ),
         if (_history.isNotEmpty) ...[
@@ -449,28 +480,7 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
         ),
         if (isLow) ...[
           const SizedBox(height: 16),
-          GlassPanel(
-            opacity: 0.08,
-            borderRadius: BorderRadius.circular(18),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Если хочется поговорить с кем-то',
-                  style: TextStyle(color: Colors.white.withOpacity(0.85), fontWeight: FontWeight.w600, fontSize: 13.5),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '• Экстренная психологическая помощь для взрослых и детей, '
-                  'круглосуточно и бесплатно: 8-800-100-49-94\n'
-                  '• Детский и подростковый телефон доверия: 8-800-2000-122 '
-                  '(короткий номер — 124)',
-                  style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5, height: 1.6),
-                ),
-              ],
-            ),
-          ),
+          const CrisisResourcesPanel(),
         ],
         const SizedBox(height: 16),
         Material(

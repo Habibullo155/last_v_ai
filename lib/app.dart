@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'screens/auth_screen.dart';
 import 'screens/chat_screen.dart';
+import 'screens/main_shell_screen.dart';
 import 'state/auth_store.dart';
 import 'state/chat_store.dart';
 import 'state/theme_store.dart';
 import 'state/voice_store.dart';
+import 'utils/responsive.dart';
 
 class GlassChatApp extends StatefulWidget {
   const GlassChatApp({super.key});
@@ -103,6 +105,14 @@ class _GlassChatAppState extends State<GlassChatApp> {
         final voiceStore = _voiceStore;
         if (chatStore == null || voiceStore == null)
           return const _LoadingScreen();
+        if (Responsive.isMobile(context)) {
+          return MainShellScreen(
+            store: chatStore,
+            authStore: _authStore,
+            themeStore: _themeStore,
+            voiceStore: voiceStore,
+          );
+        }
         return ChatScreen(
           store: chatStore,
           authStore: _authStore,

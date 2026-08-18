@@ -7,7 +7,7 @@ class VoiceSettings {
   final String? voiceLocale;
   final String? sttLocaleId;
 
-  /// Выбор из 4 фиксированных облачных голосов (Google Cloud TTS) — см.
+  /// Выбор из 4 фиксированных облачных голосов (Silero TTS) — см.
   /// models/cloud_voice.dart. Используется только когда облачная озвучка
   /// вообще доступна (сервер настроен) — иначе играет голос на устройстве.
   final String cloudVoiceName;

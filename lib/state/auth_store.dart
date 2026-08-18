@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import '../config.dart';
 import '../models/app_user.dart';
-import 'package:ai_last_v/services/auth_service.dart' as auth_svc;
+import '../services/auth_service.dart' as auth_svc;
 
 enum AuthStatus { unknown, checking, authenticated, unauthenticated }
 

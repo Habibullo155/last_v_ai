@@ -17,6 +17,7 @@ import 'admin_home_screen.dart';
 import 'profile_screen.dart';
 import 'purchase_screen.dart';
 import 'settings_screen.dart';
+import 'my_reports_screen.dart';
 import 'support_screen.dart';
 import 'voice_settings_screen.dart';
 import 'wellbeing_screen.dart';
@@ -313,6 +314,11 @@ class _ChatScreenState extends State<ChatScreen> {
               MaterialPageRoute(builder: (_) => VoiceSettingsScreen(voiceStore: widget.voiceStore)),
             );
             break;
+          case 'my_reports':
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => MyReportsScreen(authStore: widget.authStore)),
+            );
+            break;
           case 'support':
             Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => SupportScreen(authStore: widget.authStore)),
@@ -331,6 +337,7 @@ class _ChatScreenState extends State<ChatScreen> {
         _menuItem('purchase', Icons.workspace_premium_rounded, 'Подписка'),
         _menuItem('settings', Icons.settings_outlined, 'Настройки'),
         _menuItem('voice', Icons.record_voice_over_rounded, 'Голос'),
+        _menuItem('my_reports', Icons.flag_outlined, 'Мои жалобы'),
         _menuItem('support', Icons.support_agent_rounded, 'Поддержка'),
         if (isAdmin) _menuItem('admin', Icons.admin_panel_settings_rounded, 'Админ-панель'),
       ],

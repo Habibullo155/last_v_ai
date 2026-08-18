@@ -7,6 +7,7 @@ class ResponseReport {
   final String userMessage;
   final String aiResponse;
   final String? reason;
+  final String? adminReply;
   final ReportStatus status;
   final DateTime createdAt;
 
@@ -17,6 +18,7 @@ class ResponseReport {
     required this.userMessage,
     required this.aiResponse,
     required this.reason,
+    required this.adminReply,
     required this.status,
     required this.createdAt,
   });
@@ -29,6 +31,7 @@ class ResponseReport {
       userMessage: json['user_message'] as String? ?? '',
       aiResponse: json['ai_response'] as String? ?? '',
       reason: json['reason'] as String?,
+      adminReply: json['admin_reply'] as String?,
       status: (json['status'] as String?) == 'resolved' ? ReportStatus.resolved : ReportStatus.open,
       createdAt: DateTime.tryParse(json['created_at'] as String? ?? '') ?? DateTime.now(),
     );

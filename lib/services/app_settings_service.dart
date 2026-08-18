@@ -12,7 +12,7 @@ class AppSettingsException implements Exception {
 class PublicAppSettings {
   final bool voiceEnabled;
   final bool cloudTtsEnabled;
-  final String? ttsProvider; // "google" | "yandex" | null
+  final String? ttsProvider; // "silero" | null
   const PublicAppSettings({
     required this.voiceEnabled,
     required this.cloudTtsEnabled,

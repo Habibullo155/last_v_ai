@@ -40,15 +40,11 @@ class VoiceStore extends ChangeNotifier {
   /// а про то, включена ли фича глобально.
   bool isVoiceFeatureEnabled = true;
 
-  /// Настроена ли облачная озвучка (Google Cloud TTS или Yandex SpeechKit)
+  /// Настроена ли облачная озвучка (Silero TTS — свой локальный сервер)
   /// на сервере — если да, используем её вместо движка на устройстве:
   /// звучит естественнее. Честное отражение реальной настройки .env, не
   /// переключатель "для вида".
   bool isCloudTtsAvailable = false;
-
-  /// "google" | "yandex" | null — какой именно провайдер активен, нужен,
-  /// чтобы показать правильный список из 4 голосов (models/cloud_voice.dart).
-  String? ttsProvider;
 
   /// Итоговая доступность голоса — и админ должен разрешить фичу
   /// глобально, И сам пользователь не должен её выключить у себя (личное
@@ -68,18 +64,16 @@ class VoiceStore extends ChangeNotifier {
     final publicSettings = await _appSettingsService.getPublicSettings(baseUrl);
     isVoiceFeatureEnabled = publicSettings.voiceEnabled;
     isCloudTtsAvailable = publicSettings.cloudTtsEnabled;
-    ttsProvider = publicSettings.ttsProvider;
     globalPronunciation = await _pronunciationService.getPublicDictionary(baseUrl);
 
-    // Если сохранённый голос принадлежит ДРУГОМУ провайдеру (например,
-    // сервер переключили с Google на Yandex), сбрасываем на первый голос
-    // актуального списка — иначе застрянем на имени голоса, которого для
-    // этого провайдера не существует.
+    // Если сохранённый голос не из текущего списка (например, остался
+    // от прежней настройки на другой сервис до перехода на Silero),
+    // сбрасываем на первый голос списка — иначе застрянем на имени
+    // голоса, которого для Silero не существует.
     if (isCloudTtsAvailable) {
-      final activeVoices = cloudVoicesFor(ttsProvider);
-      final currentIsValid = activeVoices.any((v) => v.name == settings.cloudVoiceName);
-      if (!currentIsValid && activeVoices.isNotEmpty) {
-        settings = settings.copyWith(cloudVoiceName: activeVoices.first.name);
+      final currentIsValid = sileroCloudVoices.any((v) => v.name == settings.cloudVoiceName);
+      if (!currentIsValid) {
+        settings = settings.copyWith(cloudVoiceName: sileroCloudVoices.first.name);
         await _settingsService.save(settings);
       }
     }

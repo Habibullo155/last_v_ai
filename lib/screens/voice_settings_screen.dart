@@ -213,12 +213,11 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
           const SizedBox(height: 20),
           _sectionLabel('ГОЛОС'),
           Text(
-            'Облачная озвучка (Google Cloud TTS) — звучит естественнее, чем '
-            'голос устройства.',
+            'Локальная озвучка Silero TTS — звучит естественнее, чем голос устройства.',
             style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.5),
           ),
           const SizedBox(height: 10),
-          ...cloudVoicesFor(voice.ttsProvider).map((v) => _buildCloudVoiceTile(voice, v)),
+          ...sileroCloudVoices.map((v) => _buildCloudVoiceTile(voice, v)),
         ] else if (voice.availableVoices.isEmpty) ...[
           const SizedBox(height: 16),
           Text(

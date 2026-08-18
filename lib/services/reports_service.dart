@@ -84,6 +84,28 @@ class ReportsService {
     return ResponseReport.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
   }
 
+  /// Прямой текстовый ответ пользователю по существу жалобы — виден ему
+  /// в его собственном списке (myReports), не то же самое, что причина
+  /// исправления для датасета обучения.
+  Future<ResponseReport> setReply({
+    required String baseUrl,
+    required String token,
+    required int reportId,
+    required String reply,
+  }) async {
+    final res = await _client
+        .put(
+          Uri.parse('$baseUrl/api/reports/$reportId/reply'),
+          headers: _headers(token),
+          body: jsonEncode({'admin_reply': reply}),
+        )
+        .timeout(const Duration(seconds: 15));
+    if (res.statusCode >= 400) {
+      throw ReportsException(_extractError(res.body) ?? 'Не удалось отправить ответ.');
+    }
+    return ResponseReport.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
+  }
+
   /// FastAPI отдаёт ошибки как {"detail": "текст"} ИЛИ
   /// {"detail": [{"msg": "...", ...}, ...]} при автоматической валидации.
   String? _extractError(String body) {

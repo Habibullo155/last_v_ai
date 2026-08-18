@@ -17,9 +17,11 @@ class AdminReportsScreen extends StatefulWidget {
 
 class _AdminReportsScreenState extends State<AdminReportsScreen> {
   final _service = ReportsService();
+  final _replyControllers = <int, TextEditingController>{};
   List<ResponseReport> _reports = [];
   bool _isLoading = true;
   String? _error;
+  int? _sendingReplyForId;
 
   @override
   void initState() {
@@ -30,7 +32,48 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
   @override
   void dispose() {
     _service.dispose();
+    for (final c in _replyControllers.values) {
+      c.dispose();
+    }
     super.dispose();
+  }
+
+  TextEditingController _controllerFor(ResponseReport report) {
+    return _replyControllers.putIfAbsent(
+      report.id,
+      () => TextEditingController(text: report.adminReply ?? ''),
+    );
+  }
+
+  Future<void> _sendReply(ResponseReport report) async {
+    final token = widget.authStore.token;
+    final text = _controllerFor(report).text.trim();
+    if (token == null || text.isEmpty) return;
+
+    setState(() => _sendingReplyForId = report.id);
+    try {
+      final updated = await _service.setReply(
+        baseUrl: widget.authStore.baseUrl,
+        token: token,
+        reportId: report.id,
+        reply: text,
+      );
+      if (!mounted) return;
+      setState(() {
+        final idx = _reports.indexWhere((r) => r.id == report.id);
+        if (idx != -1) _reports[idx] = updated;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ответ отправлен'), duration: Duration(seconds: 1)),
+        );
+      }
+    } on ReportsException catch (e) {
+      if (!mounted) return;
+      setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _sendingReplyForId = null);
+    }
   }
 
   Future<void> _load() async {
@@ -205,6 +248,8 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
             _buildLabeledText('Вопрос', report.userMessage, Colors.white.withOpacity(0.55)),
             const SizedBox(height: 6),
             _buildLabeledText('Ответ ИИ', report.aiResponse, Colors.white.withOpacity(0.85)),
+            const SizedBox(height: 12),
+            _buildReplySection(report),
             const SizedBox(height: 10),
             Align(
               alignment: Alignment.centerRight,
@@ -224,6 +269,58 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildReplySection(ResponseReport report) {
+    final controller = _controllerFor(report);
+    final isSending = _sendingReplyForId == report.id;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'ОТВЕТ ПОЛЬЗОВАТЕЛЮ',
+          style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 10, letterSpacing: 0.8),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Виден только этому пользователю в его списке жалоб.',
+          style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 10.5),
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: controller,
+          minLines: 1,
+          maxLines: 4,
+          style: const TextStyle(color: Colors.white, fontSize: 13),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white.withOpacity(0.06),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            hintText: 'Например: разобрались, поправили модель',
+            hintStyle: TextStyle(color: Colors.white.withOpacity(0.25), fontSize: 12.5),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton.icon(
+            onPressed: isSending ? null : () => _sendReply(report),
+            icon: isSending
+                ? const SizedBox(
+                    width: 13,
+                    height: 13,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF6C5CE7)),
+                  )
+                : const Icon(Icons.send_rounded, size: 15, color: Color(0xFF6C5CE7)),
+            label: Text(
+              report.adminReply == null || report.adminReply!.isEmpty ? 'Отправить ответ' : 'Обновить ответ',
+              style: const TextStyle(color: Color(0xFF6C5CE7), fontSize: 12.5),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
