@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ai_glass_chat/models/gad7_checkin.dart';
+import 'package:ai_last_v/models/gad7_checkin.dart';
 
 void main() {
   group('Gad7Checkin scoring', () {

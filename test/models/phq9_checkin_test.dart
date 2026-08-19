@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ai_glass_chat/models/phq9_checkin.dart';
+import 'package:ai_last_v/models/phq9_checkin.dart';
 
 void main() {
   group('Phq9Checkin scoring', () {

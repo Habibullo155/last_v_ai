@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ai_glass_chat/models/voice_settings.dart';
+import 'package:ai_last_v/models/voice_settings.dart';
 
 void main() {
   group('VoiceSettings defaults', () {
