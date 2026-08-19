@@ -128,6 +128,46 @@ class AuthService {
     await clearToken();
   }
 
+  /// Обновляет только СВОИ поля профиля (ФИО, возраст, хобби) — не все
+  /// три обязательны разом, можно прислать одно. Передавай явный `null`
+  /// в соответствующем параметре, чтобы очистить поле, а не просто
+  /// пропускай его — пропущенный параметр здесь и так не попадёт в тело
+  /// запроса (см. ниже), так что это разделение делает сам вызывающий код.
+  Future<AppUser> updateProfile({
+    required String baseUrl,
+    required String token,
+    Map<String, dynamic>? fields,
+  }) async {
+    http.Response res;
+    try {
+      res = await _client
+          .patch(
+            Uri.parse('$baseUrl/api/auth/me/profile'),
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode(fields ?? {}),
+          )
+          .timeout(const Duration(seconds: 15));
+    } catch (e) {
+      throw AuthException('Не удалось связаться с сервером.\n$e');
+    }
+
+    final Map<String, dynamic> data;
+    try {
+      data = jsonDecode(res.body) as Map<String, dynamic>;
+    } catch (_) {
+      throw AuthException('Сервер вернул неожиданный ответ (код ${res.statusCode}).');
+    }
+
+    if (res.statusCode >= 400) {
+      throw AuthException(_extractErrorMessage(data));
+    }
+
+    return AppUser.fromJson(data);
+  }
+
   /// FastAPI отдаёт ошибки в двух разных формах:
   /// - {"detail": "текст"} — наши собственные HTTPException;
   /// - {"detail": [{"msg": "...", "loc": [...]}, ...]} — автоматическая

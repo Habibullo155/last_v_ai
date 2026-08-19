@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 
 import '../models/chat_message.dart';
 import '../theme/app_text_color.dart';
+import 'animated_ai_avatar.dart';
 import 'glass_panel.dart';
-import 'typing_dots.dart';
 
 class MessageBubble extends StatelessWidget {
   final ChatMessage message;
@@ -52,9 +52,7 @@ class MessageBubble extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (message.isStreaming && message.content.isEmpty)
-              const TypingDots()
-            else
+            if (message.content.isNotEmpty)
               SelectableText(
                 message.content,
                 style: TextStyle(
@@ -283,6 +281,9 @@ class MessageBubble extends StatelessWidget {
   }
 
   Widget _avatar(BuildContext context, {required bool isUser}) {
+    if (!isUser && message.isStreaming) {
+      return AnimatedAiAvatar(isActive: true, size: 34);
+    }
     return Container(
       width: 34,
       height: 34,

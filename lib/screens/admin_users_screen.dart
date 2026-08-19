@@ -380,6 +380,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
     bool? isActive,
     int? tariffDays,
     bool? clearTariffExpiry,
+    bool? isOperator,
   }) async {
     final token = widget.authStore.token;
     if (token == null) return;
@@ -397,6 +398,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
         isActive: isActive,
         tariffDays: tariffDays,
         clearTariffExpiry: clearTariffExpiry,
+        isOperator: isOperator,
       );
       widget.onChanged(updated);
       if (mounted) Navigator.of(context).pop();
@@ -486,17 +488,18 @@ class _EditUserSheetState extends State<_EditUserSheet> {
         padding: const EdgeInsets.all(20),
         child: SafeArea(
           top: false,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(user.email, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 16),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(user.email, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 16),
 
-              Text('ТАРИФ', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2)),
-              const SizedBox(height: 8),
-              Row(
-                children: [
+                Text('ТАРИФ', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2)),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
                   Expanded(
                     child: TextField(
                       controller: _tariffController,
@@ -575,6 +578,22 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                 ],
               ),
 
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: _isBusy ? null : () => _apply(isOperator: !user.isOperator),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: (user.isOperator ? const Color(0xFF00E6A0) : Colors.white).withOpacity(0.16)),
+                    foregroundColor: user.isOperator ? const Color(0xFF00E6A0) : Colors.white,
+                  ),
+                  icon: Icon(user.isOperator ? Icons.support_agent_rounded : Icons.support_agent_outlined, size: 18),
+                  label: Text(
+                    user.isOperator ? 'Убрать доступ к живой помощи' : 'Дать доступ к живой помощи',
+                  ),
+                ),
+              ),
+
               const SizedBox(height: 20),
               _isSelf
                   ? Text(
@@ -602,6 +621,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                 const Center(child: CircularProgressIndicator(color: Color(0xFF6C5CE7))),
               ],
             ],
+          ),
           ),
         ),
       ),
@@ -682,7 +702,8 @@ class _CreateUserSheetState extends State<_CreateUserSheet> {
         padding: const EdgeInsets.all(20),
         child: SafeArea(
           top: false,
-          child: Column(
+          child: SingleChildScrollView(
+            child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -745,6 +766,7 @@ class _CreateUserSheetState extends State<_CreateUserSheet> {
                 ),
               ),
             ],
+          ),
           ),
         ),
       ),

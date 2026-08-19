@@ -22,11 +22,10 @@ class VoiceStore extends ChangeNotifier {
   String _baseUrl = '';
   String? _authToken;
 
-  /// Словарь произношения, который задал админ — общий для всех
-  /// пользователей (в отличие от settings.pronunciationOverrides, который
-  /// хранится только на этом устройстве). Личный словарь при совпадении
-  /// слова имеет приоритет — пользователь может переопределить у себя то,
-  /// что задал админ глобально.
+  /// Словарь произношения, который задаёт админ — общий для всех
+  /// пользователей (routers_pronunciation.py). Личного словаря на
+  /// устройстве больше нет — убран из настроек намеренно, одного места
+  /// для этой настройки достаточно.
   Map<String, String> globalPronunciation = {};
 
   VoiceSettings settings = const VoiceSettings();
@@ -211,8 +210,10 @@ class VoiceStore extends ChangeNotifier {
     await _speakCloud('Привет! Так звучит этот голос.', voiceOverride: voiceName);
   }
 
-  /// Личный словарь переопределяет глобальный при совпадении слова —
-  /// сначала применяем глобальные замены (админские), затем личные поверх.
+  /// Применяет глобальный словарь произношения (задан админом) к тексту
+  /// перед озвучкой — простая замена подстрок, регистронезависимая.
+  /// Личного словаря на устройстве больше нет — одного места для этой
+  /// настройки достаточно.
   String _applyPronunciation(String text) {
     var result = text;
     for (final entry in globalPronunciation.entries) {
@@ -222,7 +223,7 @@ class VoiceStore extends ChangeNotifier {
         entry.value,
       );
     }
-    return settings.applyPronunciation(result);
+    return result;
   }
 
   Future<void> speak(String text) async {

@@ -29,6 +29,7 @@ class _Gad7ScreenState extends State<Gad7Screen> {
   final _service = Gad7Service();
   _Mode _mode = _Mode.intro;
   List<int?> _currentAnswers = List.filled(gad7Questions.length, null);
+  int _currentQuestion = 0;
   Gad7Checkin? _lastResult;
   List<Gad7Checkin> _history = [];
   bool _isLoading = true;
@@ -51,6 +52,7 @@ class _Gad7ScreenState extends State<Gad7Screen> {
   void _startTest() {
     setState(() {
       _currentAnswers = List.filled(gad7Questions.length, null);
+      _currentQuestion = 0;
       _mode = _Mode.testing;
     });
   }
@@ -202,38 +204,84 @@ class _Gad7ScreenState extends State<Gad7Screen> {
   }
 
   Widget _buildTest() {
-    return ListView(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+    final index = _currentQuestion;
+    final isLast = index == gad7Questions.length - 1;
+    final answered = _currentAnswers[index] != null;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           'За последние 2 недели, как часто вас беспокоили следующие проблемы?',
+          textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13),
         ),
-        const SizedBox(height: 16),
-        for (var i = 0; i < gad7Questions.length; i++) ...[
-          _buildQuestion(i),
-          const SizedBox(height: 14),
-        ],
-        Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(14),
-            onTap: _currentAnswers.every((a) => a != null) ? _submitTest : null,
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 13),
-              alignment: Alignment.center,
+        const SizedBox(height: 18),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(gad7Questions.length, (i) {
+            final active = i == index;
+            final done = i < index;
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              width: active ? 20 : 7,
+              height: 7,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
-                gradient: LinearGradient(
-                  colors: _currentAnswers.every((a) => a != null)
-                      ? [const Color(0xFF6C5CE7), const Color(0xFF00B4D8)]
-                      : [Colors.white24, Colors.white10],
+                borderRadius: BorderRadius.circular(4),
+                color: done || active ? const Color(0xFF6C5CE7) : Colors.white.withOpacity(0.15),
+              ),
+            );
+          }),
+        ),
+        const SizedBox(height: 24),
+        _buildQuestion(index),
+        const SizedBox(height: 20),
+        Row(
+          children: [
+            if (index > 0) ...[
+              Expanded(
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                    padding: const EdgeInsets.symmetric(vertical: 13),
+                  ),
+                  onPressed: () => setState(() => _currentQuestion--),
+                  child: Text('Назад', style: TextStyle(color: Colors.white.withOpacity(0.8))),
                 ),
               ),
-              child: const Text('Показать результат', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+              const SizedBox(width: 10),
+            ],
+            Expanded(
+              flex: 2,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: !answered
+                      ? null
+                      : isLast
+                          ? _submitTest
+                          : () => setState(() => _currentQuestion++),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 13),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      gradient: LinearGradient(
+                        colors: answered
+                            ? [const Color(0xFF6C5CE7), const Color(0xFF00B4D8)]
+                            : [Colors.white24, Colors.white10],
+                      ),
+                    ),
+                    child: Text(
+                      isLast ? 'Показать результат' : 'Далее',
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ],
     );
@@ -244,15 +292,15 @@ class _Gad7ScreenState extends State<Gad7Screen> {
       opacity: 0.08,
       blurred: false,
       borderRadius: BorderRadius.circular(16),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '${index + 1}. ${gad7Questions[index]}',
-            style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500, height: 1.35),
+            gad7Questions[index],
+            style: const TextStyle(color: Colors.white, fontSize: 15.5, fontWeight: FontWeight.w500, height: 1.35),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 14),
           Wrap(
             spacing: 8,
             runSpacing: 8,

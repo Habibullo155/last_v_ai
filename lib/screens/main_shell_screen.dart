@@ -45,6 +45,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
         authStore: widget.authStore,
         themeStore: widget.themeStore,
         voiceStore: widget.voiceStore,
+        hideShellDuplicates: true,
       ),
       WellbeingScreen(userId: userId, voiceStore: widget.voiceStore),
       ProfileScreen(authStore: widget.authStore),

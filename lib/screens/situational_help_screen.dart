@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../state/voice_store.dart';
 import '../widgets/app_background.dart';
@@ -90,18 +89,6 @@ class SituationalHelpScreen extends StatelessWidget {
                               MaterialPageRoute(builder: (_) => GratitudeJournalScreen(userId: userId)),
                             ),
                           ),
-                          const SizedBox(height: 24),
-                          Text(
-                            'ХОЧЕТСЯ ПРОСТО ПОГОВОРИТЬ',
-                            style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Скопируй любую фразу и вставь в чат — иногда сложнее всего начать.',
-                            style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
-                          ),
-                          const SizedBox(height: 10),
-                          ..._starterPrompts.map((p) => _PromptTile(text: p)),
                           const SizedBox(height: 20),
                           GlassPanel(
                             opacity: 0.06,
@@ -126,12 +113,6 @@ class SituationalHelpScreen extends StatelessWidget {
       ),
     );
   }
-
-  static const _starterPrompts = [
-    'Мне сейчас непросто, и я хочу об этом поговорить.',
-    'День выдался тяжёлым — можешь просто меня выслушать?',
-    'Не знаю, с чего начать, но хочу выговориться.',
-  ];
 }
 
 class _SituationTile extends StatelessWidget {
@@ -186,38 +167,3 @@ class _SituationTile extends StatelessWidget {
   }
 }
 
-class _PromptTile extends StatelessWidget {
-  final String text;
-  const _PromptTile({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: GlassPanel(
-        opacity: 0.06,
-        blurred: false, // список из нескольких фраз — см. message_bubble.dart
-        borderRadius: BorderRadius.circular(12),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text('«$text»', style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13, height: 1.3)),
-            ),
-            IconButton(
-              icon: Icon(Icons.copy_rounded, size: 16, color: Colors.white.withOpacity(0.5)),
-              onPressed: () async {
-                await Clipboard.setData(ClipboardData(text: text));
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Скопировано'), duration: Duration(seconds: 1)),
-                  );
-                }
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

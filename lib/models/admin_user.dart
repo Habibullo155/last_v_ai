@@ -7,6 +7,7 @@ class AdminUser {
   final DateTime createdAt;
   final DateTime? lastActiveAt;
   final DateTime? tariffExpiresAt;
+  final bool isOperator;
 
   AdminUser({
     required this.id,
@@ -17,6 +18,7 @@ class AdminUser {
     required this.createdAt,
     required this.lastActiveAt,
     required this.tariffExpiresAt,
+    this.isOperator = false,
   });
 
   bool get isAdmin => role == 'admin';
@@ -55,6 +57,7 @@ class AdminUser {
       tariffExpiresAt: json['tariff_expires_at'] != null
           ? DateTime.tryParse(json['tariff_expires_at'] as String)
           : null,
+      isOperator: json['is_operator'] as bool? ?? false,
     );
   }
 }

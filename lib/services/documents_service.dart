@@ -30,11 +30,22 @@ class DocumentsService {
 
   /// Загружает PDF по байтам файла — работает одинаково на мобильных,
   /// десктопе и в вебе (там нет доступа к файловой системе напрямую).
+  ///
+  /// [onProgress] — доля от 0.0 до 1.0, сколько байт файла реально ушло
+  /// по сети. Пакет `http` не даёт это "из коробки" (в отличие от dio) —
+  /// перехватываем поток, который `MultipartRequest` сам готовит для
+  /// отправки (`finalize()`), считаем прошедшие через него байты и
+  /// пересылаем их дальше в `http.StreamedRequest`, который и правда
+  /// уходит на сервер. Важная оговорка: это доля именно ЗАГРУЗКИ файла
+  /// по сети — не включает время, которое сервер тратит потом на разбор
+  /// PDF и построение эмбеддингов (тот шаг уже без пошагового прогресса,
+  /// см. комментарий в admin_documents_screen.dart).
   Future<RagDocument> upload({
     required String baseUrl,
     required String token,
     required String filename,
     required Uint8List bytes,
+    void Function(double progress)? onProgress,
   }) async {
     final uri = Uri.parse('$baseUrl/api/admin/documents');
     final request = http.MultipartRequest('POST', uri)
@@ -43,7 +54,36 @@ class DocumentsService {
 
     http.StreamedResponse streamed;
     try {
-      streamed = await _client.send(request).timeout(const Duration(minutes: 5));
+      // 30 минут, не 5 — реальная книга (до 50 МБ) с построением
+      // эмбеддингов по многим разделам на CPU-only Ollama может занять
+      // заметно больше времени, чем сама передача файла по сети.
+      const uploadTimeout = Duration(minutes: 30);
+      if (onProgress == null) {
+        streamed = await _client.send(request).timeout(uploadTimeout);
+      } else {
+        final total = request.contentLength;
+        var sent = 0;
+        final sourceStream = request.finalize();
+
+        final streamedRequest = http.StreamedRequest(request.method, request.url)
+          ..headers.addAll(request.headers)
+          ..contentLength = total
+          ..followRedirects = request.followRedirects
+          ..persistentConnection = request.persistentConnection;
+
+        sourceStream.listen(
+          (chunk) {
+            sent += chunk.length;
+            if (total > 0) onProgress((sent / total).clamp(0.0, 1.0));
+            streamedRequest.sink.add(chunk);
+          },
+          onDone: () => streamedRequest.sink.close(),
+          onError: (Object e, StackTrace st) => streamedRequest.sink.addError(e, st),
+          cancelOnError: true,
+        );
+
+        streamed = await _client.send(streamedRequest).timeout(uploadTimeout);
+      }
     } catch (e) {
       throw DocumentsException('Не удалось связаться с сервером.\n$e');
     }

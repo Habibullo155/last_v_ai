@@ -10,13 +10,10 @@ class VoiceSettings {
   /// Выбор из 4 фиксированных облачных голосов (Silero TTS) — см.
   /// models/cloud_voice.dart. Используется только когда облачная озвучка
   /// вообще доступна (сервер настроен) — иначе играет голос на устройстве.
+  /// Личный словарь произношения убран — за это отвечает только
+  /// глобальный словарь, который задаёт админ (routers_pronunciation.py),
+  /// одного места для этого достаточно.
   final String cloudVoiceName;
-
-  /// Словарь произношения: слово (как его пишет пользователь) → как это
-  /// нужно "прочитать" движку синтеза речи. Применяется к тексту перед
-  /// озвучкой — если движок неправильно произносит конкретное слово
-  /// (например, имя, аббревиатуру, редкий термин), можно задать замену.
-  final Map<String, String> pronunciationOverrides;
 
   const VoiceSettings({
     this.autoReadEnabled = false,
@@ -26,8 +23,7 @@ class VoiceSettings {
     this.voiceName,
     this.voiceLocale,
     this.sttLocaleId,
-    this.cloudVoiceName = 'ru-RU-Chirp3-HD-Aoede',
-    this.pronunciationOverrides = const {},
+    this.cloudVoiceName = 'baya',
   });
 
   VoiceSettings copyWith({
@@ -39,7 +35,6 @@ class VoiceSettings {
     String? voiceLocale,
     String? sttLocaleId,
     String? cloudVoiceName,
-    Map<String, String>? pronunciationOverrides,
     bool clearVoice = false,
   }) {
     return VoiceSettings(
@@ -51,23 +46,7 @@ class VoiceSettings {
       voiceLocale: clearVoice ? null : (voiceLocale ?? this.voiceLocale),
       sttLocaleId: sttLocaleId ?? this.sttLocaleId,
       cloudVoiceName: cloudVoiceName ?? this.cloudVoiceName,
-      pronunciationOverrides: pronunciationOverrides ?? this.pronunciationOverrides,
     );
-  }
-
-  /// Применяет словарь произношения к тексту перед озвучкой — простая
-  /// замена подстрок, регистронезависимая по ключу.
-  String applyPronunciation(String text) {
-    if (pronunciationOverrides.isEmpty) return text;
-    var result = text;
-    for (final entry in pronunciationOverrides.entries) {
-      if (entry.key.isEmpty) continue;
-      result = result.replaceAll(
-        RegExp(RegExp.escape(entry.key), caseSensitive: false),
-        entry.value,
-      );
-    }
-    return result;
   }
 
   Map<String, dynamic> toJson() => {
@@ -79,11 +58,9 @@ class VoiceSettings {
         'voiceLocale': voiceLocale,
         'sttLocaleId': sttLocaleId,
         'cloudVoiceName': cloudVoiceName,
-        'pronunciationOverrides': pronunciationOverrides,
       };
 
   factory VoiceSettings.fromJson(Map<String, dynamic> json) {
-    final rawOverrides = json['pronunciationOverrides'];
     return VoiceSettings(
       autoReadEnabled: json['autoReadEnabled'] as bool? ?? false,
       voiceUiEnabled: json['voiceUiEnabled'] as bool? ?? true,
@@ -92,10 +69,10 @@ class VoiceSettings {
       voiceName: json['voiceName'] as String?,
       voiceLocale: json['voiceLocale'] as String?,
       sttLocaleId: json['sttLocaleId'] as String?,
-      cloudVoiceName: json['cloudVoiceName'] as String? ?? 'ru-RU-Chirp3-HD-Aoede',
-      pronunciationOverrides: rawOverrides is Map
-          ? rawOverrides.map((k, v) => MapEntry(k.toString(), v.toString()))
-          : const {},
+      cloudVoiceName: json['cloudVoiceName'] as String? ?? 'baya',
+      // Старые сохранённые настройки могут ещё содержать
+      // pronunciationOverrides — просто игнорируем это поле, если оно
+      // есть (обратная совместимость без ошибок парсинга).
     );
   }
 }

@@ -71,6 +71,7 @@ class AdminUsersService {
     bool? isActive,
     int? tariffDays,
     bool? clearTariffExpiry,
+    bool? isOperator,
   }) async {
     final body = <String, dynamic>{};
     if (tariff != null) body['tariff'] = tariff;
@@ -78,6 +79,7 @@ class AdminUsersService {
     if (isActive != null) body['is_active'] = isActive;
     if (tariffDays != null) body['tariff_days'] = tariffDays;
     if (clearTariffExpiry != null) body['clear_tariff_expiry'] = clearTariffExpiry;
+    if (isOperator != null) body['is_operator'] = isOperator;
 
     final res = await _client
         .patch(

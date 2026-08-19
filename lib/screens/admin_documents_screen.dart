@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -21,7 +23,17 @@ class _AdminDocumentsScreenState extends State<AdminDocumentsScreen> {
   List<RagDocument> _documents = [];
   bool _isLoading = true;
   bool _isUploading = false;
+  // null, пока не начали — 1.0 значит "байты все ушли по сети", дальше
+  // сервер ещё какое-то время разбирает PDF и считает эмбеддинги (это
+  // уже без пошагового прогресса, см. _buildUploadButton).
+  double? _uploadProgress;
   String? _error;
+
+  // Сохраняем последний выбранный файл — если загрузка большой книги
+  // сорвалась (сеть, таймаут), можно попробовать снова СРАЗУ, не
+  // открывая заново системный диалог выбора файла.
+  Uint8List? _lastPickedBytes;
+  String? _lastPickedName;
 
   @override
   void initState() {
@@ -67,28 +79,57 @@ class _AdminDocumentsScreenState extends State<AdminDocumentsScreen> {
       setState(() => _error = 'Не удалось прочитать файл.');
       return;
     }
+    _lastPickedBytes = bytes;
+    _lastPickedName = file.name;
+    await _uploadBytes(bytes, file.name);
+  }
 
+  /// Повторяет отправку УЖЕ выбранного файла — не открывает системный
+  /// диалог заново. Полезно, если загрузка большой книги сорвалась на
+  /// таймауте или сети: не нужно повторно искать файл на диске.
+  Future<void> _retryUpload() async {
+    final bytes = _lastPickedBytes;
+    final name = _lastPickedName;
+    if (bytes == null || name == null) return;
+    await _uploadBytes(bytes, name);
+  }
+
+  Future<void> _uploadBytes(Uint8List bytes, String filename) async {
     final token = widget.authStore.token;
     if (token == null) return;
 
     setState(() {
       _isUploading = true;
+      _uploadProgress = 0.0;
       _error = null;
     });
     try {
       final doc = await _service.upload(
         baseUrl: widget.authStore.baseUrl,
         token: token,
-        filename: file.name,
+        filename: filename,
         bytes: bytes,
+        onProgress: (progress) {
+          if (mounted) setState(() => _uploadProgress = progress);
+        },
       );
       if (!mounted) return;
-      setState(() => _documents = [doc, ..._documents]);
+      setState(() {
+        _documents = [doc, ..._documents];
+        // Успех — больше нечего повторять.
+        _lastPickedBytes = null;
+        _lastPickedName = null;
+      });
     } on DocumentsException catch (e) {
       if (!mounted) return;
       setState(() => _error = e.message);
     } finally {
-      if (mounted) setState(() => _isUploading = false);
+      if (mounted) {
+        setState(() {
+          _isUploading = false;
+          _uploadProgress = null;
+        });
+      }
     }
   }
 
@@ -145,6 +186,27 @@ class _AdminDocumentsScreenState extends State<AdminDocumentsScreen> {
                           if (_error != null) ...[
                             const SizedBox(height: 12),
                             Text(_error!, style: const TextStyle(color: Color(0xFFFFB4B4), fontSize: 13)),
+                            if (_lastPickedBytes != null && !_isUploading) ...[
+                              const SizedBox(height: 8),
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(10),
+                                  onTap: _retryUpload,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(Icons.refresh_rounded, size: 16, color: Color(0xFF00D9C0)),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        'Повторить загрузку «${_lastPickedName ?? ''}»',
+                                        style: const TextStyle(color: Color(0xFF00D9C0), fontSize: 13, fontWeight: FontWeight.w500),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ],
                           const SizedBox(height: 20),
                           if (_isLoading)
@@ -182,45 +244,86 @@ class _AdminDocumentsScreenState extends State<AdminDocumentsScreen> {
   }
 
   Widget _buildUploadButton() {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: _isUploading ? null : _pickAndUpload,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
+    final progress = _uploadProgress;
+    final isSendingBytes = _isUploading && progress != null && progress < 1.0;
+    final isProcessingOnServer = _isUploading && (progress == null || progress >= 1.0);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
             borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              colors: _isUploading
-                  ? [Colors.white24, Colors.white10]
-                  : [const Color(0xFF6C5CE7), const Color(0xFF00B4D8)],
+            onTap: _isUploading ? null : _pickAndUpload,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  colors: _isUploading
+                      ? [Colors.white24, Colors.white10]
+                      : [const Color(0xFF6C5CE7), const Color(0xFF00B4D8)],
+                ),
+              ),
+              child: isSendingBytes
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                            value: progress,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Text('Загружаю: ${(progress * 100).round()}%', style: const TextStyle(color: Colors.white)),
+                      ],
+                    )
+                  : isProcessingOnServer
+                      ? const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            ),
+                            SizedBox(width: 10),
+                            // Байты уже все ушли — здесь уже нельзя
+                            // показать процент, сервер разбирает PDF и
+                            // считает эмбеддинги без пошагового статуса.
+                            Text('Обрабатываю PDF, считаю эмбеддинги…', style: TextStyle(color: Colors.white)),
+                          ],
+                        )
+                      : const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.upload_file_rounded, color: Colors.white, size: 20),
+                            SizedBox(width: 10),
+                            Text('Загрузить PDF', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                          ],
+                        ),
             ),
           ),
-          child: _isUploading
-              ? const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                    ),
-                    SizedBox(width: 10),
-                    Text('Загружаю и считаю эмбеддинги…', style: TextStyle(color: Colors.white)),
-                  ],
-                )
-              : const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.upload_file_rounded, color: Colors.white, size: 20),
-                    SizedBox(width: 10),
-                    Text('Загрузить PDF', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-                  ],
-                ),
         ),
-      ),
+        if (isSendingBytes) ...[
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 4,
+              backgroundColor: Colors.white.withOpacity(0.1),
+              valueColor: const AlwaysStoppedAnimation(Color(0xFF00D9C0)),
+            ),
+          ),
+        ],
+      ],
     );
   }
 

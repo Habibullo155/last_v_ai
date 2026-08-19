@@ -56,6 +56,7 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
 
   _Mode _mode = _Mode.history;
   final List<int?> _currentAnswers = List<int?>.filled(5, null);
+  int _currentQuestion = 0;
   WellbeingCheckin? _lastResult;
 
   @override
@@ -78,6 +79,7 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
     setState(() {
       _mode = _Mode.testing;
       _currentAnswers.fillRange(0, 5, null);
+      _currentQuestion = 0;
       _error = null;
     });
   }
@@ -156,44 +158,7 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        GlassPanel(
-          opacity: 0.08,
-          borderRadius: BorderRadius.circular(20),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Короткий опросник самочувствия ВОЗ (WHO-5) — 5 вопросов о твоих '
-                'последних двух неделях, минута на прохождение. Результат виден '
-                'только тебе — никуда не отправляется и не хранится на сервере.',
-                style: TextStyle(color: Colors.white.withOpacity(0.65), fontSize: 13, height: 1.5),
-              ),
-              const SizedBox(height: 16),
-              Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(14),
-                  onTap: _startTest,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 13),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      gradient: const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
-                    ),
-                    child: Text(
-                      _history.isEmpty ? 'Пройти опросник' : 'Пройти ещё раз',
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 20),
-        _buildToolTile(
+        _buildFeaturedTile(
           icon: Icons.support_rounded,
           title: 'Ситуативная помощь',
           subtitle: 'Тревога, плохое настроение, не могу уснуть — быстрые подсказки под ситуацию',
@@ -201,47 +166,62 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
             MaterialPageRoute(builder: (_) => SituationalHelpScreen(userId: widget.userId, voiceStore: widget.voiceStore)),
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 22),
         Text(
           'ИНСТРУМЕНТЫ',
           style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),
-        _buildToolTile(
-          icon: Icons.air_rounded,
-          title: 'Дыхательное упражнение',
-          subtitle: '«Квадратное» дыхание — 4 фазы по 4 секунды',
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const BreathingExerciseScreen()),
-          ),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          childAspectRatio: 1.05,
+          children: [
+            _buildGridTile(
+              icon: Icons.air_rounded,
+              title: 'Дыхание',
+              subtitle: '4 фазы по 4 сек',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const BreathingExerciseScreen()),
+              ),
+            ),
+            _buildGridTile(
+              icon: Icons.grid_view_rounded,
+              title: 'Заземление',
+              subtitle: '5-4-3-2-1',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => GroundingExerciseScreen(voiceStore: widget.voiceStore)),
+              ),
+            ),
+            _buildGridTile(
+              icon: Icons.auto_awesome_rounded,
+              title: 'Благодарность',
+              subtitle: 'Дневник',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => GratitudeJournalScreen(userId: widget.userId)),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 10),
-        _buildToolTile(
-          icon: Icons.grid_view_rounded,
-          title: 'Техника заземления 5-4-3-2-1',
-          subtitle: 'Переключить внимание на органы чувств',
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => GroundingExerciseScreen(voiceStore: widget.voiceStore)),
-          ),
-        ),
-        const SizedBox(height: 10),
-        _buildToolTile(
-          icon: Icons.auto_awesome_rounded,
-          title: 'Дневник благодарности',
-          subtitle: 'Три вещи, за которые сегодня благодарен(на) — только на этом устройстве',
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => GratitudeJournalScreen(userId: widget.userId)),
-          ),
-        ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 22),
         Text(
-          'ОПРОСНИКИ (СКРИНИНГ)',
+          'ОПРОСНИКИ',
           style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(
-          'Официальные, свободно распространяемые инструменты (Pfizer). Не диагностика.',
+          'Официальные, свободно распространяемые инструменты. Не диагностика — только скрининг для себя.',
           style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11.5),
+        ),
+        const SizedBox(height: 10),
+        _buildToolTile(
+          icon: Icons.favorite_border_rounded,
+          title: 'ВОЗ-5 — общее самочувствие',
+          subtitle: '5 вопросов, минута',
+          onTap: _startTest,
         ),
         const SizedBox(height: 10),
         _buildToolTile(
@@ -262,9 +242,9 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
           ),
         ),
         if (_history.isNotEmpty) ...[
-          const SizedBox(height: 20),
+          const SizedBox(height: 22),
           Text(
-            'ИСТОРИЯ',
+            'ИСТОРИЯ ВОЗ-5',
             style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 10),
@@ -298,6 +278,101 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
         const SizedBox(height: 20),
         _buildAttributionFooter(),
       ],
+    );
+  }
+
+  Widget _buildFeaturedTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(22),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(22),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)],
+            ),
+            boxShadow: [
+              BoxShadow(color: const Color(0xFF6C5CE7).withOpacity(0.35), blurRadius: 24, offset: const Offset(0, 10)),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.18)),
+                child: Icon(icon, color: Colors.white, size: 26),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16)),
+                    const SizedBox(height: 3),
+                    Text(subtitle, style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 12.5, height: 1.3)),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded, color: Colors.white, size: 22),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGridTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return GlassPanel(
+      opacity: 0.08,
+      blurred: false, // несколько таких карточек на экране одновременно
+      borderRadius: BorderRadius.circular(18),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(colors: [Color(0xFF6FB1DE), Color(0xFF4DD0C4)]),
+                  ),
+                  child: Icon(icon, color: Colors.white, size: 19),
+                ),
+                const SizedBox(height: 10),
+                Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13.5)),
+                const SizedBox(height: 2),
+                Text(subtitle, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11)),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -350,61 +425,113 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
   }
 
   Widget _buildTest() {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Text(
-          'Отметь, что ближе всего к тому, как ты себя чувствовал(а) последние '
-          'две недели.',
-          style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13),
-        ),
-        const SizedBox(height: 16),
-        for (var i = 0; i < 5; i++) ...[
-          _buildQuestion(i),
-          const SizedBox(height: 14),
-        ],
-        if (_error != null) ...[
-          Text(_error!, style: const TextStyle(color: Color(0xFFFFB4B4), fontSize: 13)),
-          const SizedBox(height: 12),
-        ],
-        Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(14),
-            onTap: _currentAnswers.every((a) => a != null) ? _submitTest : null,
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 13),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
-                gradient: LinearGradient(
-                  colors: _currentAnswers.every((a) => a != null)
-                      ? [const Color(0xFF6C5CE7), const Color(0xFF00B4D8)]
-                      : [Colors.white24, Colors.white10],
-                ),
-              ),
-              child: const Text('Показать результат', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+    final index = _currentQuestion;
+    final isLast = index == 4;
+    final answered = _currentAnswers[index] != null;
+
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Отметь, что ближе всего к тому, как ты себя чувствовал(а) последние '
+              'две недели.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13),
             ),
-          ),
+            const SizedBox(height: 18),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (i) {
+                final active = i == index;
+                final done = i < index;
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  width: active ? 20 : 7,
+                  height: 7,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: done || active ? const Color(0xFF6C5CE7) : Colors.white.withOpacity(0.15),
+                  ),
+                );
+              }),
+            ),
+            const SizedBox(height: 24),
+            _buildQuestion(index),
+            if (_error != null) ...[
+              const SizedBox(height: 12),
+              Text(_error!, style: const TextStyle(color: Color(0xFFFFB4B4), fontSize: 13)),
+            ],
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                if (index > 0) ...[
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                      ),
+                      onPressed: () => setState(() => _currentQuestion--),
+                      child: Text('Назад', style: TextStyle(color: Colors.white.withOpacity(0.8))),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                ],
+                Expanded(
+                  flex: 2,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(14),
+                      onTap: !answered
+                          ? null
+                          : isLast
+                              ? _submitTest
+                              : () => setState(() => _currentQuestion++),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          gradient: LinearGradient(
+                            colors: answered
+                                ? [const Color(0xFF6C5CE7), const Color(0xFF00B4D8)]
+                                : [Colors.white24, Colors.white10],
+                          ),
+                        ),
+                        child: Text(
+                          isLast ? 'Показать результат' : 'Далее',
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
   Widget _buildQuestion(int index) {
     return GlassPanel(
       opacity: 0.08,
-      blurred: false, // 5 таких панелей на экране одновременно
+      blurred: false,
       borderRadius: BorderRadius.circular(16),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             _who5Statements[index],
-            style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
+            style: const TextStyle(color: Colors.white, fontSize: 15.5, fontWeight: FontWeight.w500),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 14),
           Wrap(
             spacing: 8,
             runSpacing: 8,

@@ -5,6 +5,10 @@ class AppUser {
   final String tariff;
   final bool isActive;
   final DateTime createdAt;
+  final String? fullName;
+  final int? age;
+  final String? hobbies;
+  final bool isOperator;
 
   AppUser({
     required this.id,
@@ -13,6 +17,10 @@ class AppUser {
     required this.tariff,
     required this.isActive,
     required this.createdAt,
+    this.fullName,
+    this.age,
+    this.hobbies,
+    this.isOperator = false,
   });
 
   bool get isAdmin => role == 'admin';
@@ -26,6 +34,10 @@ class AppUser {
       isActive: json['is_active'] as bool? ?? true,
       createdAt:
           DateTime.tryParse(json['created_at'] as String? ?? '') ?? DateTime.now(),
+      fullName: json['full_name'] as String?,
+      age: json['age'] as int?,
+      hobbies: json['hobbies'] as String?,
+      isOperator: json['is_operator'] as bool? ?? false,
     );
   }
 }

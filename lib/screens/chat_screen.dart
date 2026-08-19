@@ -17,7 +17,9 @@ import 'admin_home_screen.dart';
 import 'profile_screen.dart';
 import 'purchase_screen.dart';
 import 'settings_screen.dart';
+import 'my_help_screen.dart';
 import 'my_reports_screen.dart';
+import 'operator_dashboard_screen.dart';
 import 'support_screen.dart';
 import 'voice_settings_screen.dart';
 import 'wellbeing_screen.dart';
@@ -27,12 +29,17 @@ class ChatScreen extends StatefulWidget {
   final AuthStore authStore;
   final ThemeStore themeStore;
   final VoiceStore voiceStore;
+  /// true, когда ChatScreen встроен в MainShellScreen (нижнее меню на
+  /// мобильных) — тогда "Профиль" и "Самочувствие" уже доступны через
+  /// нижнее меню и не дублируются в этом выпадающем меню.
+  final bool hideShellDuplicates;
   const ChatScreen({
     super.key,
     required this.store,
     required this.authStore,
     required this.themeStore,
     required this.voiceStore,
+    this.hideShellDuplicates = false,
   });
 
   @override
@@ -274,6 +281,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMenuButton(BuildContext context) {
     final isAdmin = widget.authStore.user?.isAdmin ?? false;
+    final isOperator = widget.authStore.user?.isOperator ?? false;
     return PopupMenuButton<String>(
       tooltip: 'Меню',
       icon: const Icon(Icons.account_circle_rounded, color: Colors.white),
@@ -319,6 +327,16 @@ class _ChatScreenState extends State<ChatScreen> {
               MaterialPageRoute(builder: (_) => MyReportsScreen(authStore: widget.authStore)),
             );
             break;
+          case 'my_help':
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => MyHelpScreen(authStore: widget.authStore)),
+            );
+            break;
+          case 'operator':
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => OperatorDashboardScreen(authStore: widget.authStore)),
+            );
+            break;
           case 'support':
             Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => SupportScreen(authStore: widget.authStore)),
@@ -332,12 +350,16 @@ class _ChatScreenState extends State<ChatScreen> {
         }
       },
       itemBuilder: (context) => [
-        _menuItem('profile', Icons.account_circle_outlined, 'Личный кабинет'),
-        _menuItem('wellbeing', Icons.self_improvement_rounded, 'Самочувствие'),
+        if (!widget.hideShellDuplicates) ...[
+          _menuItem('profile', Icons.account_circle_outlined, 'Личный кабинет'),
+          _menuItem('wellbeing', Icons.self_improvement_rounded, 'Самочувствие'),
+        ],
         _menuItem('purchase', Icons.workspace_premium_rounded, 'Подписка'),
         _menuItem('settings', Icons.settings_outlined, 'Настройки'),
         _menuItem('voice', Icons.record_voice_over_rounded, 'Голос'),
         _menuItem('my_reports', Icons.flag_outlined, 'Мои жалобы'),
+        _menuItem('my_help', Icons.support_rounded, 'Живая помощь'),
+        if (isOperator) _menuItem('operator', Icons.headset_mic_rounded, 'Кабинет оператора'),
         _menuItem('support', Icons.support_agent_rounded, 'Поддержка'),
         if (isAdmin) _menuItem('admin', Icons.admin_panel_settings_rounded, 'Админ-панель'),
       ],

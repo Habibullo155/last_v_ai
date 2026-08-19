@@ -39,16 +39,6 @@ class VoiceSettingsScreen extends StatefulWidget {
 }
 
 class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
-  final _wordController = TextEditingController();
-  final _pronunciationController = TextEditingController();
-
-  @override
-  void dispose() {
-    _wordController.dispose();
-    _pronunciationController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final voice = widget.voiceStore;
@@ -213,7 +203,8 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
           const SizedBox(height: 20),
           _sectionLabel('ГОЛОС'),
           Text(
-            'Локальная озвучка Silero TTS — звучит естественнее, чем голос устройства.',
+            'Прослушай каждый и выбери тот, что звучит для тебя спокойнее — '
+            'на слух это надёжнее, чем описание.',
             style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.5),
           ),
           const SizedBox(height: 10),
@@ -246,15 +237,6 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
             ...otherVoices.map((v) => _buildVoiceTile(voice, v)),
           ],
         ],
-        const SizedBox(height: 24),
-        _sectionLabel('СЛОВАРЬ ПРОИЗНОШЕНИЯ'),
-        Text(
-          'Если голос неправильно произносит какое-то слово — задай, как '
-          'его нужно "прочитать".',
-          style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 12, height: 1.4),
-        ),
-        const SizedBox(height: 10),
-        _buildPronunciationEditor(voice),
       ],
     );
   }
@@ -345,84 +327,6 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildPronunciationEditor(VoiceStore voice) {
-    final overrides = voice.settings.pronunciationOverrides;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (overrides.isNotEmpty)
-          GlassPanel(
-            opacity: 0.07,
-            borderRadius: BorderRadius.circular(14),
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Column(
-              children: overrides.entries
-                  .map((e) => ListTile(
-                        dense: true,
-                        title: Text('${e.key} → ${e.value}', style: const TextStyle(color: Colors.white, fontSize: 13)),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.close_rounded, size: 16, color: Colors.white54),
-                          onPressed: () {
-                            final updated = Map<String, String>.from(overrides)..remove(e.key);
-                            voice.updateSettings(voice.settings.copyWith(pronunciationOverrides: updated));
-                          },
-                        ),
-                      ))
-                  .toList(),
-            ),
-          ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _wordController,
-                style: const TextStyle(color: Colors.white, fontSize: 13),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white.withOpacity(0.08),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  hintText: 'Слово',
-                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            const Icon(Icons.arrow_forward_rounded, color: Colors.white38, size: 16),
-            const SizedBox(width: 8),
-            Expanded(
-              child: TextField(
-                controller: _pronunciationController,
-                style: const TextStyle(color: Colors.white, fontSize: 13),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white.withOpacity(0.08),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  hintText: 'Произношение',
-                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
-                ),
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.add_circle_rounded, color: Color(0xFF6C5CE7)),
-              onPressed: () {
-                final word = _wordController.text.trim();
-                final pronunciation = _pronunciationController.text.trim();
-                if (word.isEmpty || pronunciation.isEmpty) return;
-                final updated = Map<String, String>.from(overrides)..[word] = pronunciation;
-                voice.updateSettings(voice.settings.copyWith(pronunciationOverrides: updated));
-                _wordController.clear();
-                _pronunciationController.clear();
-              },
-            ),
-          ],
-        ),
-      ],
     );
   }
 
