@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ai_last_v/models/usage_info.dart';
+import 'package:ai_glass_chat/models/usage_info.dart';
 
 void main() {
   group('UsageInfo.usageFraction', () {

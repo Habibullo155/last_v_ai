@@ -4,18 +4,21 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/chat_message.dart';
+import '../models/chat_source.dart';
 
 class ChatStreamEvent {
   final String token;
   final bool done;
   final String? error;
   final bool isAuthError;
+  final List<ChatSource>? sources;
 
   ChatStreamEvent({
     required this.token,
     required this.done,
     this.error,
     this.isAuthError = false,
+    this.sources,
   });
 }
 
@@ -108,9 +111,11 @@ class ChatApiService {
             }
             final isDone = data['done'] as bool? ?? false;
             if (isDone) sawDone = true;
+            final rawSources = data['sources'] as List<dynamic>?;
             yield ChatStreamEvent(
               token: data['token'] as String? ?? '',
               done: isDone,
+              sources: rawSources?.map((e) => ChatSource.fromJson(e as Map<String, dynamic>)).toList(),
             );
           } catch (_) {
             // пропускаем битую строку

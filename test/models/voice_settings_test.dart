@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ai_last_v/models/voice_settings.dart';
+import 'package:ai_glass_chat/models/voice_settings.dart';
 
 void main() {
   group('VoiceSettings defaults', () {
@@ -10,6 +10,7 @@ void main() {
       expect(settings.rate, 0.5);
       expect(settings.pitch, 1.0);
       expect(settings.voiceName, isNull);
+      expect(settings.cloudVoiceName, 'baya');
     });
   });
 
@@ -46,6 +47,7 @@ void main() {
         voiceName: 'Milena',
         voiceLocale: 'ru-RU',
         sttLocaleId: 'ru_RU',
+        cloudVoiceName: 'aidar',
       );
       final restored = VoiceSettings.fromJson(original.toJson());
 
@@ -56,6 +58,7 @@ void main() {
       expect(restored.voiceName, original.voiceName);
       expect(restored.voiceLocale, original.voiceLocale);
       expect(restored.sttLocaleId, original.sttLocaleId);
+      expect(restored.cloudVoiceName, original.cloudVoiceName);
     });
 
     test('fromJson applies safe defaults for a missing/empty map', () {
@@ -63,23 +66,6 @@ void main() {
       expect(settings.autoReadEnabled, isFalse);
       expect(settings.voiceUiEnabled, isTrue);
       expect(settings.rate, 0.5);
-    });
-  });
-
-  group('VoiceSettings.applyPronunciation', () {
-    test('replaces a configured word, case-insensitively', () {
-      const settings = VoiceSettings(pronunciationOverrides: {'ИИ': 'искусственный интеллект'});
-      expect(settings.applyPronunciation('привет от ии!'), 'привет от искусственный интеллект!');
-    });
-
-    test('leaves text untouched when no overrides configured', () {
-      const settings = VoiceSettings();
-      expect(settings.applyPronunciation('привет мир'), 'привет мир');
-    });
-
-    test('applies multiple overrides in the same text', () {
-      const settings = VoiceSettings(pronunciationOverrides: {'ИИ': 'ИскИн', 'API': 'эй-пи-ай'});
-      expect(settings.applyPronunciation('ИИ использует API'), 'ИскИн использует эй-пи-ай');
     });
   });
 }

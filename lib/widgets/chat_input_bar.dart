@@ -9,8 +9,9 @@ class ChatInputBar extends StatefulWidget {
   final bool enabled;
   final ValueChanged<String> onSend;
   final VoiceStore? voiceStore;
+  final VoidCallback? onCallHelp;
 
-  const ChatInputBar({super.key, required this.enabled, required this.onSend, this.voiceStore});
+  const ChatInputBar({super.key, required this.enabled, required this.onSend, this.voiceStore, this.onCallHelp});
 
   @override
   State<ChatInputBar> createState() => _ChatInputBarState();
@@ -67,6 +68,10 @@ class _ChatInputBarState extends State<ChatInputBar> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       child: Row(
         children: [
+          if (widget.onCallHelp != null) ...[
+            _HelpButton(onTap: widget.onCallHelp!),
+            const SizedBox(width: 6),
+          ],
           Expanded(
             child: KeyboardListener(
               focusNode: _keyboardFocusNode,
@@ -112,6 +117,31 @@ class _ChatInputBarState extends State<ChatInputBar> {
           ],
           _SendButton(enabled: widget.enabled, onTap: _submit),
         ],
+      ),
+    );
+  }
+}
+
+class _HelpButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const _HelpButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: context.onSurfaceFaded(0.06),
+          ),
+          child: Icon(Icons.support_agent_rounded, color: context.onSurfaceFaded(0.7), size: 20),
+        ),
       ),
     );
   }

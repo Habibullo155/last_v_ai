@@ -1,3 +1,5 @@
+import 'chat_source.dart';
+
 enum MessageRole { user, assistant, system }
 
 /// null — не оценено, true — лайк, false — дизлайк.
@@ -9,6 +11,11 @@ class ChatMessage {
   bool isStreaming;
   bool isError;
   bool? liked;
+  // Источники из загруженных документов (RAG) — заполняется только для
+  // админа, сервер сам решает, присылать ли это поле вообще (см.
+  // chat_api_service.dart). Не сохраняется между сессиями — это просто
+  // отображение "откуда взят этот конкретный ответ прямо сейчас".
+  List<ChatSource>? sources;
 
   ChatMessage({
     required this.id,
@@ -18,6 +25,7 @@ class ChatMessage {
     this.isStreaming = false,
     this.isError = false,
     this.liked,
+    this.sources,
   }) : createdAt = createdAt ?? DateTime.now();
 
   String get roleKey => switch (role) {

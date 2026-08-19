@@ -35,12 +35,13 @@ class HelpService {
     required String baseUrl,
     required String token,
     String? reason,
+    String? chatContext,
   }) async {
     final res = await _client
         .post(
           Uri.parse('$baseUrl/api/help/sessions'),
           headers: _headers(token),
-          body: jsonEncode({'reason': reason}),
+          body: jsonEncode({'reason': reason, 'chat_context': chatContext}),
         )
         .timeout(const Duration(seconds: 15));
     if (res.statusCode >= 400) {

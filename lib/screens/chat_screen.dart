@@ -17,6 +17,8 @@ import 'admin_home_screen.dart';
 import 'profile_screen.dart';
 import 'purchase_screen.dart';
 import 'settings_screen.dart';
+import '../services/help_service.dart';
+import 'help_session_chat_screen.dart';
 import 'my_help_screen.dart';
 import 'my_reports_screen.dart';
 import 'operator_dashboard_screen.dart';
@@ -90,6 +92,101 @@ class _ChatScreenState extends State<ChatScreen> {
       if (messages[i].role == MessageRole.user) return messages[i].content;
     }
     return '(вопрос не найден)';
+  }
+
+  /// Собирает последние 15 сообщений текущего разговора в читаемый текст —
+  /// для передачи оператору при запросе живой помощи. Не происходит
+  /// автоматически: пользователь явно подтверждает это в диалоге ниже,
+  /// видя честную формулировку, что именно будет передано.
+  String? _recentChatSnapshot() {
+    final messages = widget.store.active?.messages;
+    if (messages == null || messages.isEmpty) return null;
+    final recent = messages.length > 15 ? messages.sublist(messages.length - 15) : messages;
+    final lines = recent.map((m) {
+      final who = m.role == MessageRole.user ? 'Пользователь' : 'ИИ';
+      return '$who: ${m.content}';
+    });
+    return lines.join('\n');
+  }
+
+  Future<void> _requestLiveHelp() async {
+    final snapshot = _recentChatSnapshot();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GlassPanel(
+          opacity: 0.18,
+          borderRadius: BorderRadius.circular(20),
+          padding: const EdgeInsets.all(20),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 380),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Позвать человека на помощь?',
+                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  snapshot != null
+                      ? 'Подключится живой человек из команды — не врач и не '
+                          'экстренная служба. Последние сообщения этого '
+                          'разговора (до 15) будут ему видны, чтобы не '
+                          'объяснять всё заново. Если ситуация требует '
+                          'срочной медицинской помощи — звони 103.'
+                      : 'Подключится живой человек из команды — не врач и не '
+                          'экстренная служба. Если ситуация требует срочной '
+                          'медицинской помощи — звони 103.',
+                  style: TextStyle(color: Colors.white.withOpacity(0.65), fontSize: 13, height: 1.5),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: Text('Отмена', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                    ),
+                    const SizedBox(width: 8),
+                    FilledButton(
+                      style: FilledButton.styleFrom(backgroundColor: const Color(0xFF6C5CE7)),
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text('Позвать'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final token = widget.authStore.token;
+    if (token == null) return;
+
+    final service = HelpService();
+    try {
+      final session = await service.createSession(
+        baseUrl: widget.authStore.baseUrl,
+        token: token,
+        chatContext: snapshot,
+      );
+      if (!mounted) return;
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => HelpSessionChatScreen(authStore: widget.authStore, session: session)),
+      );
+    } on HelpException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+    } finally {
+      service.dispose();
+    }
   }
 
   @override
@@ -232,6 +329,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   enabled: !widget.store.isSending,
                   onSend: _handleSend,
                   voiceStore: widget.voiceStore,
+                  onCallHelp: _requestLiveHelp,
                 ),
               ),
             ),

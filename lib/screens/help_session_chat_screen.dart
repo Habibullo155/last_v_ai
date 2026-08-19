@@ -184,6 +184,16 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(_error!, style: const TextStyle(color: Color(0xFFFFB4B4), fontSize: 12.5)),
                 ),
+              if (_session.chatContext != null && _session.chatContext!.isNotEmpty)
+                Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 640),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      child: _ChatContextPanel(text: _session.chatContext!),
+                    ),
+                  ),
+                ),
               Expanded(
                 child: _isLoading
                     ? const Center(child: CircularProgressIndicator(color: Color(0xFF6C5CE7)))
@@ -286,6 +296,72 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Снимок последних сообщений разговора с ИИ на момент запроса помощи —
+/// то, чем пользователь явно согласился поделиться (см. подтверждение в
+/// chat_screen.dart). Разворачивается по умолчанию, чтобы оператор сразу
+/// видел контекст, не тыкая лишний раз.
+class _ChatContextPanel extends StatefulWidget {
+  final String text;
+  const _ChatContextPanel({required this.text});
+
+  @override
+  State<_ChatContextPanel> createState() => _ChatContextPanelState();
+}
+
+class _ChatContextPanelState extends State<_ChatContextPanel> {
+  bool _expanded = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassPanel(
+      opacity: 0.07,
+      blurred: false,
+      borderRadius: BorderRadius.circular(14),
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => setState(() => _expanded = !_expanded),
+              child: Row(
+                children: [
+                  Icon(Icons.history_rounded, size: 14, color: Colors.white.withOpacity(0.5)),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      'Что происходило в чате с ИИ до этого обращения',
+                      style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  Icon(
+                    _expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                    size: 18,
+                    color: Colors.white.withOpacity(0.4),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (_expanded) ...[
+            const SizedBox(height: 8),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 220),
+              child: SingleChildScrollView(
+                child: Text(
+                  widget.text,
+                  style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 12.5, height: 1.5),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

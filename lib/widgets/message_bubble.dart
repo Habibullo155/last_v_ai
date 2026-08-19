@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../models/chat_message.dart';
+import '../models/chat_source.dart';
 import '../theme/app_text_color.dart';
 import 'animated_ai_avatar.dart';
 import 'glass_panel.dart';
@@ -63,6 +64,10 @@ class MessageBubble extends StatelessWidget {
                   height: 1.45,
                 ),
               ),
+            if (message.sources != null && message.sources!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              _SourcesBlock(sources: message.sources!),
+            ],
             const SizedBox(height: 6),
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -368,6 +373,53 @@ class _RateIconButton extends StatelessWidget {
             color: active ? const Color(0xFF6C5CE7) : context.onSurfaceFaded(0.38),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Показывается только у сообщений, где сервер прислал источники — а он
+/// делает это только для админа (main.py проверяет роль до сборки
+/// sources). Ничего дополнительно проверять на стороне Flutter не нужно:
+/// пустое/отсутствующее поле для обычного пользователя уже гарантирует,
+/// что блок не появится.
+class _SourcesBlock extends StatelessWidget {
+  final List<ChatSource> sources;
+  const _SourcesBlock({required this.sources});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.black.withOpacity(0.18),
+        border: Border.all(color: context.onSurfaceFaded(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.source_outlined, size: 12, color: context.onSurfaceFaded(0.4)),
+              const SizedBox(width: 4),
+              Text(
+                'ИСТОЧНИКИ (видно только админу)',
+                style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 9.5, letterSpacing: 0.5),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          for (final s in sources)
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                '${s.filename}${s.page != null ? ', стр. ${s.page}' : ''} · ${(s.similarity * 100).round()}%',
+                style: TextStyle(color: context.onSurfaceFaded(0.55), fontSize: 11),
+              ),
+            ),
+        ],
       ),
     );
   }

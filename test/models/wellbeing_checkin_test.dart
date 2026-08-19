@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ai_last_v/models/wellbeing_checkin.dart';
+import 'package:ai_glass_chat/models/wellbeing_checkin.dart';
 
 void main() {
   group('WellbeingCheckin scoring (WHO-5)', () {

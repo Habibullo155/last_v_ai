@@ -267,6 +267,7 @@ class ChatStore extends ChangeNotifier {
         assistantMsg.content += event.token;
         if (event.done) {
           assistantMsg.isStreaming = false;
+          if (event.sources != null) assistantMsg.sources = event.sources;
         }
         final now = DateTime.now();
         if (now.difference(lastNotify) >= notifyInterval) {
