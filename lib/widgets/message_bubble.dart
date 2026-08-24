@@ -35,11 +35,7 @@ class MessageBubble extends StatelessWidget {
     final bubble = GlassPanel(
       opacity: isUser ? 0.16 : 0.09,
       tint: isUser ? const Color(0xFF6C5CE7) : null,
-      // Пузыри рендерятся по одному на каждое сообщение в прокручиваемом
-      // списке — реальное размытие фона (BackdropFilter) тут дорого
-      // масштабируется с числом видимых сообщений. Полупрозрачная заливка
-      // и обводка сохраняют ощущение "стекла" почти бесплатно.
-      blurred: false,
+      blurred: false, // рендерится по одному на сообщение, BackdropFilter тут дорогой
       borderRadius: BorderRadius.only(
         topLeft: const Radius.circular(20),
         topRight: const Radius.circular(20),
@@ -148,11 +144,8 @@ class MessageBubble extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => SafeArea(
-        // Меню бэкграунд намеренно всегда тёмный (Color(0xFF1A2036) выше) —
-        // как модальный лист поверх всего, читаемость текста внутри него
-        // от темы приложения не зависит, поэтому здесь спокойно оставляем
-        // белый текст константами — это не тот случай, что бьётся о
-        // светлую тему (сам лист остаётся тёмным в обоих режимах).
+        // фон листа всегда тёмный (0xFF1A2036 выше), текст константами
+        // белый - от темы приложения не зависит
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -215,10 +208,7 @@ class MessageBubble extends StatelessWidget {
     final controller = TextEditingController(text: message.content);
     await showDialog(
       context: context,
-      // Диалог редактирования — тоже отдельный "тёмный лист" поверх
-      // приложения (как и меню выше), не основная поверхность экрана,
-      // поэтому внутренний текст здесь тоже намеренно на тёмном фоне
-      // независимо от темы приложения.
+      // тот же тёмный лист поверх приложения, что и меню выше
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
         child: GlassPanel(
@@ -297,10 +287,7 @@ class MessageBubble extends StatelessWidget {
         gradient: LinearGradient(
           colors: isUser
               ? [const Color(0xFF6C5CE7), const Color(0xFF00D9C0)]
-              // Спокойные приглушённые сине-зелёные тона вместо резкого
-              // розово-фиолетового — и значок волны/дыхания вместо "искр",
-              // это осознанный выбор именно для образа ассистента.
-              : [const Color(0xFF6FB1DE), const Color(0xFF4DD0C4)],
+              : [const Color(0xFF6FB1DE), const Color(0xFF4DD0C4)], // приглушённые сине-зелёные для ассистента
         ),
         border: Border.all(color: Colors.white.withOpacity(0.25)),
       ),
@@ -313,9 +300,6 @@ class MessageBubble extends StatelessWidget {
   }
 }
 
-/// Раньше копирование было только в скрытом меню по долгому нажатию —
-/// оказалось недостаточно заметно. Теперь есть ещё и видимая маленькая
-/// иконка прямо в пузыре, рядом со временем.
 class _CopyIconButton extends StatelessWidget {
   final String text;
   const _CopyIconButton({required this.text});
@@ -343,9 +327,6 @@ class _CopyIconButton extends StatelessWidget {
   }
 }
 
-/// Маленькая иконка-кнопка для лайка/дизлайка/перегенерации — рядом с
-/// иконкой копирования, а не спрятана в меню и не отдельным рядом под
-/// всем списком сообщений.
 class _RateIconButton extends StatelessWidget {
   final IconData icon;
   final IconData activeIcon;
@@ -378,11 +359,8 @@ class _RateIconButton extends StatelessWidget {
   }
 }
 
-/// Показывается только у сообщений, где сервер прислал источники — а он
-/// делает это только для админа (main.py проверяет роль до сборки
-/// sources). Ничего дополнительно проверять на стороне Flutter не нужно:
-/// пустое/отсутствующее поле для обычного пользователя уже гарантирует,
-/// что блок не появится.
+// видно только когда сервер прислал источники, а он делает это только
+// для админа - на Flutter ничего дополнительно проверять не нужно
 class _SourcesBlock extends StatelessWidget {
   final List<ChatSource> sources;
   const _SourcesBlock({required this.sources});

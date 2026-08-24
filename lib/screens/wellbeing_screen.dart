@@ -9,6 +9,7 @@ import '../widgets/app_background.dart';
 import '../widgets/crisis_resources_panel.dart';
 import '../widgets/glass_panel.dart';
 import 'breathing_exercise_screen.dart';
+import 'asrs_screen.dart';
 import 'gad7_screen.dart';
 import 'gratitude_journal_screen.dart';
 import 'grounding_exercise_screen.dart';
@@ -239,6 +240,15 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
           subtitle: '7 вопросов, 1-2 минуты',
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(builder: (_) => Gad7Screen(userId: widget.userId)),
+          ),
+        ),
+        const SizedBox(height: 10),
+        _buildToolTile(
+          icon: Icons.bolt_outlined,
+          title: 'ASRS-v1.1 — скрининг СДВГ',
+          subtitle: '6 вопросов, 1-2 минуты',
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => AsrsScreen(userId: widget.userId)),
           ),
         ),
         if (_history.isNotEmpty) ...[

@@ -4,16 +4,8 @@ import 'package:flutter/material.dart';
 import '../state/theme_store.dart';
 import '../theme/background_variant.dart';
 
-/// Тёмный фон с плавающими цветными "бликами" — база для эффекта
-/// глазморфизма (стеклянные панели поверх размытых цветных пятен).
-///
-/// Раньше здесь была ещё и полноценная светлая тема — убрана осознанно:
-/// у приложения весь текст захардкожен белым по коду, и честная светлая
-/// тема потребовала бы переписать цвет текста в каждом месте без
-/// возможности визуально проверить контраст. Вместо этого — несколько
-/// вариантов ТЁМНОГО фона с разными акцентными цветами (см.
-/// BackgroundVariant), выбираются в настройках, текст везде остаётся
-/// читаемым в любом варианте.
+// анимированный фон с плавающими цветными бликами - база глазморфизма.
+// У каждого из 9 вариантов своя палитра для тёмного и светлого режима
 class AppBackground extends StatefulWidget {
   final Widget child;
   const AppBackground({super.key, required this.child});
@@ -41,29 +33,135 @@ class _AppBackgroundState extends State<AppBackground>
     super.dispose();
   }
 
-  _Palette _paletteFor(BackgroundVariant variant) {
+  _Palette _paletteFor(BackgroundVariant variant, AppThemeMode mode) {
+    final isLight = mode == AppThemeMode.light;
     switch (variant) {
       case BackgroundVariant.violet:
-        return const _Palette(
-          base: [Color(0xFF0B0F1E), Color(0xFF141A2E), Color(0xFF0B0F1E)],
-          blob1: Color(0xFF6C5CE7),
-          blob2: Color(0xFF00D9C0),
-          blob3: Color(0xFFFF7AC6),
-        );
+        return isLight
+            ? const _Palette(
+                base: [Color(0xFFF3F0FF), Color(0xFFEAE4FF), Color(0xFFF3F0FF)],
+                blob1: Color(0xFF6C5CE7),
+                blob2: Color(0xFF00D9C0),
+                blob3: Color(0xFFFF7AC6),
+              )
+            : const _Palette(
+                base: [Color(0xFF0B0F1E), Color(0xFF141A2E), Color(0xFF0B0F1E)],
+                blob1: Color(0xFF6C5CE7),
+                blob2: Color(0xFF00D9C0),
+                blob3: Color(0xFFFF7AC6),
+              );
       case BackgroundVariant.ocean:
-        return const _Palette(
-          base: [Color(0xFF071A24), Color(0xFF0C2836), Color(0xFF071A24)],
-          blob1: Color(0xFF00B4D8),
-          blob2: Color(0xFF4DD0C4),
-          blob3: Color(0xFF3A7CA5),
-        );
+        return isLight
+            ? const _Palette(
+                base: [Color(0xFFEAF7FB), Color(0xFFDDF1F6), Color(0xFFEAF7FB)],
+                blob1: Color(0xFF00B4D8),
+                blob2: Color(0xFF4DD0C4),
+                blob3: Color(0xFF3A7CA5),
+              )
+            : const _Palette(
+                base: [Color(0xFF071A24), Color(0xFF0C2836), Color(0xFF071A24)],
+                blob1: Color(0xFF00B4D8),
+                blob2: Color(0xFF4DD0C4),
+                blob3: Color(0xFF3A7CA5),
+              );
       case BackgroundVariant.midnight:
-        return const _Palette(
-          base: [Color(0xFF08080F), Color(0xFF12121C), Color(0xFF08080F)],
-          blob1: Color(0xFF3A3A5C),
-          blob2: Color(0xFF5B4B8A),
-          blob3: Color(0xFF2E2E48),
-        );
+        return isLight
+            ? const _Palette(
+                base: [Color(0xFFF0F0F5), Color(0xFFE6E6EF), Color(0xFFF0F0F5)],
+                blob1: Color(0xFF7B6EAE),
+                blob2: Color(0xFF9B8ACB),
+                blob3: Color(0xFF5B4B8A),
+              )
+            : const _Palette(
+                base: [Color(0xFF08080F), Color(0xFF12121C), Color(0xFF08080F)],
+                blob1: Color(0xFF3A3A5C),
+                blob2: Color(0xFF5B4B8A),
+                blob3: Color(0xFF2E2E48),
+              );
+      case BackgroundVariant.sunset:
+        return isLight
+            ? const _Palette(
+                base: [Color(0xFFFFF1E9), Color(0xFFFFE4D6), Color(0xFFFFF1E9)],
+                blob1: Color(0xFFFF7E5F),
+                blob2: Color(0xFFFEB47B),
+                blob3: Color(0xFFE8618C),
+              )
+            : const _Palette(
+                base: [Color(0xFF1F0F12), Color(0xFF2B1418), Color(0xFF1F0F12)],
+                blob1: Color(0xFFFF7E5F),
+                blob2: Color(0xFFFEB47B),
+                blob3: Color(0xFFE8618C),
+              );
+      case BackgroundVariant.forest:
+        return isLight
+            ? const _Palette(
+                base: [Color(0xFFEDF7EE), Color(0xFFE0F1E3), Color(0xFFEDF7EE)],
+                blob1: Color(0xFF2E8B57),
+                blob2: Color(0xFF6FCF97),
+                blob3: Color(0xFF1B5E4A),
+              )
+            : const _Palette(
+                base: [Color(0xFF0A1710), Color(0xFF102218), Color(0xFF0A1710)],
+                blob1: Color(0xFF2E8B57),
+                blob2: Color(0xFF6FCF97),
+                blob3: Color(0xFF1B5E4A),
+              );
+      case BackgroundVariant.rose:
+        return isLight
+            ? const _Palette(
+                base: [Color(0xFFFDF0F4), Color(0xFFFCE2EA), Color(0xFFFDF0F4)],
+                blob1: Color(0xFFE0568C),
+                blob2: Color(0xFFFF9EBB),
+                blob3: Color(0xFFB23A6B),
+              )
+            : const _Palette(
+                base: [Color(0xFF1A0A12), Color(0xFF25101B), Color(0xFF1A0A12)],
+                blob1: Color(0xFFE0568C),
+                blob2: Color(0xFFFF9EBB),
+                blob3: Color(0xFFB23A6B),
+              );
+      case BackgroundVariant.amber:
+        return isLight
+            ? const _Palette(
+                base: [Color(0xFFFFF8E6), Color(0xFFFFEFC7), Color(0xFFFFF8E6)],
+                blob1: Color(0xFFE8A33D),
+                blob2: Color(0xFFFFD166),
+                blob3: Color(0xFFC97B1F),
+              )
+            : const _Palette(
+                base: [Color(0xFF1C1608), Color(0xFF29200D), Color(0xFF1C1608)],
+                blob1: Color(0xFFE8A33D),
+                blob2: Color(0xFFFFD166),
+                blob3: Color(0xFFC97B1F),
+              );
+      case BackgroundVariant.slate:
+        return isLight
+            ? const _Palette(
+                base: [Color(0xFFF1F3F5), Color(0xFFE4E8EC), Color(0xFFF1F3F5)],
+                blob1: Color(0xFF5C7A99),
+                blob2: Color(0xFF8FA8BF),
+                blob3: Color(0xFF3D5266),
+              )
+            : const _Palette(
+                base: [Color(0xFF0D1114), Color(0xFF161C21), Color(0xFF0D1114)],
+                blob1: Color(0xFF5C7A99),
+                blob2: Color(0xFF8FA8BF),
+                blob3: Color(0xFF3D5266),
+              );
+      case BackgroundVariant.mint:
+        return isLight
+            ? const _Palette(
+                base: [Color(0xFFEBFAF6), Color(0xFFD9F3EC), Color(0xFFEBFAF6)],
+                blob1: Color(0xFF00D9C0),
+                blob2: Color(0xFF6FE7D4),
+                blob3: Color(0xFF00A891),
+              )
+            : const _Palette(
+                base: [Color(0xFF071815), Color(0xFF0C221E), Color(0xFF071815)],
+                blob1: Color(0xFF00D9C0),
+                blob2: Color(0xFF6FE7D4),
+                blob3: Color(0xFF00A891),
+              );
     }
   }
 
@@ -72,7 +170,8 @@ class _AppBackgroundState extends State<AppBackground>
     return AnimatedBuilder(
       animation: ThemeStore.instance,
       builder: (context, _) {
-        final palette = _paletteFor(ThemeStore.instance.variant);
+        final isLight = ThemeStore.instance.mode == AppThemeMode.light;
+        final palette = _paletteFor(ThemeStore.instance.variant, ThemeStore.instance.mode);
         return Stack(
           fit: StackFit.expand,
           children: [
@@ -95,26 +194,34 @@ class _AppBackgroundState extends State<AppBackground>
                       color: palette.blob1,
                       alignment: Alignment(math.sin(t) * 0.8, -0.9 + math.cos(t) * 0.3),
                       size: 420,
-                      opacity: 0.55,
+                      // раньше в светлом режиме была только эта пониженная
+                      // непрозрачность, без общей плёнки поверх (см. ниже) -
+                      // блики выходили слишком яркими/насыщенными, глаз уставал.
+                      // Теперь опирается на плёнку, не на одну лишь эту цифру
+                      opacity: isLight ? 0.22 : 0.55,
                     ),
                     _blob(
                       color: palette.blob2,
                       alignment: Alignment(-0.9 + math.sin(t * 0.7) * 0.4, math.cos(t) * 0.9),
                       size: 380,
-                      opacity: 0.55,
+                      opacity: isLight ? 0.22 : 0.55,
                     ),
                     _blob(
                       color: palette.blob3,
                       alignment: Alignment(0.9 * math.cos(t * 0.5), 0.9 * math.sin(t * 0.9)),
                       size: 340,
-                      opacity: 0.55,
+                      opacity: isLight ? 0.22 : 0.55,
                     ),
                   ],
                 );
               },
             ),
-            // Лёгкое затемнение сверху, чтобы блики не были слишком яркими.
-            Container(color: Colors.black.withOpacity(0.25)),
+            // тёмный режим: чёрная плёнка притушивает блики, чтобы они не
+            // резали глаз на тёмном фоне. Светлый режим - симметрично,
+            // но белой плёнкой: без неё насыщенные акцентные цвета бликов
+            // выходили "сырыми" на пастельном фоне, глаз уставал быстрее
+            if (isLight) Container(color: Colors.white.withOpacity(0.45)),
+            if (!isLight) Container(color: Colors.black.withOpacity(0.25)),
             widget.child,
           ],
         );

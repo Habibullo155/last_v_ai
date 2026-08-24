@@ -113,6 +113,28 @@ class HelpService {
     return HelpSession.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
   }
 
+  /// Оценивает подключившегося оператора — только тот, кто запросил
+  /// помощь, может это сделать (проверка на сервере).
+  Future<HelpSession> rateSession({
+    required String baseUrl,
+    required String token,
+    required int sessionId,
+    required int rating,
+    String? comment,
+  }) async {
+    final res = await _client
+        .post(
+          Uri.parse('$baseUrl/api/help/sessions/$sessionId/rate'),
+          headers: _headers(token),
+          body: jsonEncode({'rating': rating, 'comment': comment}),
+        )
+        .timeout(const Duration(seconds: 15));
+    if (res.statusCode >= 400) {
+      throw HelpException(_extractError(res.body) ?? 'Не удалось отправить оценку.');
+    }
+    return HelpSession.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
+  }
+
   // --- Операторская сторона ---
 
   Future<List<HelpSession>> pendingSessions({required String baseUrl, required String token}) async {

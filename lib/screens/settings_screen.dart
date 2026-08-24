@@ -3,25 +3,85 @@ import 'package:flutter/material.dart';
 import '../state/auth_store.dart';
 import '../state/chat_store.dart';
 import '../state/theme_store.dart';
+import '../state/voice_store.dart';
+import '../theme/app_text_color.dart';
 import '../utils/auth_navigation.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
+import 'voice_settings_screen.dart';
 
 /// Адрес сервера здесь только отображается — редактировать его в
 /// приложении больше нельзя, он задаётся один раз при сборке через
 /// --dart-define=BACKEND_URL=... (см. lib/config.dart). Это осознанное
 /// решение: рядовой пользователь не должен иметь возможность
 /// перенаправить приложение на произвольный сервер.
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   final AuthStore authStore;
   final ChatStore chatStore;
   final ThemeStore themeStore;
+  final VoiceStore voiceStore;
   const SettingsScreen({
     super.key,
     required this.authStore,
     required this.chatStore,
     required this.themeStore,
+    required this.voiceStore,
   });
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  bool _biometricSupported = false;
+  bool _biometricEnabled = false;
+  bool _isBiometricBusy = false;
+  String? _biometricError;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBiometricState();
+  }
+
+  Future<void> _loadBiometricState() async {
+    final supported = await widget.authStore.isBiometricDeviceSupported();
+    final enabled = await widget.authStore.isBiometricEnabled();
+    if (mounted) {
+      setState(() {
+        _biometricSupported = supported;
+        _biometricEnabled = enabled;
+      });
+    }
+  }
+
+  Future<void> _toggleBiometric(bool value) async {
+    setState(() {
+      _isBiometricBusy = true;
+      _biometricError = null;
+    });
+    if (value) {
+      final error = await widget.authStore.enableBiometric();
+      if (mounted) {
+        setState(() {
+          _isBiometricBusy = false;
+          if (error != null) {
+            _biometricError = error;
+          } else {
+            _biometricEnabled = true;
+          }
+        });
+      }
+    } else {
+      await widget.authStore.disableBiometric();
+      if (mounted) {
+        setState(() {
+          _isBiometricBusy = false;
+          _biometricEnabled = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +96,12 @@ class SettingsScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Text(
+                    Text(
                       'Настройки',
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -57,8 +117,9 @@ class SettingsScreen extends StatelessWidget {
                         children: [
                           _sectionLabel('ОФОРМЛЕНИЕ'),
                           AnimatedBuilder(
-                            animation: themeStore,
+                            animation: widget.themeStore,
                             builder: (context, _) {
+                              final isLight = widget.themeStore.mode == AppThemeMode.light;
                               return GlassPanel(
                                 opacity: 0.08,
                                 borderRadius: BorderRadius.circular(18),
@@ -66,17 +127,36 @@ class SettingsScreen extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text('Цвет фона', style: TextStyle(color: Colors.white)),
-                                    const SizedBox(height: 12),
                                     Row(
+                                      children: [
+                                        Icon(
+                                          isLight ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                                          color: context.onSurfaceFaded(0.7),
+                                          size: 18,
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text('Светлая тема', style: TextStyle(color: context.onSurface)),
+                                        ),
+                                        Switch(
+                                          value: isLight,
+                                          activeColor: const Color(0xFF6C5CE7),
+                                          onChanged: (v) => widget.themeStore
+                                              .setMode(v ? AppThemeMode.light : AppThemeMode.dark),
+                                        ),
+                                      ],
+                                    ),
+                                    Divider(color: context.borderSubtle, height: 24),
+                                    Text('Цвет фона', style: TextStyle(color: context.onSurface)),
+                                    const SizedBox(height: 12),
+                                    Wrap(
+                                      spacing: 12,
+                                      runSpacing: 12,
                                       children: BackgroundVariant.values
-                                          .map((v) => Padding(
-                                                padding: const EdgeInsets.only(right: 12),
-                                                child: _VariantSwatch(
-                                                  variant: v,
-                                                  selected: themeStore.variant == v,
-                                                  onTap: () => themeStore.setVariant(v),
-                                                ),
+                                          .map((v) => _VariantSwatch(
+                                                variant: v,
+                                                selected: widget.themeStore.variant == v,
+                                                onTap: () => widget.themeStore.setVariant(v),
                                               ))
                                           .toList(),
                                     ),
@@ -86,6 +166,122 @@ class SettingsScreen extends StatelessWidget {
                             },
                           ),
                           const SizedBox(height: 24),
+                          _sectionLabel('ГОЛОС'),
+                          AnimatedBuilder(
+                            animation: widget.voiceStore,
+                            builder: (context, _) {
+                              final voice = widget.voiceStore;
+                              return GlassPanel(
+                                opacity: 0.08,
+                                borderRadius: BorderRadius.circular(18),
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          voice.settings.voiceUiEnabled ? Icons.record_voice_over_rounded : Icons.voice_over_off_rounded,
+                                          color: context.onSurfaceFaded(0.7),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Text('Голосовые кнопки в чате', style: TextStyle(color: context.onSurface, fontSize: 13.5)),
+                                        ),
+                                        Switch(
+                                          value: voice.settings.voiceUiEnabled,
+                                          activeColor: const Color(0xFF6C5CE7),
+                                          onChanged: (v) => voice.updateSettings(voice.settings.copyWith(voiceUiEnabled: v)),
+                                        ),
+                                      ],
+                                    ),
+                                    Divider(color: context.borderSubtle, height: 20),
+                                    Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        borderRadius: BorderRadius.circular(12),
+                                        onTap: () => Navigator.of(context).push(
+                                          MaterialPageRoute(builder: (_) => VoiceSettingsScreen(voiceStore: widget.voiceStore)),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 8),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  'Выбор голоса и распознавание речи',
+                                                  style: TextStyle(color: context.onSurfaceFaded(0.75), fontSize: 13),
+                                                ),
+                                              ),
+                                              Icon(Icons.chevron_right_rounded, color: context.onSurfaceFaded(0.4)),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 24),
+                          _sectionLabel('БЕЗОПАСНОСТЬ'),
+                          if (_biometricSupported)
+                            GlassPanel(
+                              opacity: 0.08,
+                              borderRadius: BorderRadius.circular(18),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        _biometricEnabled ? Icons.fingerprint_rounded : Icons.fingerprint_outlined,
+                                        color: context.onSurfaceFaded(0.7),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text('Вход по биометрии', style: TextStyle(color: context.onSurface, fontSize: 13.5)),
+                                      ),
+                                      if (_isBiometricBusy)
+                                        const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF6C5CE7)),
+                                        )
+                                      else
+                                        Switch(
+                                          value: _biometricEnabled,
+                                          activeColor: const Color(0xFF6C5CE7),
+                                          onChanged: _toggleBiometric,
+                                        ),
+                                    ],
+                                  ),
+                                  if (_biometricError != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 10),
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          _biometricError!,
+                                          style: const TextStyle(color: Color(0xFFFFB4B4), fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            )
+                          else
+                            GlassPanel(
+                              opacity: 0.06,
+                              borderRadius: BorderRadius.circular(18),
+                              padding: const EdgeInsets.all(16),
+                              child: Text(
+                                'На этом устройстве не настроена биометрия (Face ID/отпечаток) — включи её в настройках самого устройства, если хочешь использовать здесь.',
+                                style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12.5),
+                              ),
+                            ),
+                          const SizedBox(height: 24),
                           _sectionLabel('АККАУНТ'),
                           GlassPanel(
                             opacity: 0.08,
@@ -94,14 +290,14 @@ class SettingsScreen extends StatelessWidget {
                               color: Colors.transparent,
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(18),
-                                onTap: () => confirmAndLogout(context, authStore),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(16),
+                                onTap: () => confirmAndLogout(context, widget.authStore),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.logout_rounded, color: Colors.white70),
-                                      SizedBox(width: 12),
-                                      Text('Выйти из аккаунта', style: TextStyle(color: Colors.white)),
+                                      Icon(Icons.logout_rounded, color: context.onSurfaceFaded(0.7)),
+                                      const SizedBox(width: 12),
+                                      Text('Выйти из аккаунта', style: TextStyle(color: context.onSurface)),
                                     ],
                                   ),
                                 ),
@@ -117,18 +313,13 @@ class SettingsScreen extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text('AI Glass Chat', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                                Text('AI Glass Chat', style: TextStyle(color: context.onSurface, fontWeight: FontWeight.w600)),
                                 const SizedBox(height: 4),
-                                Text('Версия 1.0.0', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12.5)),
+                                Text('Версия 1.0.0', style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12.5)),
                                 const SizedBox(height: 8),
                                 Text(
                                   'Модель по умолчанию: gemma4:e2b через локальный Ollama.',
-                                  style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12.5),
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  'Сервер: ${chatStore.baseUrl}',
-                                  style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.5),
+                                  style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12.5),
                                 ),
                               ],
                             ),
@@ -142,7 +333,7 @@ class SettingsScreen extends StatelessWidget {
                               color: Colors.transparent,
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(18),
-                                onTap: () => _showDeleteAccountDialog(context, authStore),
+                                onTap: () => _showDeleteAccountDialog(context, widget.authStore),
                                 child: const Padding(
                                   padding: EdgeInsets.all(16),
                                   child: Row(
@@ -177,7 +368,7 @@ class SettingsScreen extends StatelessWidget {
         child: Text(
           text,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.4),
+            color: context.onSurfaceFaded(0.4),
             fontSize: 11,
             letterSpacing: 1.2,
             fontWeight: FontWeight.w600,
@@ -188,7 +379,7 @@ class SettingsScreen extends StatelessWidget {
   Future<void> _showDeleteAccountDialog(BuildContext context, AuthStore authStore) async {
     await showDialog(
       context: context,
-      builder: (context) => _DeleteAccountDialog(authStore: authStore),
+      builder: (context) => _DeleteAccountDialog(authStore: widget.authStore),
     );
   }
 }
@@ -258,9 +449,9 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Удалить аккаунт?',
-                style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+                style: TextStyle(color: context.onSurface, fontSize: 17, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
               Text(
@@ -268,12 +459,12 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
                 'статистика использования будут удалены полностью. История '
                 'переписки на этом устройстве останется — она никогда не '
                 'хранилась на сервере, и её можно удалить отдельно.',
-                style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, height: 1.45),
+                style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 13, height: 1.45),
               ),
               const SizedBox(height: 16),
               Text(
                 'Подтверди паролем',
-                style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12),
               ),
               const SizedBox(height: 8),
               TextField(
@@ -281,14 +472,14 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
                 obscureText: true,
                 autofocus: true,
                 onSubmitted: (_) => _isBusy ? null : _confirmDelete(),
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: context.onSurface),
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.white.withOpacity(0.08),
+                  fillColor: context.onSurfaceFaded(0.08),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   hintText: 'Пароль',
-                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                  hintStyle: TextStyle(color: context.onSurfaceFaded(0.3)),
                 ),
               ),
               if (_error != null) ...[
@@ -301,17 +492,17 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
                 children: [
                   TextButton(
                     onPressed: _isBusy ? null : () => Navigator.of(context).pop(),
-                    child: Text('Отмена', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                    child: Text('Отмена', style: TextStyle(color: context.onSurfaceFaded(0.6))),
                   ),
                   const SizedBox(width: 8),
                   FilledButton(
                     style: FilledButton.styleFrom(backgroundColor: const Color(0xFFFF6B6B)),
                     onPressed: _isBusy ? null : _confirmDelete,
                     child: _isBusy
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 16,
                             height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(strokeWidth: 2, color: context.onSurface),
                           )
                         : const Text('Удалить навсегда'),
                   ),
@@ -339,6 +530,18 @@ class _VariantSwatch extends StatelessWidget {
         return const [Color(0xFF00B4D8), Color(0xFF4DD0C4)];
       case BackgroundVariant.midnight:
         return const [Color(0xFF3A3A5C), Color(0xFF5B4B8A)];
+      case BackgroundVariant.sunset:
+        return const [Color(0xFFFF7E5F), Color(0xFFFEB47B)];
+      case BackgroundVariant.forest:
+        return const [Color(0xFF2E8B57), Color(0xFF6FCF97)];
+      case BackgroundVariant.rose:
+        return const [Color(0xFFE0568C), Color(0xFFFF9EBB)];
+      case BackgroundVariant.amber:
+        return const [Color(0xFFE8A33D), Color(0xFFFFD166)];
+      case BackgroundVariant.slate:
+        return const [Color(0xFF5C7A99), Color(0xFF8FA8BF)];
+      case BackgroundVariant.mint:
+        return const [Color(0xFF00D9C0), Color(0xFF6FE7D4)];
     }
   }
 
@@ -350,6 +553,18 @@ class _VariantSwatch extends StatelessWidget {
         return 'Океан';
       case BackgroundVariant.midnight:
         return 'Полночь';
+      case BackgroundVariant.sunset:
+        return 'Закат';
+      case BackgroundVariant.forest:
+        return 'Лес';
+      case BackgroundVariant.rose:
+        return 'Розовый';
+      case BackgroundVariant.amber:
+        return 'Янтарь';
+      case BackgroundVariant.slate:
+        return 'Графит';
+      case BackgroundVariant.mint:
+        return 'Мята';
     }
   }
 
@@ -366,7 +581,7 @@ class _VariantSwatch extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: LinearGradient(colors: _colors),
               border: Border.all(
-                color: selected ? Colors.white : Colors.white.withOpacity(0.15),
+                color: selected ? context.onSurface : context.onSurfaceFaded(0.15),
                 width: selected ? 2.5 : 1,
               ),
             ),
@@ -375,7 +590,7 @@ class _VariantSwatch extends StatelessWidget {
                 : null,
           ),
           const SizedBox(height: 6),
-          Text(_label, style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 10.5)),
+          Text(_label, style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 10.5)),
         ],
       ),
     );

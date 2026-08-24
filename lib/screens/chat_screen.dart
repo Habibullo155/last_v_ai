@@ -7,7 +7,6 @@ import '../state/theme_store.dart';
 import '../state/voice_store.dart';
 import '../utils/responsive.dart';
 import '../widgets/app_background.dart';
-import '../widgets/backend_status_pill.dart';
 import '../widgets/chat_input_bar.dart';
 import '../widgets/conversation_sidebar.dart';
 import '../widgets/glass_panel.dart';
@@ -23,7 +22,6 @@ import 'my_help_screen.dart';
 import 'my_reports_screen.dart';
 import 'operator_dashboard_screen.dart';
 import 'support_screen.dart';
-import 'voice_settings_screen.dart';
 import 'wellbeing_screen.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -31,9 +29,8 @@ class ChatScreen extends StatefulWidget {
   final AuthStore authStore;
   final ThemeStore themeStore;
   final VoiceStore voiceStore;
-  /// true, когда ChatScreen встроен в MainShellScreen (нижнее меню на
-  /// мобильных) — тогда "Профиль" и "Самочувствие" уже доступны через
-  /// нижнее меню и не дублируются в этом выпадающем меню.
+  // true в MainShellScreen (нижнее меню на мобильных) - там Профиль и
+  // Самочувствие уже есть внизу, не дублируем в выпадающем меню
   final bool hideShellDuplicates;
   const ChatScreen({
     super.key,
@@ -70,12 +67,12 @@ class _ChatScreenState extends State<ChatScreen> {
     _maybeAutoReadLastResponse();
   }
 
-  /// Озвучивает последний ответ ассистента, если включена автоозвучка в
-  /// настройках голоса — вызывается сразу после того, как стриминг ответа
-  /// закончился (и на обычную отправку, и на перегенерацию).
+  // только запасной путь для голоса на устройстве - облачный уже прочитан
+  // по предложениям во время генерации (onAssistantTextChunk -> onIncomingText)
   void _maybeAutoReadLastResponse() {
     final voice = widget.voiceStore;
     if (!voice.settings.autoReadEnabled || !voice.isVoiceAvailable) return;
+    if (voice.isCloudTtsAvailable) return;
     final convo = widget.store.active;
     if (convo == null || convo.messages.isEmpty) return;
     final last = convo.messages.last;
@@ -84,9 +81,8 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  /// Ищет ближайшее сообщение пользователя ПЕРЕД ответом ассистента с
-  /// индексом [assistantIndex] — это и есть вопрос, на который отвечала
-  /// модель, нужен для жалобы (чтобы разбирающий видел вопрос и ответ вместе).
+  // ближайшее сообщение юзера перед ответом - вопрос, на который отвечала
+  // модель, для жалобы (видно вопрос и ответ вместе)
   String _precedingUserMessage(List<ChatMessage> messages, int assistantIndex) {
     for (var i = assistantIndex - 1; i >= 0; i--) {
       if (messages[i].role == MessageRole.user) return messages[i].content;
@@ -94,10 +90,8 @@ class _ChatScreenState extends State<ChatScreen> {
     return '(вопрос не найден)';
   }
 
-  /// Собирает последние 15 сообщений текущего разговора в читаемый текст —
-  /// для передачи оператору при запросе живой помощи. Не происходит
-  /// автоматически: пользователь явно подтверждает это в диалоге ниже,
-  /// видя честную формулировку, что именно будет передано.
+  // последние 15 сообщений для оператора при запросе живой помощи - не
+  // автоматически, юзер подтверждает это в диалоге ниже
   String? _recentChatSnapshot() {
     final messages = widget.store.active?.messages;
     if (messages == null || messages.isEmpty) return null;
@@ -111,7 +105,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _requestLiveHelp() async {
     final snapshot = _recentChatSnapshot();
-    final confirmed = await showDialog<bool>(
+
+    // 'share' | 'no_share' | null(отмена) — раньше единственная кнопка
+    // "Позвать" неявно тащила с собой перепиской, если она была; теперь
+    // это отдельный, явный выбор самого пользователя, а не подразумеваемое
+    // поведение.
+    final choice = await showDialog<String>(
       context: context,
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
@@ -131,32 +130,53 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  snapshot != null
-                      ? 'Подключится живой человек из команды — не врач и не '
-                          'экстренная служба. Последние сообщения этого '
-                          'разговора (до 15) будут ему видны, чтобы не '
-                          'объяснять всё заново. Если ситуация требует '
-                          'срочной медицинской помощи — звони 103.'
-                      : 'Подключится живой человек из команды — не врач и не '
-                          'экстренная служба. Если ситуация требует срочной '
-                          'медицинской помощи — звони 103.',
+                  'Подключится живой человек из команды — не врач и не '
+                  'экстренная служба. Если ситуация требует срочной '
+                  'медицинской помощи — звони 103.',
                   style: TextStyle(color: Colors.white.withOpacity(0.65), fontSize: 13, height: 1.5),
                 ),
+                if (snapshot != null) ...[
+                  const SizedBox(height: 14),
+                  Text(
+                    'Показать ему последние сообщения этого разговора с ИИ (до 15), '
+                    'чтобы не объяснять всё заново?',
+                    style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 12.5, height: 1.4),
+                  ),
+                ],
                 const SizedBox(height: 18),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(false),
-                      child: Text('Отмена', style: TextStyle(color: Colors.white.withOpacity(0.6))),
-                    ),
-                    const SizedBox(width: 8),
-                    FilledButton(
+                if (snapshot != null) ...[
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
                       style: FilledButton.styleFrom(backgroundColor: const Color(0xFF6C5CE7)),
-                      onPressed: () => Navigator.of(context).pop(true),
+                      onPressed: () => Navigator.of(context).pop('share'),
+                      child: const Text('Да, показать разговор с ИИ'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.white.withOpacity(0.2))),
+                      onPressed: () => Navigator.of(context).pop('no_share'),
+                      child: Text('Нет, не показывать', style: TextStyle(color: Colors.white.withOpacity(0.85))),
+                    ),
+                  ),
+                ] else
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(backgroundColor: const Color(0xFF6C5CE7)),
+                      onPressed: () => Navigator.of(context).pop('no_share'),
                       child: const Text('Позвать'),
                     ),
-                  ],
+                  ),
+                const SizedBox(height: 8),
+                Center(
+                  child: TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text('Отмена', style: TextStyle(color: Colors.white.withOpacity(0.5))),
+                  ),
                 ),
               ],
             ),
@@ -165,7 +185,7 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
     );
 
-    if (confirmed != true || !mounted) return;
+    if (choice == null || !mounted) return;
 
     final token = widget.authStore.token;
     if (token == null) return;
@@ -175,7 +195,7 @@ class _ChatScreenState extends State<ChatScreen> {
       final session = await service.createSession(
         baseUrl: widget.authStore.baseUrl,
         token: token,
-        chatContext: snapshot,
+        chatContext: choice == 'share' ? snapshot : null,
       );
       if (!mounted) return;
       Navigator.of(context).push(
@@ -207,6 +227,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   padding: const EdgeInsets.fromLTRB(12, 50, 12, 12),
                   child: ConversationSidebar(
                     store: widget.store,
+                    authStore: widget.authStore,
                     onSelected: () => Navigator.of(context).pop(),
                   ),
                 ),
@@ -222,7 +243,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 if (showSidebar) ...[
                   SizedBox(
                     width: sidebarWidth,
-                    child: ConversationSidebar(store: widget.store),
+                    child: ConversationSidebar(store: widget.store, authStore: widget.authStore),
                   ),
                   const SizedBox(width: 16),
                 ],
@@ -284,10 +305,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                     widget.voiceStore.isVoiceAvailable
                                 ? () => widget.voiceStore.speak(messages[i].content)
                                 : null,
-                            // Дизлайк — не просто отметка, а тот же поток,
-                            // что и явная жалоба: спрашиваем причину и
-                            // отправляем админам на разбор. Лайк — просто
-                            // локальная пометка, без обращения к серверу.
+                            // дизлайк = тот же поток, что жалоба - причина и на разбор
+                            // админам. Лайк - просто локальная пометка
                             onRate: messages[i].role == MessageRole.assistant && !messages[i].isStreaming
                                 ? (liked) {
                                     if (liked) {
@@ -303,10 +322,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     }
                                   }
                                 : null,
-                            // Перегенерация доступна только для самого
-                            // последнего ответа ассистента — так же, как
-                            // было и раньше, просто теперь кнопка живёт в
-                            // самом пузыре, а не отдельным рядом под списком.
+                            // только для последнего ответа, кнопка теперь в пузыре
                             onRegenerate: messages[i].role == MessageRole.assistant &&
                                     i == messages.length - 1 &&
                                     canRegenerate
@@ -369,8 +385,6 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
           ),
-          BackendStatusPill(store: widget.store),
-          const SizedBox(width: 8),
           _buildMenuButton(context),
         ],
       ),
@@ -411,13 +425,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   authStore: widget.authStore,
                   chatStore: widget.store,
                   themeStore: widget.themeStore,
+                  voiceStore: widget.voiceStore,
                 ),
               ),
-            );
-            break;
-          case 'voice':
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => VoiceSettingsScreen(voiceStore: widget.voiceStore)),
             );
             break;
           case 'my_reports':
@@ -454,7 +464,6 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
         _menuItem('purchase', Icons.workspace_premium_rounded, 'Подписка'),
         _menuItem('settings', Icons.settings_outlined, 'Настройки'),
-        _menuItem('voice', Icons.record_voice_over_rounded, 'Голос'),
         _menuItem('my_reports', Icons.flag_outlined, 'Мои жалобы'),
         _menuItem('my_help', Icons.support_rounded, 'Живая помощь'),
         if (isOperator) _menuItem('operator', Icons.headset_mic_rounded, 'Кабинет оператора'),

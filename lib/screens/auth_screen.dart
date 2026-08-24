@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../state/auth_store.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
@@ -36,6 +38,12 @@ class _AuthScreenState extends State<AuthScreen> {
         : await widget.store.login(email, password);
 
     if (ok && mounted) {
+      // Завершает автозаполнение и явно сигналит ОС/браузеру, что можно
+      // предложить "Сохранить пароль?" — без этого вызова на некоторых
+      // платформах (особенно вебе и части Android-путей) подсказка о
+      // сохранении может не появиться, даже если поля размечены
+      // autofillHints правильно.
+      TextInput.finishAutofillContext();
       _passwordController.clear();
     }
   }
@@ -90,35 +98,47 @@ class _AuthScreenState extends State<AuthScreen> {
           Text(
             _isRegisterMode ? 'Создать аккаунт' : 'Вход в AI Chat',
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: context.onSurface,
               fontSize: 22,
               fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 24),
-          _buildField(
-            controller: _emailController,
-            hint: 'Email',
-            icon: Icons.alternate_email_rounded,
-            keyboardType: TextInputType.emailAddress,
-          ),
-          const SizedBox(height: 12),
-          _buildField(
-            controller: _passwordController,
-            hint: 'Пароль',
-            icon: Icons.lock_outline_rounded,
-            obscureText: _obscurePassword,
-            suffixIcon: IconButton(
-              icon: Icon(
-                _obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
-                color: Colors.white.withOpacity(0.5),
-                size: 20,
-              ),
-              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+          AutofillGroup(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildField(
+                  controller: _emailController,
+                  hint: 'Email',
+                  icon: Icons.alternate_email_rounded,
+                  keyboardType: TextInputType.emailAddress,
+                  autofillHints: const [AutofillHints.email],
+                ),
+                const SizedBox(height: 12),
+                _buildField(
+                  controller: _passwordController,
+                  hint: 'Пароль',
+                  icon: Icons.lock_outline_rounded,
+                  obscureText: _obscurePassword,
+                  // newPassword при регистрации — сигнал ОС/браузеру, что
+                  // это НОВЫЙ пароль (может предложить сгенерировать
+                  // надёжный и сохранить его), а не подставить старый.
+                  autofillHints: [_isRegisterMode ? AutofillHints.newPassword : AutofillHints.password],
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                      color: context.onSurfaceFaded(0.5),
+                      size: 20,
+                    ),
+                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  ),
+                  onChanged: _isRegisterMode ? (_) => setState(() {}) : null,
+                  onSubmitted: (_) => store.isBusy ? null : _submit(),
+                ),
+              ],
             ),
-            onChanged: _isRegisterMode ? (_) => setState(() {}) : null,
-            onSubmitted: (_) => store.isBusy ? null : _submit(),
           ),
           if (_isRegisterMode) ...[
             const SizedBox(height: 8),
@@ -145,7 +165,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 _isRegisterMode
                     ? 'Уже есть аккаунт? Войти'
                     : 'Нет аккаунта? Зарегистрироваться',
-                style: TextStyle(color: Colors.white.withOpacity(0.7)),
+                style: TextStyle(color: context.onSurfaceFaded(0.7)),
               ),
             ),
           ),
@@ -163,26 +183,28 @@ class _AuthScreenState extends State<AuthScreen> {
     Widget? suffixIcon,
     ValueChanged<String>? onChanged,
     ValueChanged<String>? onSubmitted,
+    List<String>? autofillHints,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.06),
+        color: context.onSurfaceFaded(0.06),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(0.12)),
+        border: Border.all(color: context.onSurfaceFaded(0.12)),
       ),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
         obscureText: obscureText,
+        autofillHints: autofillHints,
         onChanged: onChanged,
         onSubmitted: onSubmitted,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: context.onSurface),
         decoration: InputDecoration(
           border: InputBorder.none,
-          prefixIcon: Icon(icon, color: Colors.white.withOpacity(0.5), size: 20),
+          prefixIcon: Icon(icon, color: context.onSurfaceFaded(0.5), size: 20),
           suffixIcon: suffixIcon,
           hintText: hint,
-          hintStyle: TextStyle(color: Colors.white.withOpacity(0.35)),
+          hintStyle: TextStyle(color: context.onSurfaceFaded(0.35)),
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
         ),
       ),
@@ -202,13 +224,13 @@ class _AuthScreenState extends State<AuthScreen> {
         Icon(
           isValid ? Icons.check_circle_rounded : Icons.circle_outlined,
           size: 14,
-          color: isValid ? const Color(0xFF00E6A0) : Colors.white.withOpacity(0.35),
+          color: isValid ? const Color(0xFF00E6A0) : context.onSurfaceFaded(0.35),
         ),
         const SizedBox(width: 6),
         Text(
           isValid ? 'Длина пароля подходит' : 'Минимум $minLength символов (введено: $length)',
           style: TextStyle(
-            color: isValid ? const Color(0xFF00E6A0) : Colors.white.withOpacity(0.45),
+            color: isValid ? const Color(0xFF00E6A0) : context.onSurfaceFaded(0.45),
             fontSize: 12,
           ),
         ),

@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../models/chat_conversation.dart';
+import '../state/auth_store.dart';
 import '../state/chat_store.dart';
+import '../screens/wellbeing_calendar_screen.dart';
 import 'glass_panel.dart';
 
 class ConversationSidebar extends StatelessWidget {
   final ChatStore store;
+  final AuthStore authStore;
   final VoidCallback? onSelected;
 
-  const ConversationSidebar({super.key, required this.store, this.onSelected});
+  const ConversationSidebar({super.key, required this.store, required this.authStore, this.onSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +39,17 @@ class ConversationSidebar extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
+          _WellbeingSummaryTile(
+            onTap: () {
+              final userId = authStore.user?.id.toString();
+              if (userId == null) return;
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => WellbeingCalendarScreen(userId: userId)),
+              );
+              onSelected?.call();
+            },
+          ),
+          const SizedBox(height: 12),
           _NewChatButton(
             onTap: () {
               store.createNewChat();
@@ -87,6 +101,56 @@ class ConversationSidebar extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Ссылка на календарь самочувствия — раньше здесь была пустота (кнопка
+/// "Новый чат" была первым, что видно, и при пустой истории ниже
+/// оставалась одна короткая надпись "Пока нет диалогов"). Занимает то же
+/// место, кнопка "Новый чат" теперь ниже.
+class _WellbeingSummaryTile extends StatelessWidget {
+  final VoidCallback onTap;
+  const _WellbeingSummaryTile({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: Colors.white.withOpacity(0.06),
+            border: Border.all(color: Colors.white.withOpacity(0.1)),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.calendar_month_rounded, color: Colors.white.withOpacity(0.75), size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Календарь самочувствия',
+                      style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 13, fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      'Результаты опросников по дням',
+                      style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right_rounded, color: Colors.white.withOpacity(0.3)),
+            ],
+          ),
+        ),
       ),
     );
   }

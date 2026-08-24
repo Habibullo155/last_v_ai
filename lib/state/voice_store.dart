@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -9,6 +12,25 @@ import '../services/app_settings_service.dart';
 import '../services/cloud_tts_service.dart';
 import '../services/pronunciation_service.dart';
 import '../services/voice_settings_service.dart';
+
+// разбивает поток текста на предложения по .!?\n — не идеально (не
+// отличит "г." от конца фразы), но для тайминга озвучки этого хватает
+final _sentenceBoundary = RegExp(r'[^.!?\n]*[.!?\n]+');
+
+final _hasLatinLetters = RegExp(r'[a-zA-Z]');
+final _latinWord = RegExp(r'[a-zA-Z]+');
+
+// грубая транслитерация англ. слов на слух, для случаев без записи в
+// словаре произношения. Диграфы (sh, ch...) проверяются раньше одиночных
+// букв, иначе "sh" распадётся на с+х
+const _enToRuMap = {
+  'sh': 'ш', 'ch': 'ч', 'th': 'з', 'ph': 'ф', 'ck': 'к', 'qu': 'кв',
+  'oo': 'у', 'ee': 'и', 'ea': 'и',
+  'a': 'а', 'b': 'б', 'c': 'к', 'd': 'д', 'e': 'е', 'f': 'ф', 'g': 'г',
+  'h': 'х', 'i': 'и', 'j': 'дж', 'k': 'к', 'l': 'л', 'm': 'м', 'n': 'н',
+  'o': 'о', 'p': 'п', 'q': 'к', 'r': 'р', 's': 'с', 't': 'т', 'u': 'а',
+  'v': 'в', 'w': 'в', 'x': 'кс', 'y': 'и', 'z': 'з',
+};
 
 class VoiceStore extends ChangeNotifier {
   final FlutterTts _tts = FlutterTts();
@@ -22,32 +44,18 @@ class VoiceStore extends ChangeNotifier {
   String _baseUrl = '';
   String? _authToken;
 
-  /// Словарь произношения, который задаёт админ — общий для всех
-  /// пользователей (routers_pronunciation.py). Личного словаря на
-  /// устройстве больше нет — убран из настроек намеренно, одного места
-  /// для этой настройки достаточно.
+  // словарь произношения от админа, общий для всех (personal-версию убрали)
   Map<String, String> globalPronunciation = {};
 
   VoiceSettings settings = const VoiceSettings();
 
-  /// Распознавание речи в принципе доступно на этом устройстве (есть
-  /// разрешение на микрофон, есть системный движок).
-  bool isSttAvailable = false;
+  bool isSttAvailable = false; // микрофон + системный движок распознавания есть
 
-  /// Разрешено ли использовать голос вообще — управляется админом
-  /// (см. backend/routers_settings.py). Не про доступность оборудования,
-  /// а про то, включена ли фича глобально.
-  bool isVoiceFeatureEnabled = true;
+  bool isVoiceFeatureEnabled = true; // глобальный тумблер админа, не про железо
 
-  /// Настроена ли облачная озвучка (Silero TTS — свой локальный сервер)
-  /// на сервере — если да, используем её вместо движка на устройстве:
-  /// звучит естественнее. Честное отражение реальной настройки .env, не
-  /// переключатель "для вида".
-  bool isCloudTtsAvailable = false;
+  bool isCloudTtsAvailable = false; // настроен ли Silero-сервер в .env
 
-  /// Итоговая доступность голоса — и админ должен разрешить фичу
-  /// глобально, И сам пользователь не должен её выключить у себя (личное
-  /// предпочтение, отдельное от общего переключателя админа).
+  // и админ должен разрешить, и юзер сам не выключил у себя
   bool get isVoiceAvailable => isVoiceFeatureEnabled && settings.voiceUiEnabled;
 
   bool isListening = false;
@@ -55,24 +63,36 @@ class VoiceStore extends ChangeNotifier {
   List<Map<String, String>> availableVoices = [];
   String? lastError;
 
+  // потоковое чтение: Silero сам не умеет стримить (отдаёт готовый WAV
+  // целиком), но можно синтезировать и играть по одному предложению -
+  // пока играет N, уже синтезируется N+1, звучит почти непрерывно
+  String? _streamingMessageId;
+  String _streamingBuffer = '';
+  int _streamingSpokenLength = 0;
+  final List<String> _sentenceQueue = [];
+  bool _isSynthesizing = false;
+  bool _isPlayingQueue = false;
+
   Future<void> init(String baseUrl, {String? authToken}) async {
     _baseUrl = baseUrl;
     _authToken = authToken;
 
+    final hadSavedSettings = await _settingsService.hasSaved();
     settings = await _settingsService.load();
     final publicSettings = await _appSettingsService.getPublicSettings(baseUrl);
     isVoiceFeatureEnabled = publicSettings.voiceEnabled;
     isCloudTtsAvailable = publicSettings.cloudTtsEnabled;
     globalPronunciation = await _pronunciationService.getPublicDictionary(baseUrl);
 
-    // Если сохранённый голос не из текущего списка (например, остался
-    // от прежней настройки на другой сервис до перехода на Silero),
-    // сбрасываем на первый голос списка — иначе застрянем на имени
-    // голоса, которого для Silero не существует.
+    // дефолт от админа применяем на новом устройстве или если сохранённый
+    // голос стал недействителен. Не различаем "выбрал сам то же самое,
+    // что дефолт" от "просто остался дефолт" - редкий крайний случай
     if (isCloudTtsAvailable) {
       final currentIsValid = sileroCloudVoices.any((v) => v.name == settings.cloudVoiceName);
-      if (!currentIsValid) {
-        settings = settings.copyWith(cloudVoiceName: sileroCloudVoices.first.name);
+      final adminDefaultIsValid = sileroCloudVoices.any((v) => v.name == publicSettings.defaultVoice);
+      if (!hadSavedSettings || !currentIsValid) {
+        final fallback = adminDefaultIsValid ? publicSettings.defaultVoice : sileroCloudVoices.first.name;
+        settings = settings.copyWith(cloudVoiceName: fallback);
         await _settingsService.save(settings);
       }
     }
@@ -94,9 +114,8 @@ class VoiceStore extends ChangeNotifier {
         isSttAvailable = false;
       }
 
-      // Список голосов на устройстве нужен только как запасной вариант —
-      // если облачная озвучка настроена на сервере, используются 4
-      // фиксированных облачных голоса (models/cloud_voice.dart) вместо этого.
+      // список голосов устройства - только запасной вариант, если облако
+      // настроено, используются 4 фиксированных голоса из cloud_voice.dart
       if (!isCloudTtsAvailable) {
         try {
           final voices = await _tts.getVoices;
@@ -115,10 +134,8 @@ class VoiceStore extends ChangeNotifier {
         }
       }
 
-      // Если пользователь ещё ни разу не выбирал язык распознавания сам —
-      // по умолчанию предпочитаем русский, если он вообще доступен на
-      // устройстве, а не оставляем "как решит система" (которая может
-      // выбрать английский, даже если приложение целиком на русском).
+      // если юзер сам ещё не выбирал язык распознавания - предпочитаем
+      // русский, если доступен, а не отдаём на откуп системе
       if (settings.sttLocaleId == null && isSttAvailable) {
         try {
           final locales = await _stt.locales();
@@ -134,7 +151,7 @@ class VoiceStore extends ChangeNotifier {
             await _settingsService.save(settings);
           }
         } catch (_) {
-          // Не критично — останется системный дефолт.
+          // не критично, останется системный дефолт
         }
       }
 
@@ -150,10 +167,9 @@ class VoiceStore extends ChangeNotifier {
         isSpeaking = false;
         notifyListeners();
       });
-      _audioPlayer.onPlayerComplete.listen((_) {
-        isSpeaking = false;
-        notifyListeners();
-      });
+      // ожидание конца конкретного клипа делает _playAndWait, не общий
+      // слушатель - иначе сбрасывал бы isSpeaking после первого предложения
+      // из нескольких в очереди
 
       if (!isCloudTtsAvailable) {
         await _applyOnDeviceTtsSettings();
@@ -171,8 +187,7 @@ class VoiceStore extends ChangeNotifier {
         await _tts.setVoice({'name': settings.voiceName!, 'locale': settings.voiceLocale!});
       }
     } catch (_) {
-      // Выбранный голос мог перестать существовать (сменилось устройство,
-      // обновилась ОС) — не критично, просто останется голос по умолчанию.
+      // голос мог перестать существовать (сменилось устройство/ОС) - не критично
     }
   }
 
@@ -185,9 +200,8 @@ class VoiceStore extends ChangeNotifier {
     }
   }
 
-  /// Проговаривает тестовую фразу выбранным голосом на устройстве, НЕ
-  /// сохраняя его как текущий — так можно послушать варианты перед тем,
-  /// как решить. Для облачных голосов используй previewCloudVoice.
+  // тестовая фраза выбранным голосом, не сохраняя его как текущий - для
+  // облачных голосов используй previewCloudVoice
   Future<void> previewVoice(String name, String locale) async {
     if (!isVoiceAvailable || isCloudTtsAvailable) return;
     await stopSpeaking();
@@ -210,20 +224,60 @@ class VoiceStore extends ChangeNotifier {
     await _speakCloud('Привет! Так звучит этот голос.', voiceOverride: voiceName);
   }
 
-  /// Применяет глобальный словарь произношения (задан админом) к тексту
-  /// перед озвучкой — простая замена подстрок, регистронезависимая.
-  /// Личного словаря на устройстве больше нет — одного места для этой
-  /// настройки достаточно.
+  // замена по границам слова, не по подстроке - раньше был баг, простой
+  // replaceAll находил "ИИ" внутри "лИИния" и т.п. Обычный \b тут не
+  // годится, он не считает кириллицу буквами - отсюда \p{L} + unicode: true
   String _applyPronunciation(String text) {
     var result = text;
     for (final entry in globalPronunciation.entries) {
       if (entry.key.isEmpty) continue;
+      final pattern = '(?<![\\p{L}\\p{N}])${RegExp.escape(entry.key)}(?![\\p{L}\\p{N}])';
       result = result.replaceAll(
-        RegExp(RegExp.escape(entry.key), caseSensitive: false),
+        RegExp(pattern, caseSensitive: false, unicode: true),
         entry.value,
       );
     }
-    return result;
+    return _transliterateLatinFallback(result);
+  }
+
+  // голоса Silero - русские модели, латиницу либо пропускают, либо
+  // коверкают. Для важных слов (бренды, термины) лучше словарь
+  // произношения; это запасной вариант для всего остального -
+  // побуквенная транслитерация на слух, не точное произношение
+  String _transliterateLatinFallback(String text) {
+    if (!_hasLatinLetters.hasMatch(text)) return text;
+    return text.splitMapJoin(
+      _latinWord,
+      onMatch: (m) => _transliterateWord(m.group(0)!),
+      onNonMatch: (s) => s,
+    );
+  }
+
+  String _transliterateWord(String word) {
+    final buffer = StringBuffer();
+    var i = 0;
+    final lower = word.toLowerCase();
+    while (i < lower.length) {
+      var matched = false;
+      // Сначала более длинные буквосочетания (диграфы), потом одиночные
+      // буквы — иначе "sh" распалось бы на "с"+"х" вместо единого "ш".
+      for (final len in [2, 1]) {
+        if (i + len > lower.length) continue;
+        final chunk = lower.substring(i, i + len);
+        final replacement = _enToRuMap[chunk];
+        if (replacement != null) {
+          buffer.write(replacement);
+          i += len;
+          matched = true;
+          break;
+        }
+      }
+      if (!matched) {
+        buffer.write(lower[i]);
+        i++;
+      }
+    }
+    return buffer.toString();
   }
 
   Future<void> speak(String text) async {
@@ -261,20 +315,150 @@ class VoiceStore extends ChangeNotifier {
         text: _applyPronunciation(text),
         voiceName: voiceOverride ?? settings.cloudVoiceName,
       );
-      await _audioPlayer.play(BytesSource(bytes));
-      // isSpeaking сбросится в onPlayerComplete-подписке из init().
+      await _playAndWait(bytes);
     } on CloudTtsException catch (e) {
       lastError = e.message;
-      isSpeaking = false;
-      notifyListeners();
     } catch (e) {
       lastError = '$e';
+    } finally {
+      isSpeaking = false;
+      notifyListeners();
+    }
+  }
+
+  // временная подписка на каждый вызов, не постоянный слушатель на весь
+  // плеер - тот конфликтовал бы с очередью из нескольких клипов, см. init()
+  Future<void> _playAndWait(Uint8List bytes) async {
+    final completer = Completer<void>();
+    late StreamSubscription<void> sub;
+    sub = _audioPlayer.onPlayerComplete.listen((_) {
+      sub.cancel();
+      if (!completer.isCompleted) completer.complete();
+    });
+    try {
+      await _audioPlayer.play(BytesSource(bytes));
+    } catch (e) {
+      sub.cancel();
+      if (!completer.isCompleted) completer.completeError(e);
+      rethrow;
+    }
+    await completer.future;
+  }
+
+  // вызывается на каждый апдейт текста, который ещё генерируется
+  // (chat_store.dart: onAssistantTextChunk) - если автоозвучка включена и
+  // облако доступно, ставит в очередь на синтез каждое законченное
+  // предложение сразу, не дожидаясь конца ответа. Для голоса на
+  // устройстве стриминг не делаем, там speak() читает целиком
+  void onIncomingText({required String messageId, required String fullContent, required bool isDone}) {
+    if (!settings.autoReadEnabled || !isVoiceAvailable || !isCloudTtsAvailable) return;
+
+    if (_streamingMessageId != messageId) {
+      _resetStreamingState(messageId);
+    }
+
+    if (fullContent.length > _streamingSpokenLength) {
+      _streamingBuffer += fullContent.substring(_streamingSpokenLength);
+      _streamingSpokenLength = fullContent.length;
+    }
+
+    final matches = _sentenceBoundary.allMatches(_streamingBuffer).toList();
+    if (matches.isNotEmpty) {
+      for (final m in matches) {
+        final sentence = m.group(0)?.trim() ?? '';
+        if (sentence.isNotEmpty) _sentenceQueue.add(sentence);
+      }
+      _streamingBuffer = _streamingBuffer.substring(matches.last.end);
+    }
+
+    // длинное предложение без точки раньше блокировало синтез до самого
+    // конца - принудительно режем по последнему пробелу, если накопилось
+    // больше порога
+    const forceBreakThreshold = 90;
+    if (_streamingBuffer.length > forceBreakThreshold) {
+      final lastSpace = _streamingBuffer.lastIndexOf(' ', forceBreakThreshold);
+      final cut = lastSpace > 0 ? lastSpace : forceBreakThreshold;
+      final chunk = _streamingBuffer.substring(0, cut).trim();
+      if (chunk.isNotEmpty) _sentenceQueue.add(chunk);
+      _streamingBuffer = _streamingBuffer.substring(cut).trimLeft();
+    }
+
+    if (isDone && _streamingBuffer.trim().isNotEmpty) {
+      _sentenceQueue.add(_streamingBuffer.trim());
+      _streamingBuffer = '';
+    }
+
+    unawaited(_pumpQueue());
+  }
+
+  void _resetStreamingState(String? newMessageId) {
+    _streamingMessageId = newMessageId;
+    _streamingBuffer = '';
+    _streamingSpokenLength = 0;
+    _sentenceQueue.clear();
+  }
+
+  // два независимых цикла: этот синтезирует предложения из очереди по
+  // одному и сразу шлёт готовый звук на воспроизведение (не ждёт, пока
+  // доиграет предыдущий клип), _pumpPlayback ниже играет их по порядку.
+  // Оба ленивые - если уже работают, повторный вызов no-op
+  Future<void> _pumpQueue() async {
+    if (_isSynthesizing) return;
+    _isSynthesizing = true;
+    final token = _authToken;
+    try {
+      while (_sentenceQueue.isNotEmpty) {
+        final sentence = _sentenceQueue.removeAt(0);
+        if (token == null) continue;
+        try {
+          final bytes = await _cloudTtsService.synthesize(
+            baseUrl: _baseUrl,
+            token: token,
+            text: _applyPronunciation(sentence),
+            voiceName: settings.cloudVoiceName,
+          );
+          _playbackQueue.add(bytes);
+          unawaited(_pumpPlayback());
+        } on CloudTtsException catch (e) {
+          // Один неудавшийся кусок не должен обрывать всё чтение целиком —
+          // просто пропускаем его, остальная очередь продолжает работать.
+          lastError = e.message;
+        } catch (e) {
+          lastError = '$e';
+        }
+      }
+    } finally {
+      _isSynthesizing = false;
+    }
+  }
+
+  final List<Uint8List> _playbackQueue = [];
+
+  Future<void> _pumpPlayback() async {
+    if (_isPlayingQueue) return;
+    _isPlayingQueue = true;
+    isSpeaking = true;
+    notifyListeners();
+    try {
+      while (_playbackQueue.isNotEmpty) {
+        final bytes = _playbackQueue.removeAt(0);
+        try {
+          await _playAndWait(bytes);
+        } catch (_) {
+          // Проблема с конкретным клипом — идём дальше по очереди, не
+          // обрываем всё чтение целиком.
+        }
+      }
+    } finally {
+      _isPlayingQueue = false;
       isSpeaking = false;
       notifyListeners();
     }
   }
 
   Future<void> stopSpeaking() async {
+    _resetStreamingState(null);
+    _playbackQueue.clear();
     try {
       await _tts.stop();
     } catch (_) {
@@ -289,16 +473,13 @@ class VoiceStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Обновляет токен авторизации — нужен для запросов к облачной озвучке.
-  /// Вызывается, если токен обновился уже после init() (например, после
-  /// повторного входа).
+  // токен нужен для запросов к облачной озвучке, обновляется после init()
   void updateAuthToken(String? token) {
     _authToken = token;
   }
 
-  /// Слушает и вызывает [onResult] с распознанным текстом при каждом
-  /// промежуточном/финальном результате — вызывающий код сам решает, что
-  /// делать (обычно — подставить текст в поле ввода).
+  // вызывает onResult на каждый промежуточный/финальный результат, обычно
+  // подставляют текст в поле ввода
   Future<void> startListening({required ValueChanged<String> onResult}) async {
     if (!isVoiceAvailable || !isSttAvailable || isListening) return;
     lastError = null;

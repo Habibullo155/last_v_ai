@@ -5,19 +5,19 @@ import '../theme/background_variant.dart';
 
 export '../theme/background_variant.dart';
 
-/// Синглтон намеренно — AppBackground используется примерно в 20 экранах,
-/// пробрасывать ThemeStore через конструктор каждого из них ради выбора
-/// цвета фона было бы избыточно. AppBackground читает
-/// ThemeStore.instance напрямую.
+// синглтон - AppBackground используется примерно в 20 экранах, пробрасывать
+// через конструктор каждого ради выбора фона было бы избыточно
 class ThemeStore extends ChangeNotifier {
   ThemeStore._internal();
   static final ThemeStore instance = ThemeStore._internal();
 
   final ThemeService _service = ThemeService();
   BackgroundVariant variant = BackgroundVariant.violet;
+  AppThemeMode mode = AppThemeMode.dark;
 
   Future<void> load() async {
     variant = await _service.loadVariant();
+    mode = await _service.loadMode();
     notifyListeners();
   }
 
@@ -25,5 +25,11 @@ class ThemeStore extends ChangeNotifier {
     variant = newVariant;
     notifyListeners();
     await _service.saveVariant(newVariant);
+  }
+
+  Future<void> setMode(AppThemeMode newMode) async {
+    mode = newMode;
+    notifyListeners();
+    await _service.saveMode(newMode);
   }
 }

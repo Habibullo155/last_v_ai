@@ -37,12 +37,19 @@ class AdminUsersService {
     required String password,
     String role = 'user',
     String tariff = 'free',
+    bool isOperator = false,
   }) async {
     final res = await _client
         .post(
           Uri.parse('$baseUrl/api/admin/users'),
           headers: _headers(token),
-          body: jsonEncode({'email': email, 'password': password, 'role': role, 'tariff': tariff}),
+          body: jsonEncode({
+            'email': email,
+            'password': password,
+            'role': role,
+            'tariff': tariff,
+            'is_operator': isOperator,
+          }),
         )
         .timeout(const Duration(seconds: 15));
     if (res.statusCode >= 400) {

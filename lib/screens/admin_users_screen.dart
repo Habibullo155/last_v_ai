@@ -239,6 +239,10 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                               const SizedBox(width: 6),
                               _badge('admin', const Color(0xFF6C5CE7)),
                             ],
+                            if (user.isOperator) ...[
+                              const SizedBox(width: 6),
+                              _badge('оператор', const Color(0xFF00E6A0)),
+                            ],
                             if (!user.isActive) ...[
                               const SizedBox(width: 6),
                               _badge('деактивирован', const Color(0xFFFF6B6B)),
@@ -649,6 +653,7 @@ class _CreateUserSheetState extends State<_CreateUserSheet> {
   final _passwordController = TextEditingController();
   final _tariffController = TextEditingController(text: 'free');
   String _role = 'user';
+  bool _isOperator = false;
   bool _isBusy = false;
   String? _error;
 
@@ -682,6 +687,7 @@ class _CreateUserSheetState extends State<_CreateUserSheet> {
         password: password,
         role: _role,
         tariff: _tariffController.text.trim().isEmpty ? 'free' : _tariffController.text.trim(),
+        isOperator: _isOperator,
       );
       widget.onCreated(created);
       if (mounted) Navigator.of(context).pop();
@@ -745,6 +751,23 @@ class _CreateUserSheetState extends State<_CreateUserSheet> {
                     backgroundColor: Colors.white.withOpacity(0.06),
                   ),
                 ],
+              ),
+              const SizedBox(height: 8),
+              Material(
+                color: Colors.white.withOpacity(0.06),
+                borderRadius: BorderRadius.circular(12),
+                child: SwitchListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  value: _isOperator,
+                  onChanged: (v) => setState(() => _isOperator = v),
+                  activeColor: const Color(0xFF00E6A0),
+                  title: const Text('Доступ к живой помощи', style: TextStyle(color: Colors.white, fontSize: 13.5)),
+                  subtitle: Text(
+                    'Сможет видеть очередь заявок и подключаться к чатам — например, для врача/оператора.',
+                    style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 11.5),
+                  ),
+                ),
               ),
               if (_error != null) ...[
                 const SizedBox(height: 12),

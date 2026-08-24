@@ -20,6 +20,8 @@ class HelpSession {
   final HelpSessionStatus status;
   final String? reason;
   final String? chatContext;
+  final int? rating;
+  final String? ratingComment;
   final DateTime createdAt;
   final DateTime? claimedAt;
   final DateTime? closedAt;
@@ -33,6 +35,8 @@ class HelpSession {
     required this.status,
     required this.reason,
     required this.chatContext,
+    required this.rating,
+    required this.ratingComment,
     required this.createdAt,
     required this.claimedAt,
     required this.closedAt,
@@ -48,6 +52,8 @@ class HelpSession {
       status: _parseStatus(json['status'] as String?),
       reason: json['reason'] as String?,
       chatContext: json['chat_context'] as String?,
+      rating: json['rating'] as int?,
+      ratingComment: json['rating_comment'] as String?,
       createdAt: DateTime.tryParse(json['created_at'] as String? ?? '') ?? DateTime.now(),
       claimedAt: json['claimed_at'] != null ? DateTime.tryParse(json['claimed_at'] as String) : null,
       closedAt: json['closed_at'] != null ? DateTime.tryParse(json['closed_at'] as String) : null,

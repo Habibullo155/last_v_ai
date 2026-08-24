@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
 import '../models/dashboard_stats.dart';
-import '../services/app_settings_service.dart';
 import '../services/stats_service.dart';
 import '../state/auth_store.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 import 'admin_documents_screen.dart';
-import 'admin_pronunciation_screen.dart';
+import 'admin_operators_screen.dart';
 import 'admin_reports_screen.dart';
 import 'admin_support_screen.dart';
 import 'admin_users_screen.dart';
+import 'admin_ai_screen.dart';
+import 'admin_voice_screen.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   final AuthStore authStore;
@@ -22,11 +23,8 @@ class AdminHomeScreen extends StatefulWidget {
 
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final _service = StatsService();
-  final _appSettingsService = AppSettingsService();
   DashboardStats? _stats;
   bool _isLoading = true;
-  bool _voiceEnabled = true;
-  bool _isTogglingVoice = false;
 
   @override
   void initState() {
@@ -37,7 +35,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   @override
   void dispose() {
     _service.dispose();
-    _appSettingsService.dispose();
     super.dispose();
   }
 
@@ -53,31 +50,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       // Тихо оставляем предыдущие цифры (или пусто) — это дашборд, а не
       // критичная функция; плитки навигации ниже работают в любом случае.
     }
-    final publicSettings = await _appSettingsService.getPublicSettings(widget.authStore.baseUrl);
-    if (mounted) {
-      setState(() {
-        _voiceEnabled = publicSettings.voiceEnabled;
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _toggleVoice(bool value) async {
-    final token = widget.authStore.token;
-    if (token == null) return;
-    setState(() => _isTogglingVoice = true);
-    try {
-      final updated = await _appSettingsService.setVoiceEnabled(
-        baseUrl: widget.authStore.baseUrl,
-        token: token,
-        enabled: value,
-      );
-      if (mounted) setState(() => _voiceEnabled = updated);
-    } on AppSettingsException {
-      // Не удалось — просто оставляем переключатель в прежнем положении.
-    } finally {
-      if (mounted) setState(() => _isTogglingVoice = false);
-    }
+    if (mounted) setState(() => _isLoading = false);
   }
 
   @override
@@ -113,8 +86,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         padding: const EdgeInsets.all(16),
                         children: [
                           _buildStatsGrid(),
-                          const SizedBox(height: 20),
-                          _buildVoiceToggle(),
                           const SizedBox(height: 20),
                           _AdminTile(
                             icon: Icons.people_alt_rounded,
@@ -159,12 +130,32 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                           ),
                           const SizedBox(height: 12),
                           _AdminTile(
-                            icon: Icons.spellcheck_rounded,
-                            title: 'Словарь произношения',
-                            subtitle: 'Как озвучка должна "читать" конкретные слова — для всех пользователей',
+                            icon: Icons.record_voice_over_rounded,
+                            title: 'Управление голосом',
+                            subtitle: 'Вкл/выкл, голос по умолчанию, словарь произношения',
                             onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => AdminPronunciationScreen(authStore: widget.authStore)),
+                              MaterialPageRoute(builder: (_) => AdminVoiceScreen(authStore: widget.authStore)),
                             ),
+                          ),
+                          const SizedBox(height: 12),
+                          _AdminTile(
+                            icon: Icons.face_retouching_natural_rounded,
+                            title: 'Личность ИИ',
+                            subtitle: 'Имя ассистента и дополнительные инструкции',
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => AdminAiScreen(authStore: widget.authStore)),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          _AdminTile(
+                            icon: Icons.medical_services_outlined,
+                            title: 'Доктора',
+                            subtitle: 'Оценки от пользователей, история обращений, выговоры',
+                            onTap: () => Navigator.of(context)
+                                .push(
+                                  MaterialPageRoute(builder: (_) => AdminOperatorsScreen(authStore: widget.authStore)),
+                                )
+                                .then((_) => _load()),
                           ),
                         ],
                       ),
@@ -175,38 +166,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildVoiceToggle() {
-    return GlassPanel(
-      opacity: 0.08,
-      borderRadius: BorderRadius.circular(16),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: Row(
-        children: [
-          Icon(
-            _voiceEnabled ? Icons.record_voice_over_rounded : Icons.voice_over_off_rounded,
-            color: Colors.white70,
-          ),
-          const SizedBox(width: 12),
-          const Expanded(
-            child: Text('Голосовые функции для всех пользователей', style: TextStyle(color: Colors.white, fontSize: 13.5)),
-          ),
-          if (_isTogglingVoice)
-            const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF6C5CE7)),
-            )
-          else
-            Switch(
-              value: _voiceEnabled,
-              activeColor: const Color(0xFF6C5CE7),
-              onChanged: _toggleVoice,
-            ),
-        ],
       ),
     );
   }
