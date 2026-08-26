@@ -5,9 +5,13 @@ import '../theme/app_text_color.dart';
 
 // стеклянный контейнер: размытие + полупрозрачная заливка + обводка + тень
 //
-// tint: null = нейтральный цвет, подстраивается под тему. Не Colors.white
-// по умолчанию, потому что дефолты параметров в Dart должны быть
-// compile-time константами, а цвет от темы - нет (нужен BuildContext)
+// tint: null = белое "матовое стекло" всегда, независимо от темы - не
+// завязано на цвет текста темы. В тёмном режиме белая плёнка поверх
+// тёмного фона и так давала красивый результат; в светлом режиме та же
+// логика раньше брала context.onSurface (тёмно-синий, цвет ТЕКСТА) как
+// тон стекла - на светлом фоне это давало грязно-тёмную панель, а не
+// стекло. Белый тон работает в обе стороны: светлеет то, что под ним,
+// как и должно вести себя настоящее матовое стекло
 //
 // blurred: false для списков (сообщения в чате) - BackdropFilter на
 // каждый элемент прокручиваемого списка заметно бьёт по FPS, эффект
@@ -36,7 +40,7 @@ class GlassPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveTint = tint ?? context.onSurface;
+    final effectiveTint = tint ?? Colors.white;
     final content = Container(
       padding: padding,
       decoration: BoxDecoration(

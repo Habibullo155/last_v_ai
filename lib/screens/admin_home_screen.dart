@@ -140,8 +140,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                           const SizedBox(height: 12),
                           _AdminTile(
                             icon: Icons.face_retouching_natural_rounded,
-                            title: 'Личность ИИ',
-                            subtitle: 'Имя ассистента и дополнительные инструкции',
+                            title: 'Поведение ИИ',
+                            subtitle: 'Имя, инструкции, скорость и тон ответа',
                             onTap: () => Navigator.of(context).push(
                               MaterialPageRoute(builder: (_) => AdminAiScreen(authStore: widget.authStore)),
                             ),

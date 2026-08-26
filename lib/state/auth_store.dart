@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../config.dart';
 import '../models/app_user.dart';
 import '../services/biometric_service.dart';
-import 'package:ai_last_v/services/auth_service.dart' as auth_svc;
+import '../services/auth_service.dart' as auth_svc;
 
 // locked - токен уже прочитан (сессия есть), но биометрия ещё не
 // подтверждена в этом запуске. Не то же, что unauthenticated - там
@@ -27,8 +27,7 @@ class AuthStore extends ChangeNotifier {
   // рядовой юзер не должен мочь перенаправить приложение на чужой сервер
   final String baseUrl = AppConfig.backendUrl;
 
-  Future<bool> isBiometricDeviceSupported() =>
-      _biometricService.isDeviceSupported();
+  Future<bool> isBiometricDeviceSupported() => _biometricService.isDeviceSupported();
   Future<bool> isBiometricEnabled() => _biometricService.isEnabled();
 
   // сначала проверяет, что подтверждение реально проходит, потом
@@ -73,8 +72,7 @@ class AuthStore extends ChangeNotifier {
   }
 
   Future<void> _finishRestoringSession(String storedToken) async {
-    final freshUser =
-        await _authService.fetchMe(baseUrl: baseUrl, token: storedToken);
+    final freshUser = await _authService.fetchMe(baseUrl: baseUrl, token: storedToken);
     if (freshUser == null) {
       // истёк, недействителен или сервер недоступен - в обоих случаях
       // просим войти заново, безопаснее, чем делать вид, что всё ок
@@ -109,11 +107,10 @@ class AuthStore extends ChangeNotifier {
   }
 
   Future<bool> register(String email, String password) =>
-      _attempt(() => _authService.register(
-          baseUrl: baseUrl, email: email, password: password));
+      _attempt(() => _authService.register(baseUrl: baseUrl, email: email, password: password));
 
-  Future<bool> login(String email, String password) => _attempt(() =>
-      _authService.login(baseUrl: baseUrl, email: email, password: password));
+  Future<bool> login(String email, String password) =>
+      _attempt(() => _authService.login(baseUrl: baseUrl, email: email, password: password));
 
   Future<bool> _attempt(Future<auth_svc.AuthResult> Function() action) async {
     isBusy = true;
@@ -153,8 +150,7 @@ class AuthStore extends ChangeNotifier {
     isBusy = true;
     notifyListeners();
     try {
-      await _authService.deleteAccount(
-          baseUrl: baseUrl, token: currentToken, password: password);
+      await _authService.deleteAccount(baseUrl: baseUrl, token: currentToken, password: password);
       token = null;
       user = null;
       status = AuthStatus.unauthenticated;
@@ -195,8 +191,7 @@ class AuthStore extends ChangeNotifier {
     isBusy = true;
     notifyListeners();
     try {
-      final updated = await _authService.updateProfile(
-          baseUrl: baseUrl, token: currentToken, fields: fields);
+      final updated = await _authService.updateProfile(baseUrl: baseUrl, token: currentToken, fields: fields);
       user = updated;
       return null;
     } on auth_svc.AuthException catch (e) {

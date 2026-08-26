@@ -194,33 +194,34 @@ class _AppBackgroundState extends State<AppBackground>
                       color: palette.blob1,
                       alignment: Alignment(math.sin(t) * 0.8, -0.9 + math.cos(t) * 0.3),
                       size: 420,
-                      // раньше в светлом режиме была только эта пониженная
-                      // непрозрачность, без общей плёнки поверх (см. ниже) -
-                      // блики выходили слишком яркими/насыщенными, глаз уставал.
-                      // Теперь опирается на плёнку, не на одну лишь эту цифру
-                      opacity: isLight ? 0.22 : 0.55,
+                      // раньше 0.22 + плёнка 0.45 ниже почти полностью
+                      // вымывали цвет - фон казался "пропавшим". Теперь
+                      // блики заметно ярче, плёнка снята почти до нуля -
+                      // мягкость обеспечивают уже сами пастельные базовые
+                      // цвета палитры (см. _paletteFor выше), не плёнка
+                      opacity: isLight ? 0.4 : 0.55,
                     ),
                     _blob(
                       color: palette.blob2,
                       alignment: Alignment(-0.9 + math.sin(t * 0.7) * 0.4, math.cos(t) * 0.9),
                       size: 380,
-                      opacity: isLight ? 0.22 : 0.55,
+                      opacity: isLight ? 0.4 : 0.55,
                     ),
                     _blob(
                       color: palette.blob3,
                       alignment: Alignment(0.9 * math.cos(t * 0.5), 0.9 * math.sin(t * 0.9)),
                       size: 340,
-                      opacity: isLight ? 0.22 : 0.55,
+                      opacity: isLight ? 0.4 : 0.55,
                     ),
                   ],
                 );
               },
             ),
             // тёмный режим: чёрная плёнка притушивает блики, чтобы они не
-            // резали глаз на тёмном фоне. Светлый режим - симметрично,
-            // но белой плёнкой: без неё насыщенные акцентные цвета бликов
-            // выходили "сырыми" на пастельном фоне, глаз уставал быстрее
-            if (isLight) Container(color: Colors.white.withOpacity(0.45)),
+            // резали глаз на тёмном фоне. Светлый режим - лёгкая белая
+            // плёнка, почти незаметная - только слегка смягчает края
+            // бликов, не вымывает цвет целиком
+            if (isLight) Container(color: Colors.white.withOpacity(0.12)),
             if (!isLight) Container(color: Colors.black.withOpacity(0.25)),
             widget.child,
           ],

@@ -27,6 +27,15 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
   String? _error;
   String? _savedNotice;
 
+  // скорость/тон ответа - отдельный раздел, отдельный сброс на бэкенде
+  double _temperature = 1.0;
+  double _topP = 0.95;
+  ResponseLength _responseLength = ResponseLength.balanced;
+  bool _isSavingModel = false;
+  bool _isResettingModel = false;
+  String? _modelError;
+  String? _modelSavedNotice;
+
   @override
   void initState() {
     super.initState();
@@ -47,13 +56,67 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
     setState(() => _isLoading = true);
     try {
       final persona = await _service.getPersonaSettings(baseUrl: widget.authStore.baseUrl, token: token);
+      final model = await _service.getModelSettings(baseUrl: widget.authStore.baseUrl, token: token);
       if (!mounted) return;
       _nameController.text = persona.assistantName;
       _promptController.text = persona.assistantCustomPrompt;
+      setState(() {
+        _temperature = model.temperature;
+        _topP = model.topP;
+        _responseLength = model.responseLength;
+      });
     } on AppSettingsException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } finally {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _saveModel() async {
+    final token = widget.authStore.token;
+    if (token == null) return;
+    setState(() {
+      _isSavingModel = true;
+      _modelError = null;
+      _modelSavedNotice = null;
+    });
+    try {
+      await _service.updateModelSettings(
+        baseUrl: widget.authStore.baseUrl,
+        token: token,
+        temperature: _temperature,
+        topP: _topP,
+        responseLength: _responseLength,
+      );
+      if (mounted) setState(() => _modelSavedNotice = 'Сохранено');
+    } on AppSettingsException catch (e) {
+      if (mounted) setState(() => _modelError = e.message);
+    } finally {
+      if (mounted) setState(() => _isSavingModel = false);
+    }
+  }
+
+  Future<void> _resetModel() async {
+    final token = widget.authStore.token;
+    if (token == null) return;
+    setState(() {
+      _isResettingModel = true;
+      _modelError = null;
+      _modelSavedNotice = null;
+    });
+    try {
+      final reset = await _service.resetModelSettings(baseUrl: widget.authStore.baseUrl, token: token);
+      if (mounted) {
+        setState(() {
+          _temperature = reset.temperature;
+          _topP = reset.topP;
+          _responseLength = reset.responseLength;
+        });
+      }
+    } on AppSettingsException catch (e) {
+      if (mounted) setState(() => _modelError = e.message);
+    } finally {
+      if (mounted) setState(() => _isResettingModel = false);
     }
   }
 
@@ -167,7 +230,7 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     const Text(
-                      'Личность ИИ',
+                      'Поведение ИИ',
                       style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
@@ -295,6 +358,8 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
                                       : const Icon(Icons.restart_alt_rounded, size: 18),
                                   label: const Text('Сбросить'),
                                 ),
+                                const SizedBox(height: 32),
+                                _buildModelSection(),
                               ],
                             ),
                           ),
@@ -303,6 +368,190 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // "точность" читается человеку понятнее, чем сырое число температуры -
+  // подписи и цвет плавно меняются при движении слайдера (AnimatedSwitcher/
+  // AnimatedContainer), не мгновенным скачком
+  String _temperatureLabel(double t) {
+    if (t < 0.5) return 'Точный и предсказуемый';
+    if (t < 1.3) return 'Сбалансированный';
+    return 'Творческий и разнообразный';
+  }
+
+  Color _temperatureColor(double t) {
+    if (t < 0.5) return const Color(0xFF00B4D8);
+    if (t < 1.3) return const Color(0xFF6C5CE7);
+    return const Color(0xFFFF6B9D);
+  }
+
+  Widget _buildModelSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          'СКОРОСТЬ И ТОН ОТВЕТА',
+          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Насколько предсказуемо или творчески отвечает модель, и как подробно.',
+          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.5),
+        ),
+        const SizedBox(height: 16),
+        if (_modelError != null) ...[
+          Text(_modelError!, style: const TextStyle(color: Color(0xFFFFB4B4), fontSize: 13)),
+          const SizedBox(height: 12),
+        ],
+        GlassPanel(
+          opacity: 0.08,
+          borderRadius: BorderRadius.circular(16),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(shape: BoxShape.circle, color: _temperatureColor(_temperature)),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      child: Text(
+                        _temperatureLabel(_temperature),
+                        key: ValueKey(_temperatureLabel(_temperature)),
+                        style: const TextStyle(color: Colors.white, fontSize: 13.5, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                  Text(_temperature.toStringAsFixed(2), style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
+                ],
+              ),
+              SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  activeTrackColor: _temperatureColor(_temperature),
+                  thumbColor: _temperatureColor(_temperature),
+                  overlayColor: _temperatureColor(_temperature).withOpacity(0.2),
+                  inactiveTrackColor: Colors.white.withOpacity(0.12),
+                ),
+                child: Slider(
+                  value: _temperature,
+                  min: 0,
+                  max: 2,
+                  divisions: 40,
+                  onChanged: (v) => setState(() => _temperature = v),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(Icons.filter_alt_outlined, color: Colors.white.withOpacity(0.5), size: 16),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text('Фокус ответа (top_p)', style: TextStyle(color: Colors.white, fontSize: 13)),
+                  ),
+                  Text(_topP.toStringAsFixed(2), style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
+                ],
+              ),
+              SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  activeTrackColor: const Color(0xFF00E6A0),
+                  thumbColor: const Color(0xFF00E6A0),
+                  overlayColor: const Color(0xFF00E6A0).withOpacity(0.2),
+                  inactiveTrackColor: Colors.white.withOpacity(0.12),
+                ),
+                child: Slider(
+                  value: _topP,
+                  min: 0,
+                  max: 1,
+                  divisions: 20,
+                  onChanged: (v) => setState(() => _topP = v),
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text('Длина ответа', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                children: [
+                  _lengthChip(ResponseLength.concise, 'Кратко', Icons.short_text_rounded),
+                  _lengthChip(ResponseLength.balanced, 'Обычно', Icons.notes_rounded),
+                  _lengthChip(ResponseLength.detailed, 'Подробно', Icons.article_outlined),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: _isSavingModel ? null : _saveModel,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(vertical: 13),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      gradient: LinearGradient(colors: [_temperatureColor(_temperature), const Color(0xFF00E6A0)]),
+                    ),
+                    child: _isSavingModel
+                        ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        : const Text('Сохранить', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        if (_modelSavedNotice != null) ...[
+          const SizedBox(height: 8),
+          Text(_modelSavedNotice!, style: const TextStyle(color: Color(0xFF00E6A0), fontSize: 12.5)),
+        ],
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          onPressed: _isResettingModel ? null : _resetModel,
+          style: OutlinedButton.styleFrom(
+            side: BorderSide(color: Colors.white.withOpacity(0.16)),
+            padding: const EdgeInsets.symmetric(vertical: 13),
+            foregroundColor: Colors.white70,
+          ),
+          icon: _isResettingModel
+              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white70))
+              : const Icon(Icons.restart_alt_rounded, size: 18),
+          label: const Text('Сбросить'),
+        ),
+      ],
+    );
+  }
+
+  Widget _lengthChip(ResponseLength value, String label, IconData icon) {
+    final selected = _responseLength == value;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      child: ChoiceChip(
+        avatar: Icon(icon, size: 16, color: selected ? Colors.white : Colors.white.withOpacity(0.6)),
+        label: Text(label),
+        selected: selected,
+        onSelected: (_) => setState(() => _responseLength = value),
+        labelStyle: TextStyle(color: selected ? Colors.white : Colors.white.withOpacity(0.7), fontSize: 12.5),
+        selectedColor: const Color(0xFF6C5CE7),
+        backgroundColor: Colors.white.withOpacity(0.06),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(color: Colors.white.withOpacity(0.12)),
         ),
       ),
     );

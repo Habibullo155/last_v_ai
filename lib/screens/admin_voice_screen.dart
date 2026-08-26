@@ -1,7 +1,9 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
 import '../models/cloud_voice.dart';
 import '../services/app_settings_service.dart';
+import '../services/cloud_tts_service.dart';
 import '../state/auth_store.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
@@ -20,11 +22,22 @@ class AdminVoiceScreen extends StatefulWidget {
 
 class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
   final _service = AppSettingsService();
+  final _cloudTts = CloudTtsService();
+  final _previewPlayer = AudioPlayer();
   PublicAppSettings _settings = const PublicAppSettings(voiceEnabled: true, cloudTtsEnabled: false, ttsProvider: null);
   bool _isLoading = true;
   bool _isSaving = false;
   bool _isResetting = false;
   String? _error;
+
+  // локальные значения ползунков - независимы от _settings, пока админ
+  // не нажмёт "Сохранить и прослушать" (или просто "Сохранить")
+  double _pitch = 50;
+  double _rate = 50;
+  bool _pitchEnabled = false; // выключено = вообще не отправлять параметр
+  bool _rateEnabled = false;
+  int _sampleRate = 48000;
+  bool _isPreviewPlaying = false;
 
   @override
   void initState() {
@@ -35,6 +48,8 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
   @override
   void dispose() {
     _service.dispose();
+    _cloudTts.dispose();
+    _previewPlayer.dispose();
     super.dispose();
   }
 
@@ -45,7 +60,54 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
     setState(() {
       _settings = settings;
       _isLoading = false;
+      _pitchEnabled = settings.voicePitch != null;
+      _rateEnabled = settings.voiceRate != null;
+      _pitch = (settings.voicePitch ?? 50).toDouble();
+      _rate = (settings.voiceRate ?? 50).toDouble();
+      _sampleRate = settings.voiceSampleRate;
     });
+  }
+
+  /// Сохраняет текущие значения ползунков (или их отсутствие) и сразу
+  /// проигрывает тестовую фразу — честно называется "Сохранить и
+  /// прослушать", а не "Прослушать": pitch/rate — глобальная настройка
+  /// сервера синтеза, а не параметр одного запроса, так что настоящего
+  /// предпрослушивания без сохранения тут физически нет.
+  Future<void> _saveAndPreviewPitchRate() async {
+    final token = widget.authStore.token;
+    if (token == null) return;
+    setState(() {
+      _isSaving = true;
+      _error = null;
+    });
+    try {
+      final updated = await _service.updateSettings(
+        baseUrl: widget.authStore.baseUrl,
+        token: token,
+        voicePitch: _pitchEnabled ? _pitch.round() : null,
+        voiceRate: _rateEnabled ? _rate.round() : null,
+        clearVoicePitch: !_pitchEnabled,
+        clearVoiceRate: !_rateEnabled,
+        voiceSampleRate: _sampleRate,
+      );
+      if (mounted) setState(() => _settings = updated);
+
+      setState(() => _isPreviewPlaying = true);
+      final bytes = await _cloudTts.synthesize(
+        baseUrl: widget.authStore.baseUrl,
+        token: token,
+        text: 'Привет! Так теперь звучит голос ассистента.',
+        voiceName: _settings.defaultVoice,
+      );
+      if (mounted) await _previewPlayer.play(BytesSource(bytes));
+    } on AppSettingsException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } on CloudTtsException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+      if (mounted) setState(() => _isPreviewPlaying = false);
+    }
   }
 
   Future<void> _update({bool? voiceEnabled, String? defaultVoice}) async {
@@ -129,7 +191,16 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
     });
     try {
       final reset = await _service.resetToDefaults(baseUrl: widget.authStore.baseUrl, token: token);
-      if (mounted) setState(() => _settings = reset);
+      if (mounted) {
+        setState(() {
+          _settings = reset;
+          _pitchEnabled = reset.voicePitch != null;
+          _rateEnabled = reset.voiceRate != null;
+          _pitch = (reset.voicePitch ?? 50).toDouble();
+          _rate = (reset.voiceRate ?? 50).toDouble();
+          _sampleRate = reset.voiceSampleRate;
+        });
+      }
     } on AppSettingsException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } finally {
@@ -180,6 +251,8 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
                                 _buildEnableToggle(),
                                 const SizedBox(height: 20),
                                 _buildDefaultVoicePicker(),
+                                const SizedBox(height: 20),
+                                _buildPitchRateSection(),
                                 const SizedBox(height: 20),
                                 _buildPronunciationLink(),
                                 const SizedBox(height: 28),
@@ -353,6 +426,201 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildPitchRateSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'ВЫСОТА И ТЕМП ГОЛОСА',
+          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Необязательно — по умолчанию сервер синтеза сам решает. Значения '
+          'здесь можно только услышать самому и подобрать на слух, точной '
+          'документации на "что означает какое число" у сервера нет.',
+          style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11.5, height: 1.4),
+        ),
+        const SizedBox(height: 10),
+        if (!_settings.cloudTtsEnabled)
+          GlassPanel(
+            opacity: 0.06,
+            borderRadius: BorderRadius.circular(14),
+            padding: const EdgeInsets.all(14),
+            child: Text(
+              'Недоступно — сервер Silero TTS не настроен.',
+              style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+            ),
+          )
+        else
+          GlassPanel(
+            opacity: 0.08,
+            borderRadius: BorderRadius.circular(16),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _pitchRateRow(
+                  label: 'Высота голоса',
+                  icon: Icons.graphic_eq_rounded,
+                  enabled: _pitchEnabled,
+                  value: _pitch,
+                  onToggle: (v) => setState(() => _pitchEnabled = v),
+                  onChanged: (v) => setState(() => _pitch = v),
+                ),
+                const SizedBox(height: 14),
+                _pitchRateRow(
+                  label: 'Темп речи',
+                  icon: Icons.speed_rounded,
+                  enabled: _rateEnabled,
+                  value: _rate,
+                  onToggle: (v) => setState(() => _rateEnabled = v),
+                  onChanged: (v) => setState(() => _rate = v),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Icon(Icons.high_quality_outlined, color: Colors.white.withOpacity(0.6), size: 16),
+                    const SizedBox(width: 8),
+                    const Text('Качество звука', style: TextStyle(color: Colors.white, fontSize: 13)),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    _sampleRateChip(8000, 'Ниже'),
+                    const SizedBox(width: 8),
+                    _sampleRateChip(24000, 'Среднее'),
+                    const SizedBox(width: 8),
+                    _sampleRateChip(48000, 'Высокое'),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(14),
+                    onTap: _isSaving ? null : _saveAndPreviewPitchRate,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(vertical: 13),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        gradient: const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (_isSaving || _isPreviewPlaying)
+                            const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            )
+                          else
+                            const Icon(Icons.volume_up_rounded, color: Colors.white, size: 18),
+                          const SizedBox(width: 8),
+                          const Text('Сохранить и прослушать', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  // AnimatedContainer сам плавно перетекает между цветами при выборе -
+  // не нужен отдельный AnimatedSwitcher для такой простой смены состояния
+  Widget _sampleRateChip(int rate, String label) {
+    final selected = _sampleRate == rate;
+    return Expanded(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: () => setState(() => _sampleRate = rate),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(vertical: 9),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: selected ? const Color(0xFF6C5CE7) : Colors.white.withOpacity(0.06),
+              border: Border.all(color: selected ? const Color(0xFF6C5CE7) : Colors.white.withOpacity(0.12)),
+            ),
+            child: Text(
+              label,
+              style: TextStyle(color: selected ? Colors.white : Colors.white.withOpacity(0.6), fontSize: 12.5),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _pitchRateRow({
+    required String label,
+    required IconData icon,
+    required bool enabled,
+    required double value,
+    required ValueChanged<bool> onToggle,
+    required ValueChanged<double> onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              child: Icon(icon, size: 16, color: enabled ? Colors.white.withOpacity(0.8) : Colors.white.withOpacity(0.3)),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(label, style: TextStyle(color: enabled ? Colors.white : Colors.white.withOpacity(0.4), fontSize: 13)),
+            ),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: enabled
+                  ? Text(value.round().toString(), key: const ValueKey('on'), style: const TextStyle(color: Color(0xFF00E6A0), fontSize: 12, fontWeight: FontWeight.w600))
+                  : Text('не задано', key: const ValueKey('off'), style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 11.5)),
+            ),
+            const SizedBox(width: 8),
+            Switch(
+              value: enabled,
+              activeColor: const Color(0xFF6C5CE7),
+              onChanged: onToggle,
+            ),
+          ],
+        ),
+        AnimatedOpacity(
+          duration: const Duration(milliseconds: 200),
+          opacity: enabled ? 1 : 0.3,
+          child: SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              activeTrackColor: const Color(0xFF6C5CE7),
+              thumbColor: const Color(0xFF6C5CE7),
+              overlayColor: const Color(0xFF6C5CE7).withOpacity(0.2),
+              inactiveTrackColor: Colors.white.withOpacity(0.12),
+            ),
+            child: Slider(
+              value: value,
+              min: 0,
+              max: 100,
+              divisions: 20,
+              onChanged: enabled ? onChanged : null,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
