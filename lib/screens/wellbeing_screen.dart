@@ -43,7 +43,8 @@ enum _Mode { history, testing, result }
 class WellbeingScreen extends StatefulWidget {
   final String userId;
   final VoiceStore? voiceStore;
-  const WellbeingScreen({super.key, required this.userId, this.voiceStore});
+  final Future<void> Function(String text)? onStartAiConversation;
+  const WellbeingScreen({super.key, required this.userId, this.voiceStore, this.onStartAiConversation});
 
   @override
   State<WellbeingScreen> createState() => _WellbeingScreenState();
@@ -164,7 +165,13 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
           title: 'Ситуативная помощь',
           subtitle: 'Тревога, плохое настроение, не могу уснуть — быстрые подсказки под ситуацию',
           onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => SituationalHelpScreen(userId: widget.userId, voiceStore: widget.voiceStore)),
+            MaterialPageRoute(
+              builder: (_) => SituationalHelpScreen(
+                userId: widget.userId,
+                voiceStore: widget.voiceStore,
+                onStartAiConversation: widget.onStartAiConversation,
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 22),

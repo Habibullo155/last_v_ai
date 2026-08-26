@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -49,6 +51,10 @@ class MessageBubble extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (message.images != null && message.images!.isNotEmpty) ...[
+              _AttachedImages(images: message.images!),
+              if (message.content.isNotEmpty) const SizedBox(height: 8),
+            ],
             if (message.content.isNotEmpty)
               SelectableText(
                 message.content,
@@ -399,6 +405,44 @@ class _SourcesBlock extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+/// Превью прикреплённых фото в пузыре сообщения — тап открывает во весь
+/// экран. base64 хранится и рендерится напрямую из памяти, отдельного
+/// файла на диске для этого не заводим.
+class _AttachedImages extends StatelessWidget {
+  final List<String> images;
+  const _AttachedImages({required this.images});
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 6,
+      runSpacing: 6,
+      children: images.map((base64Image) {
+        final bytes = base64Decode(base64Image);
+        return GestureDetector(
+          onTap: () => showDialog(
+            context: context,
+            builder: (context) => Dialog(
+              backgroundColor: Colors.transparent,
+              insetPadding: const EdgeInsets.all(16),
+              child: GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: InteractiveViewer(
+                  child: Image.memory(bytes, fit: BoxFit.contain),
+                ),
+              ),
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.memory(bytes, width: 140, height: 140, fit: BoxFit.cover),
+          ),
+        );
+      }).toList(),
     );
   }
 }

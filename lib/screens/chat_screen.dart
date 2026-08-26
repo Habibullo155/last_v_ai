@@ -60,9 +60,9 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  Future<void> _handleSend(String text) async {
+  Future<void> _handleSend(String text, {List<String>? images}) async {
     _scrollToBottom();
-    await widget.store.sendMessage(text);
+    await widget.store.sendMessage(text, images: images);
     _scrollToBottom();
     _maybeAutoReadLastResponse();
   }
@@ -130,9 +130,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Подключится живой человек из команды — не врач и не '
-                  'экстренная служба. Если ситуация требует срочной '
-                  'медицинской помощи — звони 103.',
+                  'Подключится врач или специалист из команды. Это не замена '
+                  'экстренной службе — если ситуация требует срочной '
+                  'медицинской помощи, звони 103.',
                   style: TextStyle(color: Colors.white.withOpacity(0.65), fontSize: 13, height: 1.5),
                 ),
                 if (snapshot != null) ...[
@@ -410,7 +410,17 @@ class _ChatScreenState extends State<ChatScreen> {
             final userId = widget.authStore.user?.id.toString();
             if (userId == null) return;
             Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => WellbeingScreen(userId: userId, voiceStore: widget.voiceStore)),
+              MaterialPageRoute(
+                builder: (_) => WellbeingScreen(
+                  userId: userId,
+                  voiceStore: widget.voiceStore,
+                  onStartAiConversation: (text) async {
+                    widget.store.createNewChat();
+                    await widget.store.sendMessage(text);
+                    if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                ),
+              ),
             );
             break;
           case 'purchase':

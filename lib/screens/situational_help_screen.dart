@@ -7,15 +7,24 @@ import 'breathing_exercise_screen.dart';
 import 'gratitude_journal_screen.dart';
 import 'grounding_exercise_screen.dart';
 
-/// Быстрые подсказки под конкретную ситуацию — не новый контент, а
-/// маршрутизация к уже сделанным безопасным инструментам (дыхание,
-/// заземление, дневник благодарности) плюс готовые фразы для начала
-/// разговора с ИИ. Никакого нового психологического контента здесь нет —
-/// сознательно, по тем же причинам, что и раньше в этом проекте.
+/// Быстрые подсказки под конкретную ситуацию — часть маршрутизирует к уже
+/// сделанным безопасным инструментам (дыхание, заземление, дневник
+/// благодарности), часть — под темы, для которых готового инструмента
+/// нет (развод, утрата, потеря работы) — напрямую открывает разговор с
+/// ИИ с честной, неприсваивающей чужих деталей опорной фразой. Никакого
+/// нового психологического контента здесь не пишем — либо готовый
+/// инструмент, либо просто начало разговора с ИИ.
 class SituationalHelpScreen extends StatelessWidget {
   final String userId;
   final VoiceStore? voiceStore;
-  const SituationalHelpScreen({super.key, required this.userId, this.voiceStore});
+  // null — тема без прямого разговора с ИИ (плитки к инструментам ниже).
+  // Если задан вызывающим экраном — плитки "поговорить с ИИ" появляются
+  // тоже: создаёт новый чат, сразу отправляет опорную фразу, возвращает
+  // на экран чата. Опционально — если вызывающий код не прокинул этот
+  // колбэк (например, более старая версия навигации где-то ещё), эти
+  // три плитки просто не показываются, ничего не ломается.
+  final Future<void> Function(String text)? onStartAiConversation;
+  const SituationalHelpScreen({super.key, required this.userId, this.voiceStore, this.onStartAiConversation});
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +98,49 @@ class SituationalHelpScreen extends StatelessWidget {
                               MaterialPageRoute(builder: (_) => GratitudeJournalScreen(userId: userId)),
                             ),
                           ),
+                          if (onStartAiConversation != null) ...[
+                            const SizedBox(height: 20),
+                            Text(
+                              'ПОГОВОРИТЬ С ИИ',
+                              style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Для этих тем готового упражнения нет — сразу начнём разговор.',
+                              style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11.5),
+                            ),
+                            const SizedBox(height: 10),
+                            _SituationTile(
+                              icon: Icons.heart_broken_outlined,
+                              title: 'Развод или разрыв отношений',
+                              subtitle: 'Начать разговор с ИИ об этом',
+                              onTap: () => onStartAiConversation!(
+                                'У меня сейчас развод или расставание, и мне тяжело с этим '
+                                'справляться. Можешь поддержать меня в разговоре об этом?',
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            _SituationTile(
+                              icon: Icons.spa_outlined,
+                              title: 'Тяжёлая утрата',
+                              subtitle: 'Начать разговор с ИИ об этом',
+                              onTap: () => onStartAiConversation!(
+                                'У меня недавно случилась тяжёлая утрата близкого человека, '
+                                'и мне хочется с кем-то об этом поговорить.',
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            _SituationTile(
+                              icon: Icons.work_off_outlined,
+                              title: 'Потеря работы или крупные перемены',
+                              subtitle: 'Начать разговор с ИИ об этом',
+                              onTap: () => onStartAiConversation!(
+                                'У меня сейчас сложный период — потеряна работа или '
+                                'произошла резкая перемена в жизни, и это тяжело '
+                                'переживать. Можешь поддержать меня в разговоре об этом?',
+                              ),
+                            ),
+                          ],
                           const SizedBox(height: 20),
                           GlassPanel(
                             opacity: 0.06,

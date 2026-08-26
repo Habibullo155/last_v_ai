@@ -59,8 +59,10 @@ class _GlassChatAppState extends State<GlassChatApp> {
     final store = ChatStore(
       getAuthToken: () => _authStore.token,
       onSessionExpired: _authStore.logout,
-      onAssistantTextChunk: ({required messageId, required fullContent, required isDone}) {
-        voice.onIncomingText(messageId: messageId, fullContent: fullContent, isDone: isDone);
+      onAssistantTextChunk: (
+          {required messageId, required fullContent, required isDone}) {
+        voice.onIncomingText(
+            messageId: messageId, fullContent: fullContent, isDone: isDone);
       },
     );
     store.init(userId);
@@ -78,42 +80,43 @@ class _GlassChatAppState extends State<GlassChatApp> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return MaterialApp(
-    title: 'AI Glass Chat',
-    debugShowCheckedModeBanner: false,
-    // Оптимизировано: если используете enum, можно оставить вашу проверку, 
-    // но обычно проще привязать к _themeStore.themeMode напрямую, если это возможно.
-    themeMode: _themeStore.mode == AppThemeMode.light ? ThemeMode.light : ThemeMode.dark,
-    
-    // Светлая тема
-    theme: ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.light,
-      scaffoldBackgroundColor: const Color(0xFFF3F0FF),
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF6C5CE7),
-        brightness: Brightness.light,
-      ),
-      fontFamily: 'Roboto',
-    ),
-    
-    // Тёмная тема
-    darkTheme: ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: const Color(0xFF0B0F1E),
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF6C5CE7),
-        brightness: Brightness.dark,
-      ),
-      fontFamily: 'Roboto',
-    ),
-    
-    home: _buildHome(),
-  );
-}
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'AI Glass Chat',
+      debugShowCheckedModeBanner: false,
+      // Оптимизировано: если используете enum, можно оставить вашу проверку,
+      // но обычно проще привязать к _themeStore.themeMode напрямую, если это возможно.
+      themeMode: _themeStore.mode == AppThemeMode.light
+          ? ThemeMode.light
+          : ThemeMode.dark,
 
+      // Светлая тема
+      theme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: const Color(0xFFF3F0FF),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6C5CE7),
+          brightness: Brightness.light,
+        ),
+        fontFamily: 'Roboto',
+      ),
+
+      // Тёмная тема
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF0B0F1E),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6C5CE7),
+          brightness: Brightness.dark,
+        ),
+        fontFamily: 'Roboto',
+      ),
+
+      home: _buildHome(),
+    );
+  }
 
   Widget _buildHome() {
     switch (_authStore.status) {
@@ -127,7 +130,8 @@ Widget build(BuildContext context) {
       case AuthStatus.authenticated:
         final chatStore = _chatStore;
         final voiceStore = _voiceStore;
-        if (chatStore == null || voiceStore == null) return const _LoadingScreen();
+        if (chatStore == null || voiceStore == null)
+          return const _LoadingScreen();
         if (Responsive.isMobile(context)) {
           return MainShellScreen(
             store: chatStore,

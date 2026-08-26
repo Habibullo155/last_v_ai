@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../models/gad7_checkin.dart';
 import '../models/help_session.dart';
 import '../models/phq9_checkin.dart';
 import '../models/wellbeing_checkin.dart';
+import '../services/asrs_service.dart';
 import '../services/gad7_service.dart';
 import '../services/help_service.dart';
 import '../services/phq9_service.dart';
@@ -41,6 +44,8 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
   late HelpSession _session;
   bool _isLoading = true;
   bool _isSending = false;
+  final _picker = ImagePicker();
+  final List<String> _pickedImages = [];
   bool _isRatingSaving = false;
   String? _error;
 
@@ -109,7 +114,9 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
   Future<void> _send() async {
     final token = widget.authStore.token;
     final text = _controller.text.trim();
-    if (token == null || text.isEmpty || _session.status == HelpSessionStatus.closed) return;
+    if (token == null || (text.isEmpty && _pickedImages.isEmpty) || _session.status == HelpSessionStatus.closed) {
+      return;
+    }
 
     setState(() => _isSending = true);
     try {
@@ -118,11 +125,13 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
         token: token,
         sessionId: _session.id,
         content: text,
+        images: _pickedImages.isEmpty ? null : List.of(_pickedImages),
       );
       if (!mounted) return;
       setState(() {
         _messages = [..._messages, message];
         _controller.clear();
+        _pickedImages.clear();
       });
       _scrollToBottom();
     } on HelpException catch (e) {
@@ -130,6 +139,48 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
     } finally {
       if (mounted) setState(() => _isSending = false);
     }
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    // то же сжатие, что и в чате с ИИ (chat_input_bar.dart) - не раздувать
+    // хранилище переписки несжатыми фото с камеры
+    final file = await _picker.pickImage(source: source, maxWidth: 1280, maxHeight: 1280, imageQuality: 70);
+    if (file == null) return;
+    final bytes = await file.readAsBytes();
+    if (!mounted) return;
+    setState(() => _pickedImages.add(base64Encode(bytes)));
+  }
+
+  Future<void> _showImageSourceSheet() async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => SafeArea(
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF1A2036),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_camera_rounded, color: Colors.white),
+                title: const Text('Сделать фото', style: TextStyle(color: Colors.white)),
+                onTap: () => Navigator.of(context).pop(ImageSource.camera),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_rounded, color: Colors.white),
+                title: const Text('Выбрать из галереи', style: TextStyle(color: Colors.white)),
+                onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (source != null) await _pickImage(source);
   }
 
   Future<void> _close() async {
@@ -176,15 +227,23 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
     final who5 = (await WellbeingService().loadCheckins(userId));
     final phq9 = (await Phq9Service().loadCheckins(userId));
     final gad7 = (await Gad7Service().loadCheckins(userId));
+    final asrs = (await AsrsService().loadCheckins(userId));
 
     if (!mounted) return;
 
-    if (who5.isEmpty && phq9.isEmpty && gad7.isEmpty) {
+    if (who5.isEmpty && phq9.isEmpty && gad7.isEmpty && asrs.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Пока нет пройденных опросников — их можно пройти в разделе «Самочувствие».')),
       );
       return;
     }
+
+    final weekAgo = DateTime.now().subtract(const Duration(days: 7));
+    final who5Week = who5.where((c) => c.date.isAfter(weekAgo)).toList();
+    final phq9Week = phq9.where((c) => c.date.isAfter(weekAgo)).toList();
+    final gad7Week = gad7.where((c) => c.date.isAfter(weekAgo)).toList();
+    final asrsWeek = asrs.where((c) => c.date.isAfter(weekAgo)).toList();
+    final hasWeekData = who5Week.isNotEmpty || phq9Week.isNotEmpty || gad7Week.isNotEmpty || asrsWeek.isNotEmpty;
 
     final choice = await showModalBottomSheet<String>(
       context: context,
@@ -202,6 +261,14 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
             children: [
               const Text('Какой результат отправить?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15)),
               const SizedBox(height: 12),
+              if (hasWeekData)
+                _resultTile(
+                  context,
+                  title: 'Сводка за неделю',
+                  date: DateTime.now(),
+                  score: '${who5Week.length + phq9Week.length + gad7Week.length + asrsWeek.length} записей',
+                  onTap: () => Navigator.of(context).pop('week'),
+                ),
               if (who5.isNotEmpty)
                 _resultTile(
                   context,
@@ -226,6 +293,14 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
                   score: '${gad7.first.rawScore}/21',
                   onTap: () => Navigator.of(context).pop('gad7'),
                 ),
+              if (asrs.isNotEmpty)
+                _resultTile(
+                  context,
+                  title: 'ASRS-v1.1 — скрининг СДВГ',
+                  date: asrs.first.date,
+                  score: '${asrs.first.shadedCount}/6',
+                  onTap: () => Navigator.of(context).pop('asrs'),
+                ),
             ],
           ),
         ),
@@ -236,6 +311,25 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
 
     String text;
     switch (choice) {
+      case 'week':
+        // сводка перечисляет КАЖДУЮ запись за 7 дней, не только последнюю
+        // по каждому типу — врачу важна динамика, не только текущая точка
+        final lines = <String>['Результаты опросников за последние 7 дней:'];
+        for (final c in who5Week) {
+          lines.add('• ВОЗ-5 (${DateFormat.MMMd().format(c.date)}): ${c.percentScore}%');
+        }
+        for (final c in phq9Week) {
+          lines.add('• PHQ-9 (${DateFormat.MMMd().format(c.date)}): ${c.rawScore}/27, «${c.severityLabel}»'
+              '${c.hasRiskSignal ? " — отмечены мысли о самоповреждении" : ""}');
+        }
+        for (final c in gad7Week) {
+          lines.add('• GAD-7 (${DateFormat.MMMd().format(c.date)}): ${c.rawScore}/21, «${c.severityLabel}»');
+        }
+        for (final c in asrsWeek) {
+          lines.add('• ASRS-v1.1 (${DateFormat.MMMd().format(c.date)}): ${c.shadedCount}/6');
+        }
+        text = lines.join('\n');
+        break;
       case 'who5':
         final c = who5.first;
         text = 'Результат опросника ВОЗ-5 (${DateFormat.yMMMd().format(c.date)}): '
@@ -251,6 +345,12 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
         final c = gad7.first;
         text = 'Результат опросника GAD-7 (${DateFormat.yMMMd().format(c.date)}): '
             '${c.rawScore}/21, методика описывает это как «${c.severityLabel}».';
+        break;
+      case 'asrs':
+        final c = asrs.first;
+        text = 'Результат опросника ASRS-v1.1 (${DateFormat.yMMMd().format(c.date)}): '
+            '${c.shadedCount}/6 в зоне значимости'
+            '${c.suggestsFurtherAssessment ? " — методика рекомендует обсудить со специалистом" : ""}.';
         break;
       default:
         return;
@@ -418,31 +518,74 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
                         opacity: 0.12,
                         borderRadius: BorderRadius.circular(24),
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                        child: Row(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Expanded(
-                              child: TextField(
-                                controller: _controller,
-                                minLines: 1,
-                                maxLines: 4,
-                                style: const TextStyle(color: Colors.white),
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Написать сообщение…',
-                                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.4)),
+                            if (_pickedImages.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8, bottom: 2),
+                                child: SizedBox(
+                                  height: 52,
+                                  child: ListView.separated(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: _pickedImages.length,
+                                    separatorBuilder: (_, __) => const SizedBox(width: 6),
+                                    itemBuilder: (context, i) => Stack(
+                                      clipBehavior: Clip.none,
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(10),
+                                          child: Image.memory(base64Decode(_pickedImages[i]), width: 52, height: 52, fit: BoxFit.cover),
+                                        ),
+                                        Positioned(
+                                          top: -6,
+                                          right: -6,
+                                          child: GestureDetector(
+                                            onTap: () => setState(() => _pickedImages.removeAt(i)),
+                                            child: Container(
+                                              width: 18,
+                                              height: 18,
+                                              decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFFFF6B6B)),
+                                              child: const Icon(Icons.close_rounded, color: Colors.white, size: 12),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                                onSubmitted: (_) => _send(),
                               ),
-                            ),
-                            IconButton(
-                              icon: _isSending
-                                  ? const SizedBox(
-                                      width: 18,
-                                      height: 18,
-                                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                    )
-                                  : const Icon(Icons.send_rounded, color: Colors.white),
-                              onPressed: _isSending ? null : _send,
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.add_photo_alternate_outlined, color: Colors.white70),
+                                  onPressed: _isSending ? null : _showImageSourceSheet,
+                                ),
+                                Expanded(
+                                  child: TextField(
+                                    controller: _controller,
+                                    minLines: 1,
+                                    maxLines: 4,
+                                    style: const TextStyle(color: Colors.white),
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: 'Написать сообщение…',
+                                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.4)),
+                                    ),
+                                    onSubmitted: (_) => _send(),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: _isSending
+                                      ? const SizedBox(
+                                          width: 18,
+                                          height: 18,
+                                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                        )
+                                      : const Icon(Icons.send_rounded, color: Colors.white),
+                                  onPressed: _isSending ? null : _send,
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -475,7 +618,12 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(message.content, style: const TextStyle(color: Colors.white, fontSize: 14, height: 1.4)),
+                  if (message.images != null && message.images!.isNotEmpty) ...[
+                    _MessageImages(images: message.images!),
+                    if (message.content.isNotEmpty) const SizedBox(height: 6),
+                  ],
+                  if (message.content.isNotEmpty)
+                    Text(message.content, style: const TextStyle(color: Colors.white, fontSize: 14, height: 1.4)),
                   const SizedBox(height: 4),
                   Text(
                     DateFormat.Hm().format(message.createdAt),
@@ -487,6 +635,41 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Превью фото в переписке живой помощи — тап открывает во весь экран.
+/// Тот же паттерн, что в message_bubble.dart для чата с ИИ.
+class _MessageImages extends StatelessWidget {
+  final List<String> images;
+  const _MessageImages({required this.images});
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 6,
+      runSpacing: 6,
+      children: images.map((base64Image) {
+        final bytes = base64Decode(base64Image);
+        return GestureDetector(
+          onTap: () => showDialog(
+            context: context,
+            builder: (context) => Dialog(
+              backgroundColor: Colors.transparent,
+              insetPadding: const EdgeInsets.all(16),
+              child: GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: InteractiveViewer(child: Image.memory(bytes, fit: BoxFit.contain)),
+              ),
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.memory(bytes, width: 120, height: 120, fit: BoxFit.cover),
+          ),
+        );
+      }).toList(),
     );
   }
 }

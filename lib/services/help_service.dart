@@ -85,12 +85,16 @@ class HelpService {
     required String token,
     required int sessionId,
     required String content,
+    List<String>? images,
   }) async {
     final res = await _client
         .post(
           Uri.parse('$baseUrl/api/help/sessions/$sessionId/messages'),
           headers: _headers(token),
-          body: jsonEncode({'content': content}),
+          body: jsonEncode({
+            'content': content,
+            if (images != null && images.isNotEmpty) 'images': images,
+          }),
         )
         .timeout(const Duration(seconds: 15));
     if (res.statusCode >= 400) {

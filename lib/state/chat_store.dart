@@ -164,21 +164,26 @@ class ChatStore extends ChangeNotifier {
     await sendMessage(newText);
   }
 
-  Future<void> sendMessage(String text) async {
+  Future<void> sendMessage(String text, {List<String>? images}) async {
     final convo = active;
-    if (convo == null || text.trim().isEmpty || _sendingConversationIds.contains(convo.id)) return;
+    final hasImages = images != null && images.isNotEmpty;
+    // раньше пустой текст всегда блокировал отправку - теперь фото без
+    // подписи тоже валидное сообщение, текст можно оставить пустым
+    if (convo == null || (text.trim().isEmpty && !hasImages) || _sendingConversationIds.contains(convo.id)) {
+      return;
+    }
 
     final userMsg = ChatMessage(
       id: _uuid.v4(),
       role: MessageRole.user,
       content: text.trim(),
+      images: hasImages ? images : null,
     );
     convo.messages.add(userMsg);
 
     if (convo.title == 'Новый чат') {
-      convo.title = text.trim().length > 40
-          ? '${text.trim().substring(0, 40)}…'
-          : text.trim();
+      final title = text.trim().isNotEmpty ? text.trim() : 'Фото';
+      convo.title = title.length > 40 ? '${title.substring(0, 40)}…' : title;
     }
 
     await _streamAssistantReply(convo);

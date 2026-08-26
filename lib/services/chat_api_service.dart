@@ -37,7 +37,11 @@ class ChatApiService {
       ..headers['Content-Type'] = 'application/json'
       ..body = jsonEncode({
         'messages': history
-            .map((m) => {'role': m.roleKey, 'content': m.content})
+            .map((m) => {
+                  'role': m.roleKey,
+                  'content': m.content,
+                  if (m.images != null && m.images!.isNotEmpty) 'images': m.images,
+                })
             .toList(),
       });
     if (authToken != null) {

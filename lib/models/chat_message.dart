@@ -16,6 +16,11 @@ class ChatMessage {
   // chat_api_service.dart). Не сохраняется между сессиями — это просто
   // отображение "откуда взят этот конкретный ответ прямо сейчас".
   List<ChatSource>? sources;
+  // Прикреплённые фото — base64 (без префикса data:), уже сжатые при
+  // выборе (ChatInputBar: maxWidth/imageQuality), чтобы не раздувать
+  // локальное хранилище истории чатов. В отличие от sources — реальный
+  // контент пользователя, сохраняется вместе с остальным сообщением.
+  List<String>? images;
 
   ChatMessage({
     required this.id,
@@ -26,6 +31,7 @@ class ChatMessage {
     this.isError = false,
     this.liked,
     this.sources,
+    this.images,
   }) : createdAt = createdAt ?? DateTime.now();
 
   String get roleKey => switch (role) {
@@ -40,6 +46,7 @@ class ChatMessage {
         'content': content,
         'createdAt': createdAt.toIso8601String(),
         'liked': liked,
+        'images': images,
       };
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
@@ -55,6 +62,7 @@ class ChatMessage {
       createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ??
           DateTime.now(),
       liked: json['liked'] as bool?,
+      images: (json['images'] as List<dynamic>?)?.map((e) => e as String).toList(),
     );
   }
 }

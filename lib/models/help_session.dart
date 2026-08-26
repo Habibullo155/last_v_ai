@@ -67,6 +67,7 @@ class HelpMessage {
   final int senderId;
   final String? senderEmail;
   final String content;
+  final List<String>? images;
   final DateTime createdAt;
 
   HelpMessage({
@@ -75,6 +76,7 @@ class HelpMessage {
     required this.senderId,
     required this.senderEmail,
     required this.content,
+    required this.images,
     required this.createdAt,
   });
 
@@ -85,6 +87,7 @@ class HelpMessage {
       senderId: json['sender_id'] as int,
       senderEmail: json['sender_email'] as String?,
       content: json['content'] as String? ?? '',
+      images: (json['images'] as List<dynamic>?)?.map((e) => e as String).toList(),
       createdAt: DateTime.tryParse(json['created_at'] as String? ?? '') ?? DateTime.now(),
     );
   }

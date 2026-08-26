@@ -47,7 +47,15 @@ class _MainShellScreenState extends State<MainShellScreen> {
         voiceStore: widget.voiceStore,
         hideShellDuplicates: true,
       ),
-      WellbeingScreen(userId: userId, voiceStore: widget.voiceStore),
+      WellbeingScreen(
+        userId: userId,
+        voiceStore: widget.voiceStore,
+        onStartAiConversation: (text) async {
+          widget.store.createNewChat();
+          await widget.store.sendMessage(text);
+          if (mounted) setState(() => _index = 0);
+        },
+      ),
       ProfileScreen(authStore: widget.authStore),
     ];
 
