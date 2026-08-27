@@ -11,6 +11,7 @@ import 'admin_reports_screen.dart';
 import 'admin_support_screen.dart';
 import 'admin_users_screen.dart';
 import 'admin_ai_screen.dart';
+import 'admin_blog_screen.dart';
 import 'admin_voice_screen.dart';
 
 class AdminHomeScreen extends StatefulWidget {
@@ -156,6 +157,15 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                   MaterialPageRoute(builder: (_) => AdminOperatorsScreen(authStore: widget.authStore)),
                                 )
                                 .then((_) => _load()),
+                          ),
+                          const SizedBox(height: 12),
+                          _AdminTile(
+                            icon: Icons.article_outlined,
+                            title: 'Блог',
+                            subtitle: 'Писать и публиковать посты',
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => AdminBlogScreen(authStore: widget.authStore)),
+                            ),
                           ),
                         ],
                       ),

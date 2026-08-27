@@ -174,6 +174,8 @@ class AuthStore extends ChangeNotifier {
     bool clearAge = false,
     String? hobbies,
     bool clearHobbies = false,
+    String? avatarBase64,
+    bool clearAvatar = false,
   }) async {
     final currentToken = token;
     if (currentToken == null) return 'Сессия не найдена. Войди заново.';
@@ -185,6 +187,8 @@ class AuthStore extends ChangeNotifier {
     if (clearAge) fields['age'] = null;
     if (hobbies != null) fields['hobbies'] = hobbies;
     if (clearHobbies) fields['hobbies'] = null;
+    if (avatarBase64 != null) fields['avatar_base64'] = avatarBase64;
+    if (clearAvatar) fields['clear_avatar'] = true;
 
     if (fields.isEmpty) return null;
 

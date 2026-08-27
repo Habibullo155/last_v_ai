@@ -13,6 +13,7 @@ import '../widgets/glass_panel.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/report_dialog.dart';
 import 'admin_home_screen.dart';
+import 'blog_list_screen.dart';
 import 'profile_screen.dart';
 import 'purchase_screen.dart';
 import 'settings_screen.dart';
@@ -460,6 +461,11 @@ class _ChatScreenState extends State<ChatScreen> {
               MaterialPageRoute(builder: (_) => SupportScreen(authStore: widget.authStore)),
             );
             break;
+          case 'blog':
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => BlogListScreen(authStore: widget.authStore)),
+            );
+            break;
           case 'admin':
             Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => AdminHomeScreen(authStore: widget.authStore)),
@@ -478,6 +484,7 @@ class _ChatScreenState extends State<ChatScreen> {
         _menuItem('my_help', Icons.support_rounded, 'Живая помощь'),
         if (isOperator) _menuItem('operator', Icons.headset_mic_rounded, 'Кабинет оператора'),
         _menuItem('support', Icons.support_agent_rounded, 'Поддержка'),
+        _menuItem('blog', Icons.article_outlined, 'Блог'),
         if (isAdmin) _menuItem('admin', Icons.admin_panel_settings_rounded, 'Админ-панель'),
       ],
     );

@@ -8,6 +8,7 @@ class AppUser {
   final String? fullName;
   final int? age;
   final String? hobbies;
+  final String? avatarBase64;
   final bool isOperator;
 
   AppUser({
@@ -20,6 +21,7 @@ class AppUser {
     this.fullName,
     this.age,
     this.hobbies,
+    this.avatarBase64,
     this.isOperator = false,
   });
 
@@ -37,6 +39,7 @@ class AppUser {
       fullName: json['full_name'] as String?,
       age: json['age'] as int?,
       hobbies: json['hobbies'] as String?,
+      avatarBase64: json['avatar_base64'] as String?,
       isOperator: json['is_operator'] as bool? ?? false,
     );
   }

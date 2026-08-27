@@ -141,7 +141,7 @@ class _WellbeingSummaryTile extends StatelessWidget {
                       style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 13, fontWeight: FontWeight.w500),
                     ),
                     Text(
-                      'Результаты опросников по дням',
+                      'Результаты опросников и новый тест',
                       style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11),
                     ),
                   ],

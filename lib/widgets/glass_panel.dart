@@ -41,19 +41,27 @@ class GlassPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final effectiveTint = tint ?? Colors.white;
+    // раньше каждый вызов передавал свою фиксированную opacity (0.06-0.18
+    // в разных местах), значение темы никак её не трогало - "сделать
+    // светлую тему прозрачнее" точечно менять дефолт бесполезно, почти
+    // никто его не использует. Вместо этого масштабируем РЕАЛЬНУЮ
+    // непрозрачность здесь, в одном месте - тёмный режим не трогаем
+    // вообще (множитель 1), светлый становится заметно прозрачнее
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final scaledOpacity = isLight ? opacity * 0.55 : opacity;
     final content = Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: effectiveTint.withOpacity(opacity),
+        color: effectiveTint.withOpacity(scaledOpacity),
         borderRadius: borderRadius,
         border: border ??
             Border.all(
-              color: context.onSurfaceFaded(0.18),
+              color: context.onSurfaceFaded(isLight ? 0.12 : 0.18),
               width: 1.2,
             ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.25),
+            color: Colors.black.withOpacity(isLight ? 0.12 : 0.25),
             blurRadius: 30,
             offset: const Offset(0, 12),
           ),

@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../models/app_user.dart';
@@ -7,9 +10,99 @@ import '../utils/auth_navigation.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final AuthStore authStore;
   const ProfileScreen({super.key, required this.authStore});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final _picker = ImagePicker();
+  bool _isUploadingAvatar = false;
+
+  Future<void> _pickAvatar() async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => SafeArea(
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF1A2036),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading:
+                    const Icon(Icons.photo_camera_rounded, color: Colors.white),
+                title: const Text('Сделать фото',
+                    style: TextStyle(color: Colors.white)),
+                onTap: () => Navigator.of(context).pop(ImageSource.camera),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_rounded,
+                    color: Colors.white),
+                title: const Text('Выбрать из галереи',
+                    style: TextStyle(color: Colors.white)),
+                onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+              ),
+              if (widget.authStore.user?.avatarBase64 != null)
+                ListTile(
+                  leading: const Icon(Icons.delete_outline_rounded,
+                      color: Color(0xFFFF6B6B)),
+                  title: const Text('Удалить фото',
+                      style: TextStyle(color: Color(0xFFFF6B6B))),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _removeAvatar();
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (source != null) {
+      await _uploadAvatar(source);
+    }
+  }
+
+  Future<void> _uploadAvatar(ImageSource source) async {
+    // квадратный кроп + сжатие сразу при выборе - тот же приём, что и у
+    // фото в чате (chat_input_bar.dart), маленький аватар не должен
+    // раздувать профиль на сервере
+    final file = await _picker.pickImage(
+        source: source, maxWidth: 512, maxHeight: 512, imageQuality: 75);
+    if (file == null) return;
+    final bytes = await file.readAsBytes();
+    setState(() => _isUploadingAvatar = true);
+    final error =
+        await widget.authStore.updateProfile(avatarBase64: base64Encode(bytes));
+    if (mounted) {
+      setState(() => _isUploadingAvatar = false);
+      if (error != null) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(error)));
+      }
+    }
+  }
+
+  Future<void> _removeAvatar() async {
+    setState(() => _isUploadingAvatar = true);
+    final error = await widget.authStore.updateProfile(clearAvatar: true);
+    if (mounted) {
+      setState(() => _isUploadingAvatar = false);
+      if (error != null) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(error)));
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +117,17 @@ class ProfileScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: const Icon(Icons.arrow_back_rounded,
+                          color: Colors.white),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     const SizedBox(width: 4),
                     const Text(
                       'Личный кабинет',
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -46,11 +143,12 @@ class ProfileScreen extends StatelessWidget {
                       // и экран должен сразу показать новые значения, а
                       // не только после повторного открытия.
                       child: AnimatedBuilder(
-                        animation: authStore,
+                        animation: widget.authStore,
                         builder: (context, _) {
-                          final user = authStore.user;
+                          final user = widget.authStore.user;
                           return user == null
-                              ? const Text('Нет данных', style: TextStyle(color: Colors.white))
+                              ? const Text('Нет данных',
+                                  style: TextStyle(color: Colors.white))
                               : _buildContent(context, user);
                         },
                       ),
@@ -74,26 +172,83 @@ class ProfileScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Center(
-            child: Container(
-              width: 72,
-              height: 72,
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00D9C0)]),
-              ),
-              child: Text(
-                (user.fullName?.isNotEmpty == true ? user.fullName![0] : user.email[0]).toUpperCase(),
-                style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700),
+            child: GestureDetector(
+              onTap: _isUploadingAvatar ? null : _pickAvatar,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    width: 88,
+                    height: 88,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                          colors: [Color(0xFF6C5CE7), Color(0xFF00D9C0)]),
+                      image: user.avatarBase64 != null
+                          ? DecorationImage(
+                              image:
+                                  MemoryImage(base64Decode(user.avatarBase64!)),
+                              fit: BoxFit.cover)
+                          : null,
+                    ),
+                    child: _isUploadingAvatar
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : user.avatarBase64 == null
+                            ? Text(
+                                (user.fullName?.isNotEmpty == true
+                                        ? user.fullName![0]
+                                        : user.email[0])
+                                    .toUpperCase(),
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w700),
+                              )
+                            : null,
+                  ),
+                  Positioned(
+                    bottom: -2,
+                    right: -2,
+                    child: Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFF6C5CE7),
+                        border: Border.all(
+                            color: const Color(0xFF1A2036), width: 2),
+                      ),
+                      child: const Icon(Icons.camera_alt_rounded,
+                          color: Colors.white, size: 14),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          const SizedBox(height: 20),
-          _row('ФИО', user.fullName?.isNotEmpty == true ? user.fullName! : 'не указано'),
+          if (user.avatarBase64 != null) ...[
+            const SizedBox(height: 8),
+            Center(
+              child: TextButton(
+                onPressed: _isUploadingAvatar ? null : _removeAvatar,
+                child: Text('Удалить фото',
+                    style: TextStyle(
+                        color: Colors.white.withOpacity(0.5), fontSize: 12.5)),
+              ),
+            ),
+          ],
+          const SizedBox(height: 12),
+          _row(
+              'ФИО',
+              user.fullName?.isNotEmpty == true
+                  ? user.fullName!
+                  : 'не указано'),
           _divider(),
           _row('Возраст', user.age != null ? '${user.age}' : 'не указано'),
           _divider(),
-          _row('Хобби', user.hobbies?.isNotEmpty == true ? user.hobbies! : 'не указано'),
+          _row('Хобби',
+              user.hobbies?.isNotEmpty == true ? user.hobbies! : 'не указано'),
           _divider(),
           _row('Email', user.email),
           _divider(),
@@ -113,21 +268,25 @@ class ProfileScreen extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(14),
-                  gradient: const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
+                  gradient: const LinearGradient(
+                      colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
                 ),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.edit_outlined, size: 18, color: Colors.white),
                     SizedBox(width: 8),
-                    Text('Редактировать профиль', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                    Text('Редактировать профиль',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.w600)),
                   ],
                 ),
               ),
             ),
           ),
           const SizedBox(height: 12),
-          _LogoutButton(onTap: () => confirmAndLogout(context, authStore)),
+          _LogoutButton(
+              onTap: () => confirmAndLogout(context, widget.authStore)),
         ],
       ),
     );
@@ -136,27 +295,35 @@ class ProfileScreen extends StatelessWidget {
   Future<void> _showEditDialog(BuildContext context, AppUser user) async {
     await showDialog(
       context: context,
-      builder: (context) => _EditProfileDialog(authStore: authStore, user: user),
+      builder: (context) =>
+          _EditProfileDialog(authStore: widget.authStore, user: user),
     );
   }
 
-  Widget _divider() => Divider(color: Colors.white.withOpacity(0.08), height: 28);
+  Widget _divider() =>
+      Divider(color: Colors.white.withOpacity(0.08), height: 28);
 
   Widget _row(String label, String value, {bool badge = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 13.5)),
+        Text(label,
+            style: TextStyle(
+                color: Colors.white.withOpacity(0.55), fontSize: 13.5)),
         if (badge)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              gradient: const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
+              gradient: const LinearGradient(
+                  colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
             ),
             child: Text(
               value,
-              style: const TextStyle(color: Colors.white, fontSize: 12.5, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600),
             ),
           )
         else
@@ -164,7 +331,10 @@ class ProfileScreen extends StatelessWidget {
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500),
             ),
           ),
       ],
@@ -192,7 +362,8 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.user.fullName ?? '');
-    _ageController = TextEditingController(text: widget.user.age?.toString() ?? '');
+    _ageController =
+        TextEditingController(text: widget.user.age?.toString() ?? '');
     _hobbiesController = TextEditingController(text: widget.user.hobbies ?? '');
   }
 
@@ -261,40 +432,51 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
             children: [
               const Text(
                 'Редактировать профиль',
-                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 4),
               Text(
                 'Все поля необязательны — оставь пустым, чтобы очистить.',
-                style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                style: TextStyle(
+                    color: Colors.white.withOpacity(0.5), fontSize: 12),
               ),
               const SizedBox(height: 16),
               _buildField(_nameController, 'ФИО', TextInputType.name),
               const SizedBox(height: 10),
               _buildField(_ageController, 'Возраст', TextInputType.number),
               const SizedBox(height: 10),
-              _buildField(_hobbiesController, 'Хобби', TextInputType.text, maxLines: 3),
+              _buildField(_hobbiesController, 'Хобби', TextInputType.text,
+                  maxLines: 3),
               if (_error != null) ...[
                 const SizedBox(height: 10),
-                Text(_error!, style: const TextStyle(color: Color(0xFFFFB4B4), fontSize: 12.5)),
+                Text(_error!,
+                    style: const TextStyle(
+                        color: Color(0xFFFFB4B4), fontSize: 12.5)),
               ],
               const SizedBox(height: 18),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: _isSaving ? null : () => Navigator.of(context).pop(),
-                    child: Text('Отмена', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                    onPressed:
+                        _isSaving ? null : () => Navigator.of(context).pop(),
+                    child: Text('Отмена',
+                        style: TextStyle(color: Colors.white.withOpacity(0.6))),
                   ),
                   const SizedBox(width: 8),
                   FilledButton(
-                    style: FilledButton.styleFrom(backgroundColor: const Color(0xFF6C5CE7)),
+                    style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFF6C5CE7)),
                     onPressed: _isSaving ? null : _save,
                     child: _isSaving
                         ? const SizedBox(
                             width: 16,
                             height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white),
                           )
                         : const Text('Сохранить'),
                   ),
@@ -307,7 +489,9 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
     );
   }
 
-  Widget _buildField(TextEditingController controller, String label, TextInputType type, {int maxLines = 1}) {
+  Widget _buildField(
+      TextEditingController controller, String label, TextInputType type,
+      {int maxLines = 1}) {
     return TextField(
       controller: controller,
       keyboardType: type,
@@ -316,8 +500,11 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white.withOpacity(0.08),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide.none),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         labelText: label,
         labelStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
       ),
@@ -346,9 +533,13 @@ class _LogoutButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.logout_rounded, size: 18, color: Colors.white.withOpacity(0.8)),
+              Icon(Icons.logout_rounded,
+                  size: 18, color: Colors.white.withOpacity(0.8)),
               const SizedBox(width: 8),
-              Text('Выйти', style: TextStyle(color: Colors.white.withOpacity(0.85), fontWeight: FontWeight.w500)),
+              Text('Выйти',
+                  style: TextStyle(
+                      color: Colors.white.withOpacity(0.85),
+                      fontWeight: FontWeight.w500)),
             ],
           ),
         ),

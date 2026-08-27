@@ -7,6 +7,7 @@ import '../services/phq9_service.dart';
 import '../services/wellbeing_service.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
+import 'wellbeing_screen.dart';
 
 /// Один день может содержать записи сразу нескольких опросников —
 /// собираем их в общий список, не пытаясь свести к одному "баллу дня".
@@ -128,9 +129,23 @@ class _WellbeingCalendarScreenState extends State<WellbeingCalendarScreen> {
                       icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Text(
-                      'Календарь самочувствия',
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                    const Expanded(
+                      child: Text(
+                        'Календарь самочувствия',
+                        style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: () async {
+                        // возвращаемся сюда после теста - обновляем
+                        // календарь, чтобы свежая запись сразу появилась
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => WellbeingScreen(userId: widget.userId)),
+                        );
+                        _load();
+                      },
+                      icon: const Icon(Icons.add_task_rounded, color: Color(0xFF00E6A0), size: 18),
+                      label: const Text('Пройти тест', style: TextStyle(color: Color(0xFF00E6A0), fontSize: 13)),
                     ),
                   ],
                 ),
