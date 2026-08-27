@@ -142,5 +142,59 @@ class BlogService {
     }
   }
 
+  // --- Лайки и комментарии (доступно любому вошедшему пользователю,
+  // только для опубликованных постов — тот же уровень доступа, что и
+  // у чтения самих постов) ---
+
+  Future<BlogPost> toggleLike({required String baseUrl, required String token, required int postId}) async {
+    final res = await _client
+        .post(Uri.parse('$baseUrl/api/blog/posts/$postId/like'), headers: _headers(token))
+        .timeout(const Duration(seconds: 15));
+    if (res.statusCode >= 400) {
+      throw BlogException(_extractError(res.body) ?? 'Не удалось поставить лайк.');
+    }
+    return BlogPost.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
+  }
+
+  Future<List<BlogComment>> listComments({required String baseUrl, required String token, required int postId}) async {
+    final res = await _client
+        .get(Uri.parse('$baseUrl/api/blog/posts/$postId/comments'), headers: _headers(token))
+        .timeout(const Duration(seconds: 15));
+    if (res.statusCode >= 400) {
+      throw BlogException(_extractError(res.body) ?? 'Не удалось загрузить комментарии.');
+    }
+    return (jsonDecode(res.body) as List<dynamic>)
+        .map((e) => BlogComment.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<BlogComment> addComment({
+    required String baseUrl,
+    required String token,
+    required int postId,
+    required String content,
+  }) async {
+    final res = await _client
+        .post(
+          Uri.parse('$baseUrl/api/blog/posts/$postId/comments'),
+          headers: _headers(token),
+          body: jsonEncode({'content': content}),
+        )
+        .timeout(const Duration(seconds: 15));
+    if (res.statusCode >= 400) {
+      throw BlogException(_extractError(res.body) ?? 'Не удалось отправить комментарий.');
+    }
+    return BlogComment.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
+  }
+
+  Future<void> deleteComment({required String baseUrl, required String token, required int commentId}) async {
+    final res = await _client
+        .delete(Uri.parse('$baseUrl/api/blog/comments/$commentId'), headers: _headers(token))
+        .timeout(const Duration(seconds: 15));
+    if (res.statusCode >= 400) {
+      throw BlogException(_extractError(res.body) ?? 'Не удалось удалить комментарий.');
+    }
+  }
+
   void dispose() => _client.close();
 }

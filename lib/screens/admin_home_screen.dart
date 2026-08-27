@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/dashboard_stats.dart';
 import '../services/stats_service.dart';
 import '../state/auth_store.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 import 'admin_documents_screen.dart';
@@ -67,12 +68,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Text(
+                     Text(
                       'Админ-панель',
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -215,9 +216,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(item.$1, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w700)),
+                    Text(item.$1, style: TextStyle(color: context.onSurface, fontSize: 24, fontWeight: FontWeight.w700)),
                     const SizedBox(height: 2),
-                    Text(item.$2, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 11.5)),
+                    Text(item.$2, style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 11.5)),
                   ],
                 ),
               ))
@@ -276,9 +277,9 @@ class _AdminTile extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15)),
+                      Text(title, style: TextStyle(color: context.onSurface, fontWeight: FontWeight.w600, fontSize: 15)),
                       const SizedBox(height: 3),
-                      Text(subtitle, style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 12.5)),
+                      Text(subtitle, style: TextStyle(color: context.onSurfaceFaded(0.45), fontSize: 12.5)),
                     ],
                   ),
                 ),
@@ -296,7 +297,7 @@ class _AdminTile extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                 ],
-                Icon(Icons.chevron_right_rounded, color: Colors.white.withOpacity(0.3)),
+                Icon(Icons.chevron_right_rounded, color: context.onSurfaceFaded(0.3)),
               ],
             ),
           ),

@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../models/app_user.dart';
 import '../state/auth_store.dart';
+import '../theme/app_text_color.dart';
 import '../utils/auth_navigation.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
@@ -37,25 +38,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading:
-                    const Icon(Icons.photo_camera_rounded, color: Colors.white),
-                title: const Text('Сделать фото',
-                    style: TextStyle(color: Colors.white)),
+                leading: const Icon(Icons.camera, color: Colors.white, size: 16),
+                title: const Text('Камера', style: TextStyle(color: Colors.white)),
                 onTap: () => Navigator.of(context).pop(ImageSource.camera),
               ),
               ListTile(
-                leading: const Icon(Icons.photo_library_rounded,
-                    color: Colors.white),
-                title: const Text('Выбрать из галереи',
-                    style: TextStyle(color: Colors.white)),
+                leading: const Icon(Icons.photo_library, color: Colors.white, size: 16),
+                title: const Text('Галерея', style: TextStyle(color: Colors.white)),
                 onTap: () => Navigator.of(context).pop(ImageSource.gallery),
               ),
               if (widget.authStore.user?.avatarBase64 != null)
                 ListTile(
-                  leading: const Icon(Icons.delete_outline_rounded,
-                      color: Color(0xFFFF6B6B)),
-                  title: const Text('Удалить фото',
-                      style: TextStyle(color: Color(0xFFFF6B6B))),
+                  leading: const Icon(Icons.delete_outline_rounded, color: Color(0xFFFF6B6B)),
+                  title: const Text('Удалить фото', style: TextStyle(color: Color(0xFFFF6B6B))),
                   onTap: () {
                     Navigator.of(context).pop();
                     _removeAvatar();
@@ -76,18 +71,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // квадратный кроп + сжатие сразу при выборе - тот же приём, что и у
     // фото в чате (chat_input_bar.dart), маленький аватар не должен
     // раздувать профиль на сервере
-    final file = await _picker.pickImage(
-        source: source, maxWidth: 512, maxHeight: 512, imageQuality: 75);
+    final file = await _picker.pickImage(source: source, maxWidth: 512, maxHeight: 512, imageQuality: 75);
     if (file == null) return;
     final bytes = await file.readAsBytes();
     setState(() => _isUploadingAvatar = true);
-    final error =
-        await widget.authStore.updateProfile(avatarBase64: base64Encode(bytes));
+    final error = await widget.authStore.updateProfile(avatarBase64: base64Encode(bytes));
     if (mounted) {
       setState(() => _isUploadingAvatar = false);
       if (error != null) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(error)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
       }
     }
   }
@@ -98,8 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (mounted) {
       setState(() => _isUploadingAvatar = false);
       if (error != null) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(error)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
       }
     }
   }
@@ -117,17 +108,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded,
-                          color: Colors.white),
+                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     const SizedBox(width: 4),
-                    const Text(
+                    Text(
                       'Личный кабинет',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -147,8 +134,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         builder: (context, _) {
                           final user = widget.authStore.user;
                           return user == null
-                              ? const Text('Нет данных',
-                                  style: TextStyle(color: Colors.white))
+                              ? Text('Нет данных', style: TextStyle(color: context.onSurface))
                               : _buildContent(context, user);
                         },
                       ),
@@ -183,27 +169,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                          colors: [Color(0xFF6C5CE7), Color(0xFF00D9C0)]),
+                      gradient: const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00D9C0)]),
                       image: user.avatarBase64 != null
-                          ? DecorationImage(
-                              image:
-                                  MemoryImage(base64Decode(user.avatarBase64!)),
-                              fit: BoxFit.cover)
+                          ? DecorationImage(image: MemoryImage(base64Decode(user.avatarBase64!)), fit: BoxFit.cover)
                           : null,
                     ),
                     child: _isUploadingAvatar
                         ? const CircularProgressIndicator(color: Colors.white)
                         : user.avatarBase64 == null
                             ? Text(
-                                (user.fullName?.isNotEmpty == true
-                                        ? user.fullName![0]
-                                        : user.email[0])
-                                    .toUpperCase(),
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.w700),
+                                (user.fullName?.isNotEmpty == true ? user.fullName![0] : user.email[0]).toUpperCase(),
+                                style: const TextStyle(color: Colors.white),
                               )
                             : null,
                   ),
@@ -216,11 +192,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: const Color(0xFF6C5CE7),
-                        border: Border.all(
-                            color: const Color(0xFF1A2036), width: 2),
+                        border: Border.all(color: const Color(0xFF1A2036), width: 2),
                       ),
-                      child: const Icon(Icons.camera_alt_rounded,
-                          color: Colors.white, size: 14),
+                      child: const Icon(Icons.edit, color: Colors.white, size: 16),
                     ),
                   ),
                 ],
@@ -232,23 +206,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Center(
               child: TextButton(
                 onPressed: _isUploadingAvatar ? null : _removeAvatar,
-                child: Text('Удалить фото',
-                    style: TextStyle(
-                        color: Colors.white.withOpacity(0.5), fontSize: 12.5)),
+                child: Text('Удалить фото', style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12.5)),
               ),
             ),
           ],
           const SizedBox(height: 12),
-          _row(
-              'ФИО',
-              user.fullName?.isNotEmpty == true
-                  ? user.fullName!
-                  : 'не указано'),
+          _row('ФИО', user.fullName?.isNotEmpty == true ? user.fullName! : 'не указано'),
           _divider(),
           _row('Возраст', user.age != null ? '${user.age}' : 'не указано'),
           _divider(),
-          _row('Хобби',
-              user.hobbies?.isNotEmpty == true ? user.hobbies! : 'не указано'),
+          _row('Хобби', user.hobbies?.isNotEmpty == true ? user.hobbies! : 'не указано'),
           _divider(),
           _row('Email', user.email),
           _divider(),
@@ -268,25 +235,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(14),
-                  gradient: const LinearGradient(
-                      colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
+                  gradient: const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
                 ),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.edit_outlined, size: 18, color: Colors.white),
-                    SizedBox(width: 8),
-                    Text('Редактировать профиль',
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.w600)),
+                    const Icon(Icons.edit, color: Colors.white, size: 16),
+                    const SizedBox(width: 8),
+                    const Text('Редактировать профиль', style: TextStyle(color: Colors.white))
                   ],
                 ),
               ),
             ),
           ),
           const SizedBox(height: 12),
-          _LogoutButton(
-              onTap: () => confirmAndLogout(context, widget.authStore)),
+          _LogoutButton(onTap: () => confirmAndLogout(context, widget.authStore)),
         ],
       ),
     );
@@ -295,35 +258,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _showEditDialog(BuildContext context, AppUser user) async {
     await showDialog(
       context: context,
-      builder: (context) =>
-          _EditProfileDialog(authStore: widget.authStore, user: user),
+      builder: (context) => _EditProfileDialog(authStore: widget.authStore, user: user),
     );
   }
 
-  Widget _divider() =>
-      Divider(color: Colors.white.withOpacity(0.08), height: 28);
+  Widget _divider() => Divider(color: context.onSurfaceFaded(0.08), height: 28);
 
   Widget _row(String label, String value, {bool badge = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label,
-            style: TextStyle(
-                color: Colors.white.withOpacity(0.55), fontSize: 13.5)),
+        Text(label, style: TextStyle(color: context.onSurfaceFaded(0.55), fontSize: 13.5)),
         if (badge)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              gradient: const LinearGradient(
-                  colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
+              gradient: const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
             ),
             child: Text(
               value,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600),
+              style: const TextStyle(color: Colors.white)
             ),
           )
         else
@@ -331,10 +286,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500),
+              style: TextStyle(color: context.onSurface, fontSize: 14, fontWeight: FontWeight.w500),
             ),
           ),
       ],
@@ -362,8 +314,7 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.user.fullName ?? '');
-    _ageController =
-        TextEditingController(text: widget.user.age?.toString() ?? '');
+    _ageController = TextEditingController(text: widget.user.age?.toString() ?? '');
     _hobbiesController = TextEditingController(text: widget.user.hobbies ?? '');
   }
 
@@ -430,53 +381,42 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Редактировать профиль',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600),
+                style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 4),
               Text(
                 'Все поля необязательны — оставь пустым, чтобы очистить.',
-                style: TextStyle(
-                    color: Colors.white.withOpacity(0.5), fontSize: 12),
+                style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12),
               ),
               const SizedBox(height: 16),
               _buildField(_nameController, 'ФИО', TextInputType.name),
               const SizedBox(height: 10),
               _buildField(_ageController, 'Возраст', TextInputType.number),
               const SizedBox(height: 10),
-              _buildField(_hobbiesController, 'Хобби', TextInputType.text,
-                  maxLines: 3),
+              _buildField(_hobbiesController, 'Хобби', TextInputType.text, maxLines: 3),
               if (_error != null) ...[
                 const SizedBox(height: 10),
-                Text(_error!,
-                    style: const TextStyle(
-                        color: Color(0xFFFFB4B4), fontSize: 12.5)),
+                Text(_error!, style: const TextStyle(color: Color(0xFFFFB4B4), fontSize: 12.5)),
               ],
               const SizedBox(height: 18),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed:
-                        _isSaving ? null : () => Navigator.of(context).pop(),
-                    child: Text('Отмена',
-                        style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                    onPressed: _isSaving ? null : () => Navigator.of(context).pop(),
+                    child: Text('Отмена', style: TextStyle(color: context.onSurfaceFaded(0.6))),
                   ),
                   const SizedBox(width: 8),
                   FilledButton(
-                    style: FilledButton.styleFrom(
-                        backgroundColor: const Color(0xFF6C5CE7)),
+                    style: FilledButton.styleFrom(backgroundColor: const Color(0xFF6C5CE7)),
                     onPressed: _isSaving ? null : _save,
                     child: _isSaving
                         ? const SizedBox(
                             width: 16,
                             height: 16,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                           )
                         : const Text('Сохранить'),
                   ),
@@ -489,24 +429,19 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
     );
   }
 
-  Widget _buildField(
-      TextEditingController controller, String label, TextInputType type,
-      {int maxLines = 1}) {
+  Widget _buildField(TextEditingController controller, String label, TextInputType type, {int maxLines = 1}) {
     return TextField(
       controller: controller,
       keyboardType: type,
       maxLines: maxLines,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: context.onSurface),
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.white.withOpacity(0.08),
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide.none),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        fillColor: context.onSurfaceFaded(0.08),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         labelText: label,
-        labelStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+        labelStyle: TextStyle(color: context.onSurfaceFaded(0.5)),
       ),
     );
   }
@@ -528,18 +463,14 @@ class _LogoutButton extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.white.withOpacity(0.16)),
+            border: Border.all(color: context.onSurfaceFaded(0.16)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.logout_rounded,
-                  size: 18, color: Colors.white.withOpacity(0.8)),
+              Icon(Icons.logout_rounded, size: 18, color: context.onSurfaceFaded(0.8)),
               const SizedBox(width: 8),
-              Text('Выйти',
-                  style: TextStyle(
-                      color: Colors.white.withOpacity(0.85),
-                      fontWeight: FontWeight.w500)),
+              Text('Выйти', style: TextStyle(color: context.onSurfaceFaded(0.85), fontWeight: FontWeight.w500)),
             ],
           ),
         ),

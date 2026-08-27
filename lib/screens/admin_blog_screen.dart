@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../models/blog_post.dart';
 import '../services/blog_service.dart';
 import '../state/auth_store.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 import 'admin_blog_editor_screen.dart';
@@ -75,12 +76,12 @@ class _AdminBlogScreenState extends State<AdminBlogScreen> {
               children: [
                 Text(
                   'Удалить пост «${post.title}»?',
-                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                  style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Действие необратимо.',
-                  style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13),
+                  style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 13),
                 ),
                 const SizedBox(height: 18),
                 Row(
@@ -88,7 +89,7 @@ class _AdminBlogScreenState extends State<AdminBlogScreen> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(false),
-                      child: Text('Отмена', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                      child: Text('Отмена', style: TextStyle(color: context.onSurfaceFaded(0.6))),
                     ),
                     const SizedBox(width: 8),
                     FilledButton(
@@ -129,13 +130,13 @@ class _AdminBlogScreenState extends State<AdminBlogScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Expanded(
+                     Expanded(
                       child: Text(
                         'Блог',
-                        style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                        style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                       ),
                     ),
                     IconButton(
@@ -172,7 +173,7 @@ class _AdminBlogScreenState extends State<AdminBlogScreen> {
                                             child: Text(
                                               'Постов пока нет — нажми + сверху, чтобы добавить первый.',
                                               textAlign: TextAlign.center,
-                                              style: TextStyle(color: Colors.white.withOpacity(0.4)),
+                                              style: TextStyle(color: context.onSurfaceFaded(0.4)),
                                             ),
                                           ),
                                         )
@@ -226,7 +227,7 @@ class _AdminPostTile extends StatelessWidget {
                 height: 8,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: post.isPublished ? const Color(0xFF00E6A0) : Colors.white.withOpacity(0.3),
+                  color: post.isPublished ? const Color(0xFF00E6A0) : context.onSurfaceFaded(0.3),
                 ),
               ),
               const SizedBox(width: 12),
@@ -236,7 +237,7 @@ class _AdminPostTile extends StatelessWidget {
                   children: [
                     Text(
                       post.title,
-                      style: const TextStyle(color: Colors.white, fontSize: 14.5, fontWeight: FontWeight.w500),
+                      style: TextStyle(color: context.onSurface, fontSize: 14.5, fontWeight: FontWeight.w500),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -245,13 +246,13 @@ class _AdminPostTile extends StatelessWidget {
                       post.isPublished
                           ? 'Опубликовано ${post.publishedAt != null ? DateFormat.yMMMd().format(post.publishedAt!) : ""}'
                           : 'Черновик',
-                      style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.5),
+                      style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11.5),
                     ),
                   ],
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.delete_outline_rounded, color: Colors.white.withOpacity(0.4), size: 20),
+                icon: Icon(Icons.delete_outline_rounded, color: context.onSurfaceFaded(0.4), size: 20),
                 onPressed: onDelete,
               ),
             ],

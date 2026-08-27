@@ -5,6 +5,7 @@ import '../services/asrs_service.dart';
 import '../services/gad7_service.dart';
 import '../services/phq9_service.dart';
 import '../services/wellbeing_service.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 import 'wellbeing_screen.dart';
@@ -126,13 +127,13 @@ class _WellbeingCalendarScreenState extends State<WellbeingCalendarScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Expanded(
+                     Expanded(
                       child: Text(
                         'Календарь самочувствия',
-                        style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                        style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                       ),
                     ),
                     TextButton.icon(
@@ -168,7 +169,7 @@ class _WellbeingCalendarScreenState extends State<WellbeingCalendarScreen> {
                                   const SizedBox(height: 20),
                                   Text(
                                     DateFormat.yMMMMd().format(_selectedDay!),
-                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
+                                    style: TextStyle(color: context.onSurface, fontWeight: FontWeight.w600, fontSize: 14),
                                   ),
                                   const SizedBox(height: 10),
                                   ...selectedEntries.map((e) => Padding(
@@ -183,9 +184,9 @@ class _WellbeingCalendarScreenState extends State<WellbeingCalendarScreen> {
                                               Container(width: 8, height: 8, decoration: BoxDecoration(shape: BoxShape.circle, color: e.color)),
                                               const SizedBox(width: 10),
                                               Expanded(
-                                                child: Text(e.label, style: const TextStyle(color: Colors.white, fontSize: 13.5)),
+                                                child: Text(e.label, style: TextStyle(color: context.onSurface, fontSize: 13.5)),
                                               ),
-                                              Text(e.score, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                                              Text(e.score, style: TextStyle(color: context.onSurface, fontWeight: FontWeight.w600)),
                                             ],
                                           ),
                                         ),
@@ -196,7 +197,7 @@ class _WellbeingCalendarScreenState extends State<WellbeingCalendarScreen> {
                                     child: Text(
                                       'Пока нет пройденных опросников — они появятся здесь\nпосле прохождения в разделе «Самочувствие».',
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13, height: 1.5),
+                                      style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 13, height: 1.5),
                                     ),
                                   ),
                                 ],
@@ -223,7 +224,7 @@ class _WellbeingCalendarScreenState extends State<WellbeingCalendarScreen> {
         ),
         Text(
           DateFormat.yMMMM().format(_month),
-          style: const TextStyle(color: Colors.white, fontSize: 15.5, fontWeight: FontWeight.w600),
+          style: TextStyle(color: context.onSurface, fontSize: 15.5, fontWeight: FontWeight.w600),
         ),
         IconButton(
           icon: const Icon(Icons.chevron_right_rounded, color: Colors.white70),
@@ -252,7 +253,7 @@ class _WellbeingCalendarScreenState extends State<WellbeingCalendarScreen> {
             children: weekdayLabels
                 .map((d) => Expanded(
                       child: Center(
-                        child: Text(d, style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11)),
+                        child: Text(d, style: TextStyle(color: context.onSurfaceFaded(0.35), fontSize: 11)),
                       ),
                     ))
                 .toList(),
@@ -283,12 +284,12 @@ class _WellbeingCalendarScreenState extends State<WellbeingCalendarScreen> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         color: isSelected ? const Color(0xFF6C5CE7).withOpacity(0.35) : Colors.transparent,
-                        border: isToday ? Border.all(color: Colors.white.withOpacity(0.4)) : null,
+                        border: isToday ? Border.all(color: context.onSurfaceFaded(0.4)) : null,
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('$day', style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 12.5)),
+                          Text('$day', style: TextStyle(color: context.onSurfaceFaded(0.85), fontSize: 12.5)),
                           const SizedBox(height: 3),
                           if (entries != null)
                             Wrap(

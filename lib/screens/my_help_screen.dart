@@ -49,8 +49,7 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
     if (token == null) return;
     setState(() => _isLoading = true);
     try {
-      final sessions = await _service.mySessions(
-          baseUrl: widget.authStore.baseUrl, token: token);
+      final sessions = await _service.mySessions(baseUrl: widget.authStore.baseUrl, token: token);
       if (!mounted) return;
       setState(() => _sessions = sessions);
     } on HelpException catch (e) {
@@ -69,9 +68,7 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
       final session = await _service.createSession(
         baseUrl: widget.authStore.baseUrl,
         token: token,
-        reason: _reasonController.text.trim().isEmpty
-            ? null
-            : _reasonController.text.trim(),
+        reason: _reasonController.text.trim().isEmpty ? null : _reasonController.text.trim(),
       );
       _reasonController.clear();
       if (!mounted) return;
@@ -86,9 +83,7 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
 
   void _openSession(HelpSession session) {
     Navigator.of(context)
-        .push(MaterialPageRoute(
-            builder: (_) => HelpSessionChatScreen(
-                authStore: widget.authStore, session: session)))
+        .push(MaterialPageRoute(builder: (_) => HelpSessionChatScreen(authStore: widget.authStore, session: session)))
         .then((_) => _load());
   }
 
@@ -105,16 +100,12 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded,
-                          color: Colors.white),
+                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     const Text(
                       'Живая помощь',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600),
+                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -140,44 +131,28 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
                                   children: [
                                     const Text(
                                       'Позвать человека на помощь',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 15),
+                                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
                                     ),
                                     const SizedBox(height: 6),
                                     Text(
                                       'Подключится врач или специалист из команды. Это не '
                                       'замена экстренной службе — если ситуация требует срочной '
                                       'медицинской помощи, звони 103 или обратись в скорую напрямую.',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.6),
-                                          fontSize: 12.5,
-                                          height: 1.5),
+                                      style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5, height: 1.5),
                                     ),
                                     const SizedBox(height: 14),
                                     TextField(
                                       controller: _reasonController,
                                       minLines: 1,
                                       maxLines: 3,
-                                      style: const TextStyle(
-                                          color: Colors.white, fontSize: 13.5),
+                                      style: const TextStyle(color: Colors.white, fontSize: 13.5),
                                       decoration: InputDecoration(
                                         filled: true,
-                                        fillColor:
-                                            Colors.white.withOpacity(0.07),
-                                        border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            borderSide: BorderSide.none),
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 12),
-                                        hintText:
-                                            'Коротко, что случилось (необязательно)',
-                                        hintStyle: TextStyle(
-                                            color:
-                                                Colors.white.withOpacity(0.3)),
+                                        fillColor: Colors.white.withOpacity(0.07),
+                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+                                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                        hintText: 'Коротко, что случилось (необязательно)',
+                                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
                                       ),
                                     ),
                                     const SizedBox(height: 14),
@@ -185,35 +160,21 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
                                       color: Colors.transparent,
                                       child: InkWell(
                                         borderRadius: BorderRadius.circular(14),
-                                        onTap:
-                                            _isCreating ? null : _requestHelp,
+                                        onTap: _isCreating ? null : _requestHelp,
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 13),
+                                          padding: const EdgeInsets.symmetric(vertical: 13),
                                           alignment: Alignment.center,
                                           decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(14),
-                                            gradient: const LinearGradient(
-                                                colors: [
-                                                  Color(0xFF6C5CE7),
-                                                  Color(0xFF00B4D8)
-                                                ]),
+                                            borderRadius: BorderRadius.circular(14),
+                                            gradient: const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
                                           ),
                                           child: _isCreating
                                               ? const SizedBox(
                                                   width: 18,
                                                   height: 18,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                          strokeWidth: 2,
-                                                          color: Colors.white),
+                                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                                 )
-                                              : const Text('Позвать на помощь',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.w600)),
+                                              : const Text('Позвать на помощь', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
                                         ),
                                       ),
                                     ),
@@ -224,20 +185,13 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
                               const CrisisResourcesPanel(),
                               if (_error != null) ...[
                                 const SizedBox(height: 12),
-                                Text(_error!,
-                                    style: const TextStyle(
-                                        color: Color(0xFFFFB4B4),
-                                        fontSize: 13)),
+                                Text(_error!, style: const TextStyle(color: Color(0xFFFFB4B4), fontSize: 13)),
                               ],
                               if (_sessions.isNotEmpty) ...[
                                 const SizedBox(height: 20),
                                 Text(
                                   'МОИ ОБРАЩЕНИЯ',
-                                  style: TextStyle(
-                                      color: Colors.white.withOpacity(0.4),
-                                      fontSize: 11,
-                                      letterSpacing: 1.2,
-                                      fontWeight: FontWeight.w600),
+                                  style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
                                 ),
                                 const SizedBox(height: 10),
                                 ..._sessions.map(_buildSessionTile),
@@ -259,10 +213,7 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
 
   Widget _buildSessionTile(HelpSession session) {
     final (label, color) = switch (session.status) {
-      HelpSessionStatus.pending => (
-          'Ждём подключения',
-          const Color(0xFFFFD166)
-        ),
+      HelpSessionStatus.pending => ('Ждём подключения', const Color(0xFFFFD166)),
       HelpSessionStatus.active => ('Подключено', const Color(0xFF00E6A0)),
       HelpSessionStatus.closed => ('Закрыто', Colors.white38),
     };
@@ -287,37 +238,24 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
                       children: [
                         Text(
                           DateFormat.yMMMd().add_Hm().format(session.createdAt),
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 13.5,
-                              fontWeight: FontWeight.w500),
+                          style: const TextStyle(color: Colors.white, fontSize: 13.5, fontWeight: FontWeight.w500),
                         ),
-                        if (session.reason != null &&
-                            session.reason!.isNotEmpty) ...[
+                        if (session.reason != null && session.reason!.isNotEmpty) ...[
                           const SizedBox(height: 2),
                           Text(
                             session.reason!,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                color: Colors.white.withOpacity(0.45),
-                                fontSize: 12),
+                            style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 12),
                           ),
                         ],
                       ],
                     ),
                   ),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: color.withOpacity(0.18)),
-                    child: Text(label,
-                        style: TextStyle(
-                            color: color,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600)),
+                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: color.withOpacity(0.18)),
+                    child: Text(label, style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w600)),
                   ),
                 ],
               ),

@@ -593,7 +593,7 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+               Text(
                 'Удалить аккаунт?',
                 style: TextStyle(color: context.onSurface, fontSize: 17, fontWeight: FontWeight.w600),
               ),

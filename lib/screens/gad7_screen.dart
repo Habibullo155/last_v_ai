@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 
 import '../models/gad7_checkin.dart';
 import '../services/gad7_service.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/crisis_resources_panel.dart';
 import '../widgets/glass_panel.dart';
@@ -86,12 +87,12 @@ class _Gad7ScreenState extends State<Gad7Screen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Text(
+                    Text(
                       'GAD-7',
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -134,9 +135,9 @@ class _Gad7ScreenState extends State<Gad7Screen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Опросник выраженности тревожных симптомов',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
+                style: TextStyle(color: context.onSurface, fontWeight: FontWeight.w600, fontSize: 15),
               ),
               const SizedBox(height: 8),
               Text(
@@ -146,7 +147,7 @@ class _Gad7ScreenState extends State<Gad7Screen> {
                 'результат показывает выраженность симптомов за последние '
                 '2 недели, а не медицинское заключение. Проходишь и видишь '
                 'результат только ты — на сервер ничего не отправляется.',
-                style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5, height: 1.5),
+                style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 12.5, height: 1.5),
               ),
               const SizedBox(height: 16),
               Material(
@@ -175,7 +176,7 @@ class _Gad7ScreenState extends State<Gad7Screen> {
           const SizedBox(height: 20),
           Text(
             'ИСТОРИЯ',
-            style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+            style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 10),
           ..._history.map((c) => Padding(
@@ -190,10 +191,10 @@ class _Gad7ScreenState extends State<Gad7Screen> {
                       Expanded(
                         child: Text(
                           DateFormat.yMMMd().add_Hm().format(c.date),
-                          style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5),
+                          style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 12.5),
                         ),
                       ),
-                      Text('${c.rawScore}/21', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                      Text('${c.rawScore}/21', style: TextStyle(color: context.onSurface, fontWeight: FontWeight.w600)),
                     ],
                   ),
                 ),
@@ -214,7 +215,7 @@ class _Gad7ScreenState extends State<Gad7Screen> {
         Text(
           'За последние 2 недели, как часто вас беспокоили следующие проблемы?',
           textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13),
+          style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 13),
         ),
         const SizedBox(height: 18),
         Row(
@@ -228,7 +229,7 @@ class _Gad7ScreenState extends State<Gad7Screen> {
               height: 7,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(4),
-                color: done || active ? const Color(0xFF6C5CE7) : Colors.white.withOpacity(0.15),
+                color: done || active ? const Color(0xFF6C5CE7) : context.onSurfaceFaded(0.15),
               ),
             );
           }),
@@ -242,11 +243,11 @@ class _Gad7ScreenState extends State<Gad7Screen> {
               Expanded(
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                    side: BorderSide(color: context.onSurfaceFaded(0.2)),
                     padding: const EdgeInsets.symmetric(vertical: 13),
                   ),
                   onPressed: () => setState(() => _currentQuestion--),
-                  child: Text('Назад', style: TextStyle(color: Colors.white.withOpacity(0.8))),
+                  child: Text('Назад', style: TextStyle(color: context.onSurfaceFaded(0.8))),
                 ),
               ),
               const SizedBox(width: 10),
@@ -270,7 +271,7 @@ class _Gad7ScreenState extends State<Gad7Screen> {
                       gradient: LinearGradient(
                         colors: answered
                             ? [const Color(0xFF6C5CE7), const Color(0xFF00B4D8)]
-                            : [Colors.white24, Colors.white10],
+                            : [context.onSurfaceFaded(0.24), context.onSurfaceFaded(0.10)],
                       ),
                     ),
                     child: Text(
@@ -298,7 +299,7 @@ class _Gad7ScreenState extends State<Gad7Screen> {
         children: [
           Text(
             gad7Questions[index],
-            style: const TextStyle(color: Colors.white, fontSize: 15.5, fontWeight: FontWeight.w500, height: 1.35),
+            style: TextStyle(color: context.onSurface, fontSize: 15.5, fontWeight: FontWeight.w500, height: 1.35),
           ),
           const SizedBox(height: 14),
           Wrap(
@@ -311,14 +312,14 @@ class _Gad7ScreenState extends State<Gad7Screen> {
                 selected: selected,
                 onSelected: (_) => setState(() => _currentAnswers[index] = optionIdx),
                 labelStyle: TextStyle(
-                  color: selected ? Colors.white : Colors.white.withOpacity(0.7),
+                  color: selected ? Colors.white : context.onSurfaceFaded(0.7),
                   fontSize: 12.5,
                 ),
                 selectedColor: const Color(0xFF6C5CE7),
-                backgroundColor: Colors.white.withOpacity(0.06),
+                backgroundColor: context.onSurfaceFaded(0.06),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
-                  side: BorderSide(color: Colors.white.withOpacity(0.12)),
+                  side: BorderSide(color: context.onSurfaceFaded(0.12)),
                 ),
               );
             }),
@@ -339,13 +340,13 @@ class _Gad7ScreenState extends State<Gad7Screen> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              Text('${result.rawScore}', style: const TextStyle(color: Colors.white, fontSize: 44, fontWeight: FontWeight.w700)),
-              Text('из 21', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13)),
+              Text('${result.rawScore}', style: TextStyle(color: context.onSurface, fontSize: 44, fontWeight: FontWeight.w700)),
+              Text('из 21', style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 13)),
               const SizedBox(height: 10),
               Text(
                 'Методика описывает такой результат как: ${result.severityLabel}.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13.5, height: 1.4),
+                style: TextStyle(color: context.onSurfaceFaded(0.7), fontSize: 13.5, height: 1.4),
               ),
               const SizedBox(height: 8),
               Text(
@@ -353,7 +354,7 @@ class _Gad7ScreenState extends State<Gad7Screen> {
                     ? 'При таком результате методика рекомендует обсудить его со специалистом — это скрининг, не диагноз.'
                     : 'Официальная методика не считает такой результат поводом для дополнительной оценки — но если тебе тяжело, это не отменяется этой цифрой.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 12.5, height: 1.5),
+                style: TextStyle(color: context.onSurfaceFaded(0.55), fontSize: 12.5, height: 1.5),
               ),
             ],
           ),
@@ -373,9 +374,9 @@ class _Gad7ScreenState extends State<Gad7Screen> {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white.withOpacity(0.2)),
+                border: Border.all(color: context.onSurfaceFaded(0.2)),
               ),
-              child: Text('Готово', style: TextStyle(color: Colors.white.withOpacity(0.85), fontWeight: FontWeight.w600)),
+              child: Text('Готово', style: TextStyle(color: context.onSurfaceFaded(0.85), fontWeight: FontWeight.w600)),
             ),
           ),
         ),

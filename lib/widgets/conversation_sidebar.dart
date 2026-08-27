@@ -5,6 +5,8 @@ import '../models/chat_conversation.dart';
 import '../state/auth_store.dart';
 import '../state/chat_store.dart';
 import '../screens/wellbeing_calendar_screen.dart';
+import '../screens/wellbeing_screen.dart';
+import '../theme/app_text_color.dart';
 import 'glass_panel.dart';
 
 class ConversationSidebar extends StatelessWidget {
@@ -26,12 +28,12 @@ class ConversationSidebar extends StatelessWidget {
           Row(
             children: [
               Icon(Icons.spa_rounded,
-                  color: Colors.white.withOpacity(0.85), size: 20),
+                  color: context.onSurfaceFaded(0.85), size: 20),
               const SizedBox(width: 8),
               Text(
                 'AI Chat',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.92),
+                  color: context.onSurfaceFaded(0.92),
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
                 ),
@@ -39,7 +41,10 @@ class ConversationSidebar extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          _WellbeingSummaryTile(
+          _SidebarLinkTile(
+            icon: Icons.calendar_month_rounded,
+            title: 'Календарь',
+            subtitle: 'Результаты опросников по дням',
             onTap: () {
               final userId = authStore.user?.id.toString();
               if (userId == null) return;
@@ -49,7 +54,21 @@ class ConversationSidebar extends StatelessWidget {
               onSelected?.call();
             },
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
+          _SidebarLinkTile(
+            icon: Icons.self_improvement_rounded,
+            title: 'Самочувствие',
+            subtitle: 'Пройти тест, ситуативная помощь',
+            onTap: () {
+              final userId = authStore.user?.id.toString();
+              if (userId == null) return;
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => WellbeingScreen(userId: userId)),
+              );
+              onSelected?.call();
+            },
+          ),
+          const SizedBox(height: 16),
           _NewChatButton(
             onTap: () {
               store.createNewChat();
@@ -60,7 +79,7 @@ class ConversationSidebar extends StatelessWidget {
           Text(
             'ИСТОРИЯ',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.4),
+              color: context.onSurfaceFaded(0.4),
               fontSize: 11,
               letterSpacing: 1.2,
               fontWeight: FontWeight.w600,
@@ -75,7 +94,7 @@ class ConversationSidebar extends StatelessWidget {
                   return Center(
                     child: Text(
                       'Пока нет диалогов',
-                      style: TextStyle(color: Colors.white.withOpacity(0.4)),
+                      style: TextStyle(color: context.onSurfaceFaded(0.4)),
                     ),
                   );
                 }
@@ -110,9 +129,12 @@ class ConversationSidebar extends StatelessWidget {
 /// "Новый чат" была первым, что видно, и при пустой истории ниже
 /// оставалась одна короткая надпись "Пока нет диалогов"). Занимает то же
 /// место, кнопка "Новый чат" теперь ниже.
-class _WellbeingSummaryTile extends StatelessWidget {
+class _SidebarLinkTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
   final VoidCallback onTap;
-  const _WellbeingSummaryTile({required this.onTap});
+  const _SidebarLinkTile({required this.icon, required this.title, required this.subtitle, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -125,29 +147,29 @@ class _WellbeingSummaryTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            color: Colors.white.withOpacity(0.06),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            color: context.onSurfaceFaded(0.06),
+            border: Border.all(color: context.onSurfaceFaded(0.1)),
           ),
           child: Row(
             children: [
-              Icon(Icons.calendar_month_rounded, color: Colors.white.withOpacity(0.75), size: 20),
+              Icon(icon, color: context.onSurfaceFaded(0.75), size: 20),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Календарь самочувствия',
-                      style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 13, fontWeight: FontWeight.w500),
+                      title,
+                      style: TextStyle(color: context.onSurfaceFaded(0.85), fontSize: 13, fontWeight: FontWeight.w500),
                     ),
                     Text(
-                      'Результаты опросников и новый тест',
-                      style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11),
+                      subtitle,
+                      style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right_rounded, color: Colors.white.withOpacity(0.3)),
+              Icon(Icons.chevron_right_rounded, color: context.onSurfaceFaded(0.3)),
             ],
           ),
         ),
@@ -227,22 +249,22 @@ class _ConversationTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Переименовать чат',
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                  style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: controller,
                   autofocus: true,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: context.onSurface),
                   onSubmitted: (value) {
                     onRename(value);
                     Navigator.of(context).pop();
                   },
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Colors.white.withOpacity(0.08),
+                    fillColor: context.onSurfaceFaded(0.08),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
                     contentPadding: const EdgeInsets.all(12),
                   ),
@@ -253,7 +275,7 @@ class _ConversationTile extends StatelessWidget {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: Text('Отмена', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                      child: Text('Отмена', style: TextStyle(color: context.onSurfaceFaded(0.6))),
                     ),
                     const SizedBox(width: 8),
                     FilledButton(
@@ -289,14 +311,14 @@ class _ConversationTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Удалить чат?',
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                  style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Переписка «${convo.title}» будет удалена без возможности восстановить.',
-                  style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, height: 1.4),
+                  style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 13, height: 1.4),
                 ),
                 const SizedBox(height: 18),
                 Row(
@@ -304,7 +326,7 @@ class _ConversationTile extends StatelessWidget {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(false),
-                      child: Text('Отмена', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                      child: Text('Отмена', style: TextStyle(color: context.onSurfaceFaded(0.6))),
                     ),
                     const SizedBox(width: 8),
                     FilledButton(
@@ -341,7 +363,7 @@ class _ConversationTile extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
             color: isActive
-                ? Colors.white.withOpacity(0.14)
+                ? context.onSurfaceFaded(0.14)
                 : Colors.transparent,
           ),
           child: Row(
@@ -358,7 +380,7 @@ class _ConversationTile extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
+                              color: context.onSurfaceFaded(0.9),
                               fontWeight: FontWeight.w500,
                               fontSize: 13.5,
                             ),
@@ -380,7 +402,7 @@ class _ConversationTile extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.42),
+                        color: context.onSurfaceFaded(0.42),
                         fontSize: 12,
                       ),
                     ),
@@ -390,7 +412,7 @@ class _ConversationTile extends StatelessWidget {
               Text(
                 DateFormat.Hm().format(convo.updatedAt),
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.3),
+                  color: context.onSurfaceFaded(0.3),
                   fontSize: 10.5,
                 ),
               ),
@@ -402,7 +424,7 @@ class _ConversationTile extends StatelessWidget {
                   child: Icon(
                     Icons.close_rounded,
                     size: 14,
-                    color: Colors.white.withOpacity(0.35),
+                    color: context.onSurfaceFaded(0.35),
                   ),
                 ),
               ),

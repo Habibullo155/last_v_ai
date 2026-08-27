@@ -98,7 +98,7 @@ class _AuthScreenState extends State<AuthScreen> {
           Text(
             _isRegisterMode ? 'Создать аккаунт' : 'Вход в AI Chat',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style:  TextStyle(
               color: context.onSurface,
               fontSize: 22,
               fontWeight: FontWeight.w600,

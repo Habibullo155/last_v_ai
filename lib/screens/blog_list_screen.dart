@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../models/blog_post.dart';
 import '../services/blog_service.dart';
 import '../state/auth_store.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 import 'blog_post_screen.dart';
@@ -64,12 +65,12 @@ class _BlogListScreenState extends State<BlogListScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Text(
+                    Text(
                       'Блог',
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -88,7 +89,7 @@ class _BlogListScreenState extends State<BlogListScreen> {
                                 ? Center(
                                     child: Text(
                                       'Постов пока нет — загляни позже.',
-                                      style: TextStyle(color: Colors.white.withOpacity(0.4)),
+                                      style: TextStyle(color: context.onSurfaceFaded(0.4)),
                                     ),
                                   )
                                 : ListView(
@@ -154,19 +155,31 @@ class _PostTile extends StatelessWidget {
                   children: [
                     Text(
                       post.title,
-                      style: const TextStyle(color: Colors.white, fontSize: 15.5, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 15.5, fontWeight: FontWeight.w600),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 6),
                     Text(
                       post.publishedAt != null ? DateFormat.yMMMd().format(post.publishedAt!) : '',
-                      style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+                      style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(Icons.favorite_rounded, size: 13, color: context.onSurfaceFaded(0.35)),
+                        const SizedBox(width: 4),
+                        Text('${post.likeCount}', style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11.5)),
+                        const SizedBox(width: 12),
+                        Icon(Icons.chat_bubble_rounded, size: 12, color: context.onSurfaceFaded(0.35)),
+                        const SizedBox(width: 4),
+                        Text('${post.commentCount}', style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11.5)),
+                      ],
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right_rounded, color: Colors.white.withOpacity(0.3)),
+              Icon(Icons.chevron_right_rounded, color: context.onSurfaceFaded(0.3)),
             ],
           ),
         ),

@@ -4,6 +4,7 @@ import '../models/chat_message.dart';
 import '../state/auth_store.dart';
 import '../state/chat_store.dart';
 import '../state/theme_store.dart';
+import '../theme/app_text_color.dart';
 import '../state/voice_store.dart';
 import '../utils/responsive.dart';
 import '../widgets/app_background.dart';
@@ -224,12 +225,29 @@ class _ChatScreenState extends State<ChatScreen> {
           : Drawer(
               backgroundColor: Colors.transparent,
               child: AppBackground(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 50, 12, 12),
-                  child: ConversationSidebar(
-                    store: widget.store,
-                    authStore: widget.authStore,
-                    onSelected: () => Navigator.of(context).pop(),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: IconButton(
+                            icon: Icon(Icons.close_rounded, color: context.onSurfaceFaded(0.7)),
+                            tooltip: 'Закрыть',
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        ),
+                        Expanded(
+                          child: ConversationSidebar(
+                            store: widget.store,
+                            authStore: widget.authStore,
+                            onSelected: () => Navigator.of(context).pop(),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -59,10 +59,8 @@ class _GlassChatAppState extends State<GlassChatApp> {
     final store = ChatStore(
       getAuthToken: () => _authStore.token,
       onSessionExpired: _authStore.logout,
-      onAssistantTextChunk: (
-          {required messageId, required fullContent, required isDone}) {
-        voice.onIncomingText(
-            messageId: messageId, fullContent: fullContent, isDone: isDone);
+      onAssistantTextChunk: ({required messageId, required fullContent, required isDone}) {
+        voice.onIncomingText(messageId: messageId, fullContent: fullContent, isDone: isDone);
       },
     );
     store.init(userId);
@@ -79,7 +77,7 @@ class _GlassChatAppState extends State<GlassChatApp> {
     super.dispose();
   }
 
-  @override
+   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'AI Glass Chat',
@@ -130,8 +128,7 @@ class _GlassChatAppState extends State<GlassChatApp> {
       case AuthStatus.authenticated:
         final chatStore = _chatStore;
         final voiceStore = _voiceStore;
-        if (chatStore == null || voiceStore == null)
-          return const _LoadingScreen();
+        if (chatStore == null || voiceStore == null) return const _LoadingScreen();
         if (Responsive.isMobile(context)) {
           return MainShellScreen(
             store: chatStore,

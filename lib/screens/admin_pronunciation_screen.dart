@@ -1,5 +1,8 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
+import '../services/app_settings_service.dart';
+import '../services/cloud_tts_service.dart';
 import '../services/pronunciation_service.dart';
 import '../state/auth_store.dart';
 import '../widgets/app_background.dart';
@@ -15,12 +18,18 @@ class AdminPronunciationScreen extends StatefulWidget {
 
 class _AdminPronunciationScreenState extends State<AdminPronunciationScreen> {
   final _service = PronunciationService();
+  final _settingsService = AppSettingsService();
+  final _cloudTts = CloudTtsService();
+  final _previewPlayer = AudioPlayer();
   final _wordController = TextEditingController();
   final _pronunciationController = TextEditingController();
 
   List<Map<String, String>> _entries = [];
   bool _isLoading = true;
   bool _isSaving = false;
+  bool _isPreviewPlaying = false;
+  bool _cloudTtsAvailable = false;
+  String _defaultVoice = 'baya';
   String? _error;
 
   @override
@@ -32,6 +41,8 @@ class _AdminPronunciationScreenState extends State<AdminPronunciationScreen> {
   @override
   void dispose() {
     _service.dispose();
+    _settingsService.dispose();
+    _previewPlayer.dispose();
     _wordController.dispose();
     _pronunciationController.dispose();
     super.dispose();
@@ -43,7 +54,14 @@ class _AdminPronunciationScreenState extends State<AdminPronunciationScreen> {
     setState(() => _isLoading = true);
     try {
       final entries = await _service.listAdmin(baseUrl: widget.authStore.baseUrl, token: token);
-      if (mounted) setState(() => _entries = entries);
+      final settings = await _settingsService.getPublicSettings(widget.authStore.baseUrl);
+      if (mounted) {
+        setState(() {
+          _entries = entries;
+          _cloudTtsAvailable = settings.cloudTtsEnabled;
+          _defaultVoice = settings.defaultVoice;
+        });
+      }
     } on PronunciationException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } finally {
@@ -51,22 +69,68 @@ class _AdminPronunciationScreenState extends State<AdminPronunciationScreen> {
     }
   }
 
-  Future<void> _addOrUpdate() async {
+  // сохраняет слово и сразу проигрывает ЕГО ПРОИЗНОШЕНИЕ так, как оно
+  // прозвучит в реальном разговоре — синтез идёт через тот же
+  // /api/tts/synthesize, что и обычная озвучка ответов, честно показывает
+  // результат, а не просто "текст сохранён"
+  Future<void> _addAndPreview() async {
     final token = widget.authStore.token;
     final word = _wordController.text.trim();
     final pronunciation = _pronunciationController.text.trim();
     if (token == null || word.isEmpty || pronunciation.isEmpty) return;
 
-    setState(() => _isSaving = true);
+    setState(() {
+      _isSaving = true;
+      _error = null;
+    });
     try {
       await _service.upsert(baseUrl: widget.authStore.baseUrl, token: token, word: word, pronunciation: pronunciation);
       _wordController.clear();
       _pronunciationController.clear();
       await _load();
+
+      if (_cloudTtsAvailable) {
+        setState(() => _isPreviewPlaying = true);
+        final bytes = await _cloudTts.synthesize(
+          baseUrl: widget.authStore.baseUrl,
+          token: token,
+          text: pronunciation,
+          voiceName: _defaultVoice,
+        );
+        await _previewPlayer.play(BytesSource(bytes));
+      }
     } on PronunciationException catch (e) {
       if (mounted) setState(() => _error = e.message);
+    } catch (_) {
+      // прослушивание — необязательная часть, слово уже сохранено к
+      // этому моменту; молча не проигрываем, не превращаем это в ошибку
+      // всей операции
     } finally {
-      if (mounted) setState(() => _isSaving = false);
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+          _isPreviewPlaying = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _previewExisting(String pronunciation) async {
+    final token = widget.authStore.token;
+    if (token == null || !_cloudTtsAvailable) return;
+    setState(() => _isPreviewPlaying = true);
+    try {
+      final bytes = await _cloudTts.synthesize(
+        baseUrl: widget.authStore.baseUrl,
+        token: token,
+        text: pronunciation,
+        voiceName: _defaultVoice,
+      );
+      await _previewPlayer.play(BytesSource(bytes));
+    } catch (_) {
+      // то же самое — не критично, если прослушивание не сработало
+    } finally {
+      if (mounted) setState(() => _isPreviewPlaying = false);
     }
   }
 
@@ -115,13 +179,36 @@ class _AdminPronunciationScreenState extends State<AdminPronunciationScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text(
-                            'Действует для всех пользователей — если движок озвучки '
-                            'неправильно произносит слово (название, аббревиатуру, '
-                            'термин), задай здесь правильное "чтение". У каждого '
-                            'пользователя есть ещё и свой личный словарь в настройках '
-                            'голоса — он имеет приоритет над этим общим.',
-                            style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12.5, height: 1.4),
+                          // Простыми словами, с примером — раньше был абзац
+                          // прозы без наглядного примера, что именно
+                          // произойдёт с конкретным словом.
+                          GlassPanel(
+                            opacity: 0.07,
+                            borderRadius: BorderRadius.circular(14),
+                            padding: const EdgeInsets.all(14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Если озвучка неправильно читает какое-то слово — научи её здесь.',
+                                  style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13, height: 1.4),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'Пример: слово «ИИ» озвучка может прочитать по буквам '
+                                  '«и-и» — впиши «ИИ» слева и «искусственный интеллект» '
+                                  'справа, и в разговоре она будет произносить это словами.',
+                                  style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 12, height: 1.4),
+                                ),
+                                if (!_cloudTtsAvailable) ...[
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Прослушать результат сразу нельзя — сервер облачной озвучки не настроен.',
+                                    style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.5),
+                                  ),
+                                ],
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 16),
                           _buildEditor(),
@@ -162,49 +249,49 @@ class _AdminPronunciationScreenState extends State<AdminPronunciationScreen> {
       opacity: 0.08,
       borderRadius: BorderRadius.circular(16),
       padding: const EdgeInsets.all(14),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            child: TextField(
-              controller: _wordController,
-              style: const TextStyle(color: Colors.white, fontSize: 13),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white.withOpacity(0.08),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                hintText: 'Слово',
-                hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
-              ),
+          Text('КАК НАПИСАНО В ТЕКСТЕ', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 10.5, letterSpacing: 1, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 6),
+          TextField(
+            controller: _wordController,
+            style: const TextStyle(color: Colors.white, fontSize: 13.5),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white.withOpacity(0.08),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+              hintText: 'Например: ИИ',
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
             ),
           ),
-          const SizedBox(width: 8),
-          const Icon(Icons.arrow_forward_rounded, color: Colors.white38, size: 16),
-          const SizedBox(width: 8),
-          Expanded(
-            child: TextField(
-              controller: _pronunciationController,
-              style: const TextStyle(color: Colors.white, fontSize: 13),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white.withOpacity(0.08),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                hintText: 'Произношение',
-                hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
-              ),
+          const SizedBox(height: 12),
+          Text('КАК ДОЛЖНО ПРОЗВУЧАТЬ', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 10.5, letterSpacing: 1, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 6),
+          TextField(
+            controller: _pronunciationController,
+            style: const TextStyle(color: Colors.white, fontSize: 13.5),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white.withOpacity(0.08),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+              hintText: 'Например: искусственный интеллект',
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
             ),
           ),
-          const SizedBox(width: 6),
-          IconButton(
-            icon: _isSaving
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF6C5CE7)),
-                  )
-                : const Icon(Icons.add_circle_rounded, color: Color(0xFF6C5CE7)),
-            onPressed: _isSaving ? null : _addOrUpdate,
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              style: FilledButton.styleFrom(backgroundColor: const Color(0xFF6C5CE7), padding: const EdgeInsets.symmetric(vertical: 13)),
+              onPressed: _isSaving ? null : _addAndPreview,
+              icon: _isSaving
+                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  : Icon(_cloudTtsAvailable ? Icons.volume_up_rounded : Icons.add_rounded, size: 18),
+              label: Text(_cloudTtsAvailable ? 'Сохранить и прослушать' : 'Сохранить'),
+            ),
           ),
         ],
       ),
@@ -212,6 +299,7 @@ class _AdminPronunciationScreenState extends State<AdminPronunciationScreen> {
   }
 
   Widget _buildEntryTile(Map<String, String> entry) {
+    final pronunciation = entry['pronunciation'] ?? '';
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: GlassPanel(
@@ -223,10 +311,16 @@ class _AdminPronunciationScreenState extends State<AdminPronunciationScreen> {
           children: [
             Expanded(
               child: Text(
-                '${entry['word']} → ${entry['pronunciation']}',
+                '${entry['word']} → $pronunciation',
                 style: const TextStyle(color: Colors.white, fontSize: 13.5),
               ),
             ),
+            if (_cloudTtsAvailable)
+              IconButton(
+                icon: Icon(Icons.volume_up_rounded, size: 18, color: Colors.white.withOpacity(0.6)),
+                tooltip: 'Прослушать',
+                onPressed: _isPreviewPlaying ? null : () => _previewExisting(pronunciation),
+              ),
             IconButton(
               icon: const Icon(Icons.delete_outline_rounded, size: 18, color: Color(0xFFFFB4B4)),
               onPressed: () => _delete(entry['word'] ?? ''),

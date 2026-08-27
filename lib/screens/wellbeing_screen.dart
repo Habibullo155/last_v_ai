@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 
 import '../models/wellbeing_checkin.dart';
 import '../services/wellbeing_service.dart';
+import '../theme/app_text_color.dart';
 import '../state/voice_store.dart';
 import '../widgets/app_background.dart';
 import '../widgets/crisis_resources_panel.dart';
@@ -119,7 +120,7 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
                       onPressed: () {
                         if (_mode != _Mode.history) {
                           setState(() => _mode = _Mode.history);
@@ -128,9 +129,9 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
                         }
                       },
                     ),
-                    const Text(
+                    Text(
                       'Самочувствие',
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -177,7 +178,7 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
         const SizedBox(height: 22),
         Text(
           'ИНСТРУМЕНТЫ',
-          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+          style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),
         GridView.count(
@@ -217,12 +218,12 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
         const SizedBox(height: 22),
         Text(
           'ОПРОСНИКИ',
-          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+          style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(
           'Официальные, свободно распространяемые инструменты. Не диагностика — только скрининг для себя.',
-          style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11.5),
+          style: TextStyle(color: context.onSurfaceFaded(0.35), fontSize: 11.5),
         ),
         const SizedBox(height: 10),
         _buildToolTile(
@@ -262,7 +263,7 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
           const SizedBox(height: 22),
           Text(
             'ИСТОРИЯ ВОЗ-5',
-            style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+            style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 10),
           ..._history.map((c) => Padding(
@@ -285,7 +286,7 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
                       const SizedBox(width: 12),
                       Text(
                         DateFormat.yMMMd().add_Hm().format(c.date),
-                        style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12.5),
+                        style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12.5),
                       ),
                     ],
                   ),
@@ -382,9 +383,9 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
                   child: Icon(icon, color: Colors.white, size: 19),
                 ),
                 const SizedBox(height: 10),
-                Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13.5)),
+                Text(title, style: TextStyle(color: context.onSurface, fontWeight: FontWeight.w600, fontSize: 13.5)),
                 const SizedBox(height: 2),
-                Text(subtitle, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11)),
+                Text(subtitle, style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11)),
               ],
             ),
           ),
@@ -426,13 +427,13 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13.5)),
+                      Text(title, style: TextStyle(color: context.onSurface, fontWeight: FontWeight.w600, fontSize: 13.5)),
                       const SizedBox(height: 2),
-                      Text(subtitle, style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 12)),
+                      Text(subtitle, style: TextStyle(color: context.onSurfaceFaded(0.45), fontSize: 12)),
                     ],
                   ),
                 ),
-                Icon(Icons.chevron_right_rounded, color: Colors.white.withOpacity(0.3)),
+                Icon(Icons.chevron_right_rounded, color: context.onSurfaceFaded(0.3)),
               ],
             ),
           ),
@@ -456,7 +457,7 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
               'Отметь, что ближе всего к тому, как ты себя чувствовал(а) последние '
               'две недели.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13),
+              style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 13),
             ),
             const SizedBox(height: 18),
             Row(
@@ -470,7 +471,7 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
                   height: 7,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(4),
-                    color: done || active ? const Color(0xFF6C5CE7) : Colors.white.withOpacity(0.15),
+                    color: done || active ? const Color(0xFF6C5CE7) : context.onSurfaceFaded(0.15),
                   ),
                 );
               }),
@@ -488,11 +489,11 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
                   Expanded(
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                        side: BorderSide(color: context.onSurfaceFaded(0.2)),
                         padding: const EdgeInsets.symmetric(vertical: 13),
                       ),
                       onPressed: () => setState(() => _currentQuestion--),
-                      child: Text('Назад', style: TextStyle(color: Colors.white.withOpacity(0.8))),
+                      child: Text('Назад', style: TextStyle(color: context.onSurfaceFaded(0.8))),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -546,7 +547,7 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
         children: [
           Text(
             _who5Statements[index],
-            style: const TextStyle(color: Colors.white, fontSize: 15.5, fontWeight: FontWeight.w500),
+            style: TextStyle(color: context.onSurface, fontSize: 15.5, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 14),
           Wrap(
@@ -561,14 +562,14 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
                 selected: selected,
                 onSelected: (_) => setState(() => _currentAnswers[index] = value),
                 labelStyle: TextStyle(
-                  color: selected ? Colors.white : Colors.white.withOpacity(0.7),
+                  color: selected ? Colors.white : context.onSurfaceFaded(0.7),
                   fontSize: 12.5,
                 ),
                 selectedColor: const Color(0xFF6C5CE7),
-                backgroundColor: Colors.white.withOpacity(0.06),
+                backgroundColor: context.onSurfaceFaded(0.06),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
-                  side: BorderSide(color: Colors.white.withOpacity(0.12)),
+                  side: BorderSide(color: context.onSurfaceFaded(0.12)),
                 ),
               );
             }),
@@ -604,7 +605,7 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
               const SizedBox(height: 8),
               Text(
                 isLow ? 'Показатель ниже среднего' : 'Показатель в пределах нормы',
-                style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
+                style: TextStyle(color: context.onSurface, fontSize: 15, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 12),
               Text(
@@ -617,7 +618,7 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
                         'признаком нормального психологического благополучия '
                         'за последние две недели.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white.withOpacity(0.65), fontSize: 13, height: 1.5),
+                style: TextStyle(color: context.onSurfaceFaded(0.65), fontSize: 13, height: 1.5),
               ),
             ],
           ),
@@ -637,9 +638,9 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white.withOpacity(0.16)),
+                border: Border.all(color: context.onSurfaceFaded(0.16)),
               ),
-              child: Text('К истории', style: TextStyle(color: Colors.white.withOpacity(0.85))),
+              child: Text('К истории', style: TextStyle(color: context.onSurfaceFaded(0.85))),
             ),
           ),
         ),
@@ -663,14 +664,14 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
             'инструмент для самонаблюдения, а не диагностика. Для точной '
             'оценки психологического состояния обратись к врачу или '
             'психотерапевту.',
-            style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11, height: 1.5),
+            style: TextStyle(color: context.onSurfaceFaded(0.35), fontSize: 11, height: 1.5),
           ),
           const SizedBox(height: 8),
           Text(
             'Опросник: World Health Organization-Five Well-Being Index (WHO-5), '
             '© World Health Organization 2024, лицензия CC BY-NC-SA 3.0 IGO. '
             'Использование ВОЗ этого приложения не подразумевается.',
-            style: TextStyle(color: Colors.white.withOpacity(0.25), fontSize: 10.5, height: 1.5),
+            style: TextStyle(color: context.onSurfaceFaded(0.25), fontSize: 10.5, height: 1.5),
           ),
         ],
       ),

@@ -5,6 +5,7 @@ import '../models/cloud_voice.dart';
 import '../services/app_settings_service.dart';
 import '../services/cloud_tts_service.dart';
 import '../state/auth_store.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 import 'admin_pronunciation_screen.dart';
@@ -147,16 +148,16 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Восстановить настройки по умолчанию?',
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                  style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Голос включится (если был выключен), голос по умолчанию '
                   'вернётся на первый в списке. Словарь произношения не '
                   'тронется — это отдельно накопленный контент, не настройка.',
-                  style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, height: 1.5),
+                  style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 13, height: 1.5),
                 ),
                 const SizedBox(height: 18),
                 Row(
@@ -164,7 +165,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(false),
-                      child: Text('Отмена', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                      child: Text('Отмена', style: TextStyle(color: context.onSurfaceFaded(0.6))),
                     ),
                     const SizedBox(width: 8),
                     FilledButton(
@@ -221,12 +222,12 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Text(
+                    Text(
                       'Управление голосом',
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -280,7 +281,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
         children: [
           Icon(
             configured ? Icons.cloud_done_rounded : Icons.cloud_off_rounded,
-            color: configured ? const Color(0xFF00E6A0) : Colors.white.withOpacity(0.4),
+            color: configured ? const Color(0xFF00E6A0) : context.onSurfaceFaded(0.4),
             size: 20,
           ),
           const SizedBox(width: 10),
@@ -289,7 +290,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
               configured
                   ? 'Локальный сервер Silero TTS настроен (${_settings.ttsProvider ?? "silero"}) — используется вместо голоса устройства.'
                   : 'Сервер Silero TTS не настроен в .env — играет только голос устройства, список ниже недоступен.',
-              style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5, height: 1.4),
+              style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 12.5, height: 1.4),
             ),
           ),
         ],
@@ -309,8 +310,8 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
             color: Colors.white70,
           ),
           const SizedBox(width: 12),
-          const Expanded(
-            child: Text('Голосовые функции для всех пользователей', style: TextStyle(color: Colors.white, fontSize: 13.5)),
+           Expanded(
+            child: Text('Голосовые функции для всех пользователей', style: TextStyle(color: context.onSurface, fontSize: 13.5)),
           ),
           if (_isSaving)
             const SizedBox(
@@ -335,12 +336,12 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
       children: [
         Text(
           'ГОЛОС ПО УМОЛЧАНИЮ',
-          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+          style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(
           'Каким голосом заговорит ИИ у пользователя, который сам ещё ничего не выбирал в своих настройках голоса.',
-          style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11.5),
+          style: TextStyle(color: context.onSurfaceFaded(0.35), fontSize: 11.5),
         ),
         const SizedBox(height: 10),
         if (!_settings.cloudTtsEnabled)
@@ -350,7 +351,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
             padding: const EdgeInsets.all(14),
             child: Text(
               'Недоступно — сервер Silero TTS не настроен (см. панель выше).',
-              style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+              style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12),
             ),
           )
         else
@@ -373,11 +374,11 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
                         children: [
                           Icon(
                             v.isFemale ? Icons.face_3_rounded : Icons.face_6_rounded,
-                            color: Colors.white.withOpacity(0.6),
+                            color: context.onSurfaceFaded(0.6),
                             size: 18,
                           ),
                           const SizedBox(width: 10),
-                          Expanded(child: Text(v.label, style: const TextStyle(color: Colors.white, fontSize: 13.5))),
+                          Expanded(child: Text(v.label, style: TextStyle(color: context.onSurface, fontSize: 13.5))),
                           if (selected) const Icon(Icons.check_circle_rounded, color: Color(0xFF00E6A0), size: 18),
                         ],
                       ),
@@ -406,21 +407,21 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
             padding: const EdgeInsets.all(14),
             child: Row(
               children: [
-                Icon(Icons.spellcheck_rounded, color: Colors.white.withOpacity(0.7)),
+                Icon(Icons.spellcheck_rounded, color: context.onSurfaceFaded(0.7)),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Словарь произношения', style: TextStyle(color: Colors.white, fontSize: 13.5, fontWeight: FontWeight.w500)),
+                      Text('Словарь произношения', style: TextStyle(color: context.onSurface, fontSize: 13.5, fontWeight: FontWeight.w500)),
                       Text(
                         'Как озвучка должна "читать" конкретные слова',
-                        style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.5),
+                        style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11.5),
                       ),
                     ],
                   ),
                 ),
-                Icon(Icons.chevron_right_rounded, color: Colors.white.withOpacity(0.3)),
+                Icon(Icons.chevron_right_rounded, color: context.onSurfaceFaded(0.3)),
               ],
             ),
           ),
@@ -435,14 +436,14 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
       children: [
         Text(
           'ВЫСОТА И ТЕМП ГОЛОСА',
-          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+          style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(
           'Необязательно — по умолчанию сервер синтеза сам решает. Значения '
           'здесь можно только услышать самому и подобрать на слух, точной '
           'документации на "что означает какое число" у сервера нет.',
-          style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11.5, height: 1.4),
+          style: TextStyle(color: context.onSurfaceFaded(0.35), fontSize: 11.5, height: 1.4),
         ),
         const SizedBox(height: 10),
         if (!_settings.cloudTtsEnabled)
@@ -452,7 +453,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
             padding: const EdgeInsets.all(14),
             child: Text(
               'Недоступно — сервер Silero TTS не настроен.',
-              style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+              style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12),
             ),
           )
         else
@@ -483,9 +484,9 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    Icon(Icons.high_quality_outlined, color: Colors.white.withOpacity(0.6), size: 16),
+                    Icon(Icons.high_quality_outlined, color: context.onSurfaceFaded(0.6), size: 16),
                     const SizedBox(width: 8),
-                    const Text('Качество звука', style: TextStyle(color: Colors.white, fontSize: 13)),
+                    Text('Качество звука', style: TextStyle(color: context.onSurface, fontSize: 13)),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -553,12 +554,12 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: selected ? const Color(0xFF6C5CE7) : Colors.white.withOpacity(0.06),
-              border: Border.all(color: selected ? const Color(0xFF6C5CE7) : Colors.white.withOpacity(0.12)),
+              color: selected ? const Color(0xFF6C5CE7) : context.onSurfaceFaded(0.06),
+              border: Border.all(color: selected ? const Color(0xFF6C5CE7) : context.onSurfaceFaded(0.12)),
             ),
             child: Text(
               label,
-              style: TextStyle(color: selected ? Colors.white : Colors.white.withOpacity(0.6), fontSize: 12.5),
+              style: TextStyle(color: selected ? Colors.white : context.onSurfaceFaded(0.6), fontSize: 12.5),
             ),
           ),
         ),
@@ -581,17 +582,17 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
           children: [
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              child: Icon(icon, size: 16, color: enabled ? Colors.white.withOpacity(0.8) : Colors.white.withOpacity(0.3)),
+              child: Icon(icon, size: 16, color: enabled ? context.onSurfaceFaded(0.8) : context.onSurfaceFaded(0.3)),
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(label, style: TextStyle(color: enabled ? Colors.white : Colors.white.withOpacity(0.4), fontSize: 13)),
+              child: Text(label, style: TextStyle(color: enabled ? context.onSurface : context.onSurfaceFaded(0.4), fontSize: 13)),
             ),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
               child: enabled
                   ? Text(value.round().toString(), key: const ValueKey('on'), style: const TextStyle(color: Color(0xFF00E6A0), fontSize: 12, fontWeight: FontWeight.w600))
-                  : Text('не задано', key: const ValueKey('off'), style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 11.5)),
+                  : Text('не задано', key: const ValueKey('off'), style: TextStyle(color: context.onSurfaceFaded(0.3), fontSize: 11.5)),
             ),
             const SizedBox(width: 8),
             Switch(
@@ -609,7 +610,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
               activeTrackColor: const Color(0xFF6C5CE7),
               thumbColor: const Color(0xFF6C5CE7),
               overlayColor: const Color(0xFF6C5CE7).withOpacity(0.2),
-              inactiveTrackColor: Colors.white.withOpacity(0.12),
+              inactiveTrackColor: context.onSurfaceFaded(0.12),
             ),
             child: Slider(
               value: value,
@@ -628,7 +629,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
     return OutlinedButton.icon(
       onPressed: _isResetting ? null : _confirmReset,
       style: OutlinedButton.styleFrom(
-        side: BorderSide(color: Colors.white.withOpacity(0.16)),
+        side: BorderSide(color: context.onSurfaceFaded(0.16)),
         padding: const EdgeInsets.symmetric(vertical: 13),
         foregroundColor: Colors.white70,
       ),

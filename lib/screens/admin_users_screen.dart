@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../models/admin_user.dart';
 import '../services/admin_users_service.dart';
 import '../state/auth_store.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
@@ -74,18 +75,18 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Expanded(
+                     Expanded(
                       child: Text(
                         'Пользователи',
-                        style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+                        style: TextStyle(color: context.onSurface, fontSize: 17, fontWeight: FontWeight.w600),
                       ),
                     ),
                     IconButton(
                       tooltip: 'Добавить пользователя',
-                      icon: const Icon(Icons.person_add_alt_1_rounded, color: Colors.white),
+                      icon: Icon(Icons.person_add_alt_1_rounded, color: context.onSurface),
                       onPressed: _showCreateUserSheet,
                     ),
                   ],
@@ -117,7 +118,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 40),
                               child: Center(
-                                child: Text('Никого не найдено', style: TextStyle(color: Colors.white.withOpacity(0.4))),
+                                child: Text('Никого не найдено', style: TextStyle(color: context.onSurfaceFaded(0.4))),
                               ),
                             )
                           else
@@ -146,8 +147,8 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('${_users.length}', style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w700)),
-                Text('всего', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+                Text('${_users.length}', style: TextStyle(color: context.onSurface, fontSize: 22, fontWeight: FontWeight.w700)),
+                Text('всего', style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12)),
               ],
             ),
           ),
@@ -169,10 +170,10 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                       margin: const EdgeInsets.only(right: 6, bottom: 2),
                       decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFF00E6A0)),
                     ),
-                    Text('$_onlineCount', style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w700)),
+                    Text('$_onlineCount', style: TextStyle(color: context.onSurface, fontSize: 22, fontWeight: FontWeight.w700)),
                   ],
                 ),
-                Text('в сети сейчас', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+                Text('в сети сейчас', style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12)),
               ],
             ),
           ),
@@ -184,13 +185,13 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   Widget _buildSearch() {
     return TextField(
       onChanged: (v) => setState(() => _search = v),
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: context.onSurface),
       decoration: InputDecoration(
-        prefixIcon: Icon(Icons.search_rounded, color: Colors.white.withOpacity(0.4)),
+        prefixIcon: Icon(Icons.search_rounded, color: context.onSurfaceFaded(0.4)),
         hintText: 'Поиск по email…',
-        hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+        hintStyle: TextStyle(color: context.onSurfaceFaded(0.3)),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.06),
+        fillColor: context.onSurfaceFaded(0.06),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
         contentPadding: const EdgeInsets.symmetric(vertical: 12),
       ),
@@ -232,7 +233,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                               child: Text(
                                 user.email,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13.5),
+                                style: TextStyle(color: context.onSurface, fontWeight: FontWeight.w600, fontSize: 13.5),
                               ),
                             ),
                             if (user.isAdmin) ...[
@@ -252,7 +253,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                         const SizedBox(height: 4),
                         Text(
                           _subtitleFor(user),
-                          style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 12),
+                          style: TextStyle(color: context.onSurfaceFaded(0.45), fontSize: 12),
                         ),
                       ],
                     ),
@@ -265,7 +266,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                       Text(
                         _expiryLabel(user),
                         style: TextStyle(
-                          color: user.isTariffExpired ? const Color(0xFFFFB4B4) : Colors.white.withOpacity(0.4),
+                          color: user.isTariffExpired ? const Color(0xFFFFB4B4) : context.onSurfaceFaded(0.4),
                           fontSize: 11,
                         ),
                       ),
@@ -428,9 +429,9 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Удалить пользователя?',
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                  style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -438,7 +439,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                   'его обращениями в поддержку и историей расхода токенов. '
                   'Загруженные им документы для RAG останутся (просто станут '
                   'без автора).',
-                  style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, height: 1.4),
+                  style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 13, height: 1.4),
                 ),
                 const SizedBox(height: 18),
                 Row(
@@ -446,7 +447,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(false),
-                      child: Text('Отмена', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                      child: Text('Отмена', style: TextStyle(color: context.onSurfaceFaded(0.6))),
                     ),
                     const SizedBox(width: 8),
                     FilledButton(
@@ -497,24 +498,24 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(user.email, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                Text(user.email, style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 16),
 
-                Text('ТАРИФ', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2)),
+                Text('ТАРИФ', style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2)),
                 const SizedBox(height: 8),
                 Row(
                   children: [
                   Expanded(
                     child: TextField(
                       controller: _tariffController,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: context.onSurface),
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.08),
+                        fillColor: context.onSurfaceFaded(0.08),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                         hintText: 'free / pro / unlimited',
-                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                        hintStyle: TextStyle(color: context.onSurfaceFaded(0.3)),
                       ),
                     ),
                   ),
@@ -527,7 +528,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               ),
 
               const SizedBox(height: 16),
-              Text('СРОК ПОДПИСКИ', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2)),
+              Text('СРОК ПОДПИСКИ', style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2)),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -537,16 +538,16 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                     OutlinedButton(
                       onPressed: _isBusy ? null : () => _apply(tariffDays: days),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withOpacity(0.16)),
-                        foregroundColor: Colors.white,
+                        side: BorderSide(color: context.onSurfaceFaded(0.16)),
+                        foregroundColor: context.onSurface,
                       ),
                       child: Text('+$days дн.'),
                     ),
                   OutlinedButton(
                     onPressed: _isBusy ? null : () => _apply(clearTariffExpiry: true),
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.white.withOpacity(0.16)),
-                      foregroundColor: Colors.white70,
+                      side: BorderSide(color: context.onSurfaceFaded(0.16)),
+                      foregroundColor: context.onSurfaceFaded(0.7),
                     ),
                     child: const Text('Сделать бессрочным'),
                   ),
@@ -554,7 +555,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               ),
 
               const SizedBox(height: 16),
-              Text('РОЛЬ И ДОСТУП', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2)),
+              Text('РОЛЬ И ДОСТУП', style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2)),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -562,8 +563,8 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                     child: OutlinedButton(
                       onPressed: _isBusy ? null : () => _apply(role: user.isAdmin ? 'user' : 'admin'),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withOpacity(0.16)),
-                        foregroundColor: Colors.white,
+                        side: BorderSide(color: context.onSurfaceFaded(0.16)),
+                        foregroundColor: context.onSurface,
                       ),
                       child: Text(user.isAdmin ? 'Снять права админа' : 'Сделать админом'),
                     ),
@@ -588,8 +589,8 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                 child: OutlinedButton.icon(
                   onPressed: _isBusy ? null : () => _apply(isOperator: !user.isOperator),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: (user.isOperator ? const Color(0xFF00E6A0) : Colors.white).withOpacity(0.16)),
-                    foregroundColor: user.isOperator ? const Color(0xFF00E6A0) : Colors.white,
+                    side: BorderSide(color: (user.isOperator ? const Color(0xFF00E6A0) : context.onSurface).withOpacity(0.16)),
+                    foregroundColor: user.isOperator ? const Color(0xFF00E6A0) : context.onSurface,
                   ),
                   icon: Icon(user.isOperator ? Icons.support_agent_rounded : Icons.support_agent_outlined, size: 18),
                   label: Text(
@@ -602,7 +603,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               _isSelf
                   ? Text(
                       'Нельзя удалить свой же аккаунт, пока ты им пользуешься.',
-                      style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 12),
+                      style: TextStyle(color: context.onSurfaceFaded(0.35), fontSize: 12),
                     )
                   : SizedBox(
                       width: double.infinity,
@@ -713,14 +714,14 @@ class _CreateUserSheetState extends State<_CreateUserSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Новый пользователь',
-                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 4),
               Text(
                 'Создаётся сразу с указанным паролем — сам человек регистрироваться не должен.',
-                style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12),
               ),
               const SizedBox(height: 16),
               _field(_emailController, 'Email', keyboardType: TextInputType.emailAddress),
@@ -731,7 +732,7 @@ class _CreateUserSheetState extends State<_CreateUserSheet> {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  Text('Роль:', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13)),
+                  Text('Роль:', style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 13)),
                   const SizedBox(width: 10),
                   ChoiceChip(
                     label: const Text('Пользователь'),
@@ -739,7 +740,7 @@ class _CreateUserSheetState extends State<_CreateUserSheet> {
                     onSelected: (_) => setState(() => _role = 'user'),
                     selectedColor: const Color(0xFF6C5CE7),
                     labelStyle: TextStyle(color: _role == 'user' ? Colors.white : Colors.white70, fontSize: 12.5),
-                    backgroundColor: Colors.white.withOpacity(0.06),
+                    backgroundColor: context.onSurfaceFaded(0.06),
                   ),
                   const SizedBox(width: 8),
                   ChoiceChip(
@@ -748,13 +749,13 @@ class _CreateUserSheetState extends State<_CreateUserSheet> {
                     onSelected: (_) => setState(() => _role = 'admin'),
                     selectedColor: const Color(0xFF6C5CE7),
                     labelStyle: TextStyle(color: _role == 'admin' ? Colors.white : Colors.white70, fontSize: 12.5),
-                    backgroundColor: Colors.white.withOpacity(0.06),
+                    backgroundColor: context.onSurfaceFaded(0.06),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
               Material(
-                color: Colors.white.withOpacity(0.06),
+                color: context.onSurfaceFaded(0.06),
                 borderRadius: BorderRadius.circular(12),
                 child: SwitchListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12),
@@ -762,10 +763,10 @@ class _CreateUserSheetState extends State<_CreateUserSheet> {
                   value: _isOperator,
                   onChanged: (v) => setState(() => _isOperator = v),
                   activeColor: const Color(0xFF00E6A0),
-                  title: const Text('Доступ к живой помощи', style: TextStyle(color: Colors.white, fontSize: 13.5)),
+                  title: Text('Доступ к живой помощи', style: TextStyle(color: context.onSurface, fontSize: 13.5)),
                   subtitle: Text(
                     'Сможет видеть очередь заявок и подключаться к чатам — например, для врача/оператора.',
-                    style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 11.5),
+                    style: TextStyle(color: context.onSurfaceFaded(0.45), fontSize: 11.5),
                   ),
                 ),
               ),
@@ -801,14 +802,14 @@ class _CreateUserSheetState extends State<_CreateUserSheet> {
       controller: controller,
       obscureText: obscure,
       keyboardType: keyboardType,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: context.onSurface),
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.white.withOpacity(0.08),
+        fillColor: context.onSurfaceFaded(0.08),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         hintText: hint,
-        hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+        hintStyle: TextStyle(color: context.onSurfaceFaded(0.3)),
       ),
     );
   }

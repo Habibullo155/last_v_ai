@@ -5,13 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
+import '../models/gad7_checkin.dart';
 import '../models/help_session.dart';
+import '../models/phq9_checkin.dart';
+import '../models/wellbeing_checkin.dart';
 import '../services/asrs_service.dart';
 import '../services/gad7_service.dart';
 import '../services/help_service.dart';
 import '../services/phq9_service.dart';
 import '../services/wellbeing_service.dart';
 import '../state/auth_store.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
@@ -163,13 +167,15 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: const Icon(Icons.photo_camera_rounded, color: Colors.white),
-                title: const Text('Сделать фото', style: TextStyle(color: Colors.white)),
+                title: const Text('Камера'),
+                textColor: Colors.white,
+                iconColor: Colors.white,
                 onTap: () => Navigator.of(context).pop(ImageSource.camera),
               ),
               ListTile(
-                leading: const Icon(Icons.photo_library_rounded, color: Colors.white),
-                title: const Text('Выбрать из галереи', style: TextStyle(color: Colors.white)),
+                title: const Text('Галерея'),
+                textColor: Colors.white,
+                iconColor: Colors.white,
                 onTap: () => Navigator.of(context).pop(ImageSource.gallery),
               ),
             ],
@@ -256,7 +262,10 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Какой результат отправить?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15)),
+              const Text(
+                'Выберите опросник',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
               const SizedBox(height: 12),
               if (hasWeekData)
                 _resultTile(
@@ -391,8 +400,8 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: const TextStyle(color: Colors.white, fontSize: 13.5)),
-                    Text(DateFormat.yMMMd().format(date), style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.5)),
+                    Text(title, style: TextStyle(color: context.onSurface, fontSize: 13.5)),
+                    Text(DateFormat.yMMMd().format(date), style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11.5)),
                   ],
                 ),
               ),
@@ -418,21 +427,21 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Живая помощь', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                          Text('Живая помощь', style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600)),
                           Text(
                             isClosed
                                 ? 'Обращение закрыто'
                                 : _session.operatorEmail != null
                                     ? 'Подключён: ${_session.operatorEmail}'
                                     : 'Ждём, когда кто-то подключится…',
-                            style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                            style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12),
                           ),
                         ],
                       ),
@@ -440,13 +449,13 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
                     if (!isClosed && _isRequester && _session.operatorId != null)
                       IconButton(
                         tooltip: 'Отправить результаты теста',
-                        icon: Icon(Icons.assignment_turned_in_outlined, color: Colors.white.withOpacity(0.7)),
+                        icon: Icon(Icons.assignment_turned_in_outlined, color: context.onSurfaceFaded(0.7)),
                         onPressed: _shareTestResults,
                       ),
                     if (!isClosed && _isParticipant)
                       TextButton(
                         onPressed: _close,
-                        child: Text('Завершить', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                        child: Text('Завершить', style: TextStyle(color: context.onSurfaceFaded(0.6))),
                       ),
                   ],
                 ),
@@ -493,7 +502,7 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
                                         ? 'Заявка отправлена — сообщение появится, как только кто-то подключится.'
                                         : 'Напиши, что случилось.',
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(color: Colors.white.withOpacity(0.4)),
+                                    style: TextStyle(color: context.onSurfaceFaded(0.4)),
                                   ),
                                 )
                               : ListView.builder(
@@ -543,7 +552,7 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
                                               width: 18,
                                               height: 18,
                                               decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFFFF6B6B)),
-                                              child: const Icon(Icons.close_rounded, color: Colors.white, size: 12),
+                                              color: Colors.white
                                             ),
                                           ),
                                         ),
@@ -555,7 +564,7 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
                             Row(
                               children: [
                                 IconButton(
-                                  icon: const Icon(Icons.add_photo_alternate_outlined, color: Colors.white70),
+                                  icon: Icon(Icons.add_photo_alternate_outlined, color: context.onSurfaceFaded(0.7)),
                                   onPressed: _isSending ? null : _showImageSourceSheet,
                                 ),
                                 Expanded(
@@ -563,23 +572,23 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
                                     controller: _controller,
                                     minLines: 1,
                                     maxLines: 4,
-                                    style: const TextStyle(color: Colors.white),
+                                    style: TextStyle(color: context.onSurface),
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
                                       hintText: 'Написать сообщение…',
-                                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.4)),
+                                      hintStyle: TextStyle(color: context.onSurfaceFaded(0.4)),
                                     ),
                                     onSubmitted: (_) => _send(),
                                   ),
                                 ),
                                 IconButton(
                                   icon: _isSending
-                                      ? const SizedBox(
+                                      ? SizedBox(
                                           width: 18,
                                           height: 18,
-                                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                          child: CircularProgressIndicator(strokeWidth: 2, color: context.onSurface),
                                         )
-                                      : const Icon(Icons.send_rounded, color: Colors.white),
+                                      : Icon(Icons.send_rounded, color: context.onSurface),
                                   onPressed: _isSending ? null : _send,
                                 ),
                               ],
@@ -620,11 +629,11 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
                     if (message.content.isNotEmpty) const SizedBox(height: 6),
                   ],
                   if (message.content.isNotEmpty)
-                    Text(message.content, style: const TextStyle(color: Colors.white, fontSize: 14, height: 1.4)),
+                    Text(message.content, style: TextStyle(color: isMine ? Colors.white : context.onSurface, fontSize: 14, height: 1.4)),
                   const SizedBox(height: 4),
                   Text(
                     DateFormat.Hm().format(message.createdAt),
-                    style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 10.5),
+                    style: TextStyle(color: isMine ? Colors.white.withOpacity(0.65) : context.onSurfaceFaded(0.5), fontSize: 10.5),
                   ),
                 ],
               ),
@@ -700,18 +709,18 @@ class _ChatContextPanelState extends State<_ChatContextPanel> {
               onTap: () => setState(() => _expanded = !_expanded),
               child: Row(
                 children: [
-                  Icon(Icons.history_rounded, size: 14, color: Colors.white.withOpacity(0.5)),
+                  Icon(Icons.history_rounded, size: 14, color: context.onSurfaceFaded(0.5)),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       'Что происходило в чате с ИИ до этого обращения',
-                      style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                   ),
                   Icon(
                     _expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
                     size: 18,
-                    color: Colors.white.withOpacity(0.4),
+                    color: context.onSurfaceFaded(0.4),
                   ),
                 ],
               ),
@@ -724,7 +733,7 @@ class _ChatContextPanelState extends State<_ChatContextPanel> {
               child: SingleChildScrollView(
                 child: Text(
                   widget.text,
-                  style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 12.5, height: 1.5),
+                  style: TextStyle(color: context.onSurfaceFaded(0.55), fontSize: 12.5, height: 1.5),
                 ),
               ),
             ),
@@ -770,7 +779,7 @@ class _RatingPanelState extends State<_RatingPanel> {
         children: [
           Text(
             alreadyRated ? 'Твоя оценка' : 'Как прошло общение с оператором?',
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13.5),
+            style: TextStyle(color: context.onSurface, fontWeight: FontWeight.w600, fontSize: 13.5),
           ),
           const SizedBox(height: 10),
           Row(
@@ -782,7 +791,7 @@ class _RatingPanelState extends State<_RatingPanel> {
                 constraints: const BoxConstraints(),
                 icon: Icon(
                   filled ? Icons.star_rounded : Icons.star_border_rounded,
-                  color: filled ? const Color(0xFFFFD166) : Colors.white.withOpacity(0.3),
+                  color: filled ? const Color(0xFFFFD166) : context.onSurfaceFaded(0.3),
                   size: 30,
                 ),
                 onPressed: widget.isSaving
@@ -799,14 +808,14 @@ class _RatingPanelState extends State<_RatingPanel> {
             TextField(
               controller: _commentController,
               maxLines: 2,
-              style: const TextStyle(color: Colors.white, fontSize: 13),
+              style: TextStyle(color: context.onSurface, fontSize: 13),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white.withOpacity(0.07),
+                fillColor: context.onSurfaceFaded(0.07),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
                 contentPadding: const EdgeInsets.all(10),
                 hintText: 'Комментарий (необязательно)',
-                hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                hintStyle: TextStyle(color: context.onSurfaceFaded(0.3)),
               ),
             ),
             const SizedBox(height: 10),

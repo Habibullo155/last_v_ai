@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/app_settings_service.dart';
 import '../state/auth_store.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
@@ -158,15 +159,15 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Сбросить имя и инструкции ИИ?',
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                  style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Ассистент вернётся к обычному поведению без имени и '
                   'дополнительных инструкций.',
-                  style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, height: 1.5),
+                  style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 13, height: 1.5),
                 ),
                 const SizedBox(height: 18),
                 Row(
@@ -174,7 +175,7 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(false),
-                      child: Text('Отмена', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                      child: Text('Отмена', style: TextStyle(color: context.onSurfaceFaded(0.6))),
                     ),
                     const SizedBox(width: 8),
                     FilledButton(
@@ -226,12 +227,12 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Text(
+                    Text(
                       'Поведение ИИ',
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -257,14 +258,14 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
                                   padding: const EdgeInsets.all(14),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.shield_outlined, color: Colors.white.withOpacity(0.6), size: 18),
+                                      Icon(Icons.shield_outlined, color: context.onSurfaceFaded(0.6), size: 18),
                                       const SizedBox(width: 10),
                                       Expanded(
                                         child: Text(
                                           'Встроенные правила безопасности и поддерживающий тон '
                                           'нельзя отключить или переопределить отсюда — то, что '
                                           'ты задашь ниже, добавляется поверх них, не вместо.',
-                                          style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 12, height: 1.4),
+                                          style: TextStyle(color: context.onSurfaceFaded(0.55), fontSize: 12, height: 1.4),
                                         ),
                                       ),
                                     ],
@@ -273,43 +274,43 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
                                 const SizedBox(height: 20),
                                 Text(
                                   'ИМЯ АССИСТЕНТА',
-                                  style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+                                  style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
                                 ),
                                 const SizedBox(height: 8),
                                 TextField(
                                   controller: _nameController,
-                                  style: const TextStyle(color: Colors.white),
+                                  style: TextStyle(color: context.onSurface),
                                   decoration: InputDecoration(
                                     filled: true,
-                                    fillColor: Colors.white.withOpacity(0.07),
+                                    fillColor: context.onSurfaceFaded(0.07),
                                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                                     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                                     hintText: 'Например: Люмен (необязательно)',
-                                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                                    hintStyle: TextStyle(color: context.onSurfaceFaded(0.3)),
                                   ),
                                 ),
                                 const SizedBox(height: 20),
                                 Text(
                                   'ДОПОЛНИТЕЛЬНЫЕ ИНСТРУКЦИИ',
-                                  style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+                                  style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   'Чем должен заниматься ассистент, какого стиля держаться — добавляется к каждому разговору.',
-                                  style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.5),
+                                  style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11.5),
                                 ),
                                 const SizedBox(height: 8),
                                 TextField(
                                   controller: _promptController,
                                   maxLines: 6,
-                                  style: const TextStyle(color: Colors.white, fontSize: 13.5),
+                                  style: TextStyle(color: context.onSurface, fontSize: 13.5),
                                   decoration: InputDecoration(
                                     filled: true,
-                                    fillColor: Colors.white.withOpacity(0.07),
+                                    fillColor: context.onSurfaceFaded(0.07),
                                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                                     contentPadding: const EdgeInsets.all(14),
                                     hintText: 'Например: специализируешься на поддержке в учёбе, объясняй просто и с примерами.',
-                                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                                    hintStyle: TextStyle(color: context.onSurfaceFaded(0.3)),
                                   ),
                                 ),
                                 const SizedBox(height: 20),
@@ -349,7 +350,7 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
                                 OutlinedButton.icon(
                                   onPressed: _isResetting ? null : _confirmReset,
                                   style: OutlinedButton.styleFrom(
-                                    side: BorderSide(color: Colors.white.withOpacity(0.16)),
+                                    side: BorderSide(color: context.onSurfaceFaded(0.16)),
                                     padding: const EdgeInsets.symmetric(vertical: 13),
                                     foregroundColor: Colors.white70,
                                   ),
@@ -394,12 +395,12 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
       children: [
         Text(
           'СКОРОСТЬ И ТОН ОТВЕТА',
-          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+          style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(
           'Насколько предсказуемо или творчески отвечает модель, и как подробно.',
-          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.5),
+          style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11.5),
         ),
         const SizedBox(height: 16),
         if (_modelError != null) ...[
@@ -428,11 +429,11 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
                       child: Text(
                         _temperatureLabel(_temperature),
                         key: ValueKey(_temperatureLabel(_temperature)),
-                        style: const TextStyle(color: Colors.white, fontSize: 13.5, fontWeight: FontWeight.w500),
+                        style: TextStyle(color: context.onSurface, fontSize: 13.5, fontWeight: FontWeight.w500),
                       ),
                     ),
                   ),
-                  Text(_temperature.toStringAsFixed(2), style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
+                  Text(_temperature.toStringAsFixed(2), style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12)),
                 ],
               ),
               SliderTheme(
@@ -440,7 +441,7 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
                   activeTrackColor: _temperatureColor(_temperature),
                   thumbColor: _temperatureColor(_temperature),
                   overlayColor: _temperatureColor(_temperature).withOpacity(0.2),
-                  inactiveTrackColor: Colors.white.withOpacity(0.12),
+                  inactiveTrackColor: context.onSurfaceFaded(0.12),
                 ),
                 child: Slider(
                   value: _temperature,
@@ -453,12 +454,12 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.filter_alt_outlined, color: Colors.white.withOpacity(0.5), size: 16),
+                  Icon(Icons.filter_alt_outlined, color: context.onSurfaceFaded(0.5), size: 16),
                   const SizedBox(width: 8),
-                  const Expanded(
-                    child: Text('Фокус ответа (top_p)', style: TextStyle(color: Colors.white, fontSize: 13)),
+                   Expanded(
+                    child: Text('Фокус ответа (top_p)', style: TextStyle(color: context.onSurface, fontSize: 13)),
                   ),
-                  Text(_topP.toStringAsFixed(2), style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
+                  Text(_topP.toStringAsFixed(2), style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12)),
                 ],
               ),
               SliderTheme(
@@ -466,7 +467,7 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
                   activeTrackColor: const Color(0xFF00E6A0),
                   thumbColor: const Color(0xFF00E6A0),
                   overlayColor: const Color(0xFF00E6A0).withOpacity(0.2),
-                  inactiveTrackColor: Colors.white.withOpacity(0.12),
+                  inactiveTrackColor: context.onSurfaceFaded(0.12),
                 ),
                 child: Slider(
                   value: _topP,
@@ -477,7 +478,7 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              const Text('Длина ответа', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
+              Text('Длина ответа', style: TextStyle(color: context.onSurface, fontSize: 13, fontWeight: FontWeight.w500)),
               const SizedBox(height: 10),
               Wrap(
                 spacing: 8,
@@ -524,7 +525,7 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
         OutlinedButton.icon(
           onPressed: _isResettingModel ? null : _resetModel,
           style: OutlinedButton.styleFrom(
-            side: BorderSide(color: Colors.white.withOpacity(0.16)),
+            side: BorderSide(color: context.onSurfaceFaded(0.16)),
             padding: const EdgeInsets.symmetric(vertical: 13),
             foregroundColor: Colors.white70,
           ),
@@ -542,16 +543,16 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       child: ChoiceChip(
-        avatar: Icon(icon, size: 16, color: selected ? Colors.white : Colors.white.withOpacity(0.6)),
+        avatar: Icon(icon, size: 16, color: selected ? Colors.white : context.onSurfaceFaded(0.6)),
         label: Text(label),
         selected: selected,
         onSelected: (_) => setState(() => _responseLength = value),
-        labelStyle: TextStyle(color: selected ? Colors.white : Colors.white.withOpacity(0.7), fontSize: 12.5),
+        labelStyle: TextStyle(color: selected ? Colors.white : context.onSurfaceFaded(0.7), fontSize: 12.5),
         selectedColor: const Color(0xFF6C5CE7),
-        backgroundColor: Colors.white.withOpacity(0.06),
+        backgroundColor: context.onSurfaceFaded(0.06),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: Colors.white.withOpacity(0.12)),
+          side: BorderSide(color: context.onSurfaceFaded(0.12)),
         ),
       ),
     );
