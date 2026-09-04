@@ -20,7 +20,11 @@ enum _Mode { intro, testing, result }
 /// сама по себе.
 class Gad7Screen extends StatefulWidget {
   final String userId;
-  const Gad7Screen({super.key, required this.userId});
+  // Опционально - если задан, на экране результата появляется кнопка
+  // "Обсудить с ИИ": закрывает тест и сразу отправляет результат в чат,
+  // чтобы ИИ отреагировал, а не оставлять человека наедине с голой цифрой
+  final Future<void> Function(String summary)? onDiscussWithAi;
+  const Gad7Screen({super.key, required this.userId, this.onDiscussWithAi});
 
   @override
   State<Gad7Screen> createState() => _Gad7ScreenState();
@@ -87,7 +91,7 @@ class _Gad7ScreenState extends State<Gad7Screen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
+                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     Text(
@@ -362,6 +366,31 @@ class _Gad7ScreenState extends State<Gad7Screen> {
         if (result.suggestsFurtherAssessment) ...[
           const SizedBox(height: 16),
           const CrisisResourcesPanel(),
+        ],
+        if (widget.onDiscussWithAi != null) ...[
+          const SizedBox(height: 16),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: () async {
+                final text = 'Я прошёл(ла) опросник GAD-7 (тревожные симптомы): '
+                    '${result.rawScore}/21, методика описывает это как «${result.severityLabel}». '
+                    'Можешь прокомментировать результат и поддержать меня?';
+                Navigator.of(context).pop();
+                await widget.onDiscussWithAi!(text);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 13),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  gradient: const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
+                ),
+                child: const Text('Обсудить с ИИ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+              ),
+            ),
+          ),
         ],
         const SizedBox(height: 16),
         Material(

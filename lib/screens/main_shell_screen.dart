@@ -1,3 +1,4 @@
+import 'package:ai_last_v/widgets/app_background.dart';
 import 'package:flutter/material.dart';
 
 import '../state/auth_store.dart';
@@ -7,6 +8,7 @@ import '../state/voice_store.dart';
 import '../widgets/glass_panel.dart';
 import 'chat_screen.dart';
 import 'profile_screen.dart';
+import 'sleep_music_screen.dart';
 import 'wellbeing_screen.dart';
 
 /// Только для мобильных — на десктопе/планшете как было: один ChatScreen
@@ -34,6 +36,23 @@ class MainShellScreen extends StatefulWidget {
 
 class _MainShellScreenState extends State<MainShellScreen> {
   int _index = 0;
+  // Ленивая первая загрузка - раньше все 4 экрана строились сразу при
+  // старте приложения и IndexedStack держал их все смонтированными
+  // навсегда, даже если человек ни разу не открывал, скажем, "Профиль".
+  // Каждый такой экран - это списки, контроллеры, слушатели стора - реальная
+  // память и работа сборщика мусора впустую для вкладок, которые ещё
+  // никто не открывал. Теперь вкладка строится только при первом реальном
+  // переходе на неё; после этого - как раньше, состояние сохраняется
+  // между переключениями (IndexedStack не пересоздаёт уже посещённые).
+  final Set<int> _visitedIndices = {0};
+
+  void _goToIndex(int i) {
+    if (!mounted) return;
+    setState(() {
+      _index = i;
+      _visitedIndices.add(i);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,24 +66,40 @@ class _MainShellScreenState extends State<MainShellScreen> {
         voiceStore: widget.voiceStore,
         hideShellDuplicates: true,
       ),
-      WellbeingScreen(
-        userId: userId,
-        voiceStore: widget.voiceStore,
-        onStartAiConversation: (text) async {
-          widget.store.createNewChat();
-          await widget.store.sendMessage(text);
-          if (mounted) setState(() => _index = 0);
-        },
-      ),
-      ProfileScreen(authStore: widget.authStore),
+      if (_visitedIndices.contains(1))
+        WellbeingScreen(
+          userId: userId,
+          voiceStore: widget.voiceStore,
+          authStore: widget.authStore,
+          showOwnBackground: false,
+          onStartAiConversation: (text) async {
+            // без createNewChat() - не обрываем уже идущий разговор ради
+            // нового, см. тот же фикс в chat_screen.dart::_chooseTest()
+            await widget.store.sendMessage(text);
+            _goToIndex(0);
+          },
+        )
+      else
+        const SizedBox.shrink(),
+      if (_visitedIndices.contains(2)) ProfileScreen(authStore: widget.authStore, showOwnBackground: false) else const SizedBox.shrink(),
+      if (_visitedIndices.contains(3)) SleepMusicScreen(authStore: widget.authStore, showOwnBackground: false) else const SizedBox.shrink(),
     ];
 
     return Scaffold(
       backgroundColor: const Color(0xFF0B0F1E),
-      body: IndexedStack(index: _index, children: pages),
+      // ОДИН общий фон на всю оболочку - раньше каждая из 4 вкладок несла
+      // СВОЙ отдельный AppBackground, а IndexedStack держит все вкладки
+      // смонтированными одновременно (не только видимую), значит на
+      // мобильном реально работали 4 параллельных таймера анимации бликов
+      // разом, даже когда видна была только одна вкладка. Теперь - ровно
+      // один, у каждого дочернего экрана enabled: false (или
+      // hideShellDuplicates: true у ChatScreen, тот же смысл)
+      body: AppBackground(
+        child: IndexedStack(index: _index, children: pages),
+      ),
       bottomNavigationBar: _GlassBottomNav(
         index: _index,
-        onTap: (i) => setState(() => _index = i),
+        onTap: _goToIndex,
       ),
     );
   }
@@ -79,6 +114,7 @@ class _GlassBottomNav extends StatelessWidget {
     (icon: Icons.spa_rounded, label: 'Чат'),
     (icon: Icons.self_improvement_rounded, label: 'Самочувствие'),
     (icon: Icons.person_rounded, label: 'Профиль'),
+    (icon: Icons.nightlight_rounded, label: 'Сон'),
   ];
 
   @override

@@ -1,14 +1,19 @@
+import 'package:ai_last_v/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+
 
 import '../services/reminder_service.dart';
 import '../state/auth_store.dart';
 import '../state/chat_store.dart';
+import '../state/notification_prefs_store.dart';
+import '../state/performance_mode_store.dart';
 import '../state/theme_store.dart';
 import '../state/voice_store.dart';
 import '../theme/app_text_color.dart';
 import '../utils/auth_navigation.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
+import '../widgets/theme_variant_swatch.dart';
 import 'voice_settings_screen.dart';
 
 /// Адрес сервера здесь только отображается — редактировать его в
@@ -78,7 +83,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           if (granted) {
             _reminderEnabled = true;
           } else {
-            _reminderError = 'Нет разрешения на уведомления — включи их в настройках устройства для этого приложения.';
+            _reminderError = AppLocalizations.of(context)!.settingsReminderPermissionDenied;
           }
         });
       }
@@ -151,6 +156,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: AppBackground(
@@ -162,11 +168,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
+                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                     Text(
-                      'Настройки',
+                    Text(
+                      l10n.settingsTitle,
                       style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
@@ -181,11 +187,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _sectionLabel('ОФОРМЛЕНИЕ'),
+                          _sectionLabel(l10n.settingsSectionAppearance),
                           AnimatedBuilder(
                             animation: widget.themeStore,
                             builder: (context, _) {
-                              final isLight = widget.themeStore.mode == AppThemeMode.light;
                               return GlassPanel(
                                 opacity: 0.08,
                                 borderRadius: BorderRadius.circular(18),
@@ -193,33 +198,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          isLight ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                                          color: context.onSurfaceFaded(0.7),
-                                          size: 18,
+                                    Text(l10n.settingsThemeLabel, style: TextStyle(color: context.onSurface)),
+                                    const SizedBox(height: 12),
+                                    SegmentedButton<AppThemeMode>(
+                                      segments: [
+                                        ButtonSegment(
+                                          value: AppThemeMode.dark,
+                                          icon: const Icon(Icons.dark_mode_rounded, size: 17),
+                                          label: Text(l10n.settingsThemeDark),
                                         ),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text('Светлая тема', style: TextStyle(color: context.onSurface)),
+                                        ButtonSegment(
+                                          value: AppThemeMode.light,
+                                          icon: const Icon(Icons.light_mode_rounded, size: 17),
+                                          label: Text(l10n.settingsThemeLight),
                                         ),
-                                        Switch(
-                                          value: isLight,
-                                          activeColor: const Color(0xFF6C5CE7),
-                                          onChanged: (v) => widget.themeStore
-                                              .setMode(v ? AppThemeMode.light : AppThemeMode.dark),
+                                        ButtonSegment(
+                                          value: AppThemeMode.system,
+                                          icon: const Icon(Icons.brightness_auto_rounded, size: 17),
+                                          label: Text(l10n.settingsThemeSystem),
                                         ),
                                       ],
+                                      selected: {widget.themeStore.mode},
+                                      onSelectionChanged: (selection) => widget.themeStore.setMode(selection.first),
+                                      style: SegmentedButton.styleFrom(
+                                        selectedBackgroundColor: const Color(0xFF6C5CE7),
+                                        selectedForegroundColor: Colors.white,
+                                      ),
                                     ),
                                     Divider(color: context.borderSubtle, height: 24),
-                                    Text('Цвет фона', style: TextStyle(color: context.onSurface)),
+                                    Text(l10n.settingsBackgroundColorLabel, style: TextStyle(color: context.onSurface)),
                                     const SizedBox(height: 12),
                                     Wrap(
                                       spacing: 12,
                                       runSpacing: 12,
                                       children: BackgroundVariant.values
-                                          .map((v) => _VariantSwatch(
+                                          .map((v) => ThemeVariantSwatch(
                                                 variant: v,
                                                 selected: widget.themeStore.variant == v,
                                                 onTap: () => widget.themeStore.setVariant(v),
@@ -232,7 +245,90 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             },
                           ),
                           const SizedBox(height: 24),
-                          _sectionLabel('ГОЛОС'),
+                          _sectionLabel(l10n.settingsSectionPerformance),
+                          AnimatedBuilder(
+                            animation: PerformanceModeStore.instance,
+                            builder: (context, _) {
+                              return GlassPanel(
+                                opacity: 0.08,
+                                borderRadius: BorderRadius.circular(18),
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(Icons.battery_saver_outlined, color: context.onSurfaceFaded(0.7), size: 18),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(l10n.settingsPerformanceModeLabel, style: TextStyle(color: context.onSurface)),
+                                        ),
+                                        Switch(
+                                          value: PerformanceModeStore.instance.enabled,
+                                          activeColor: const Color(0xFF6C5CE7),
+                                          onChanged: (v) => PerformanceModeStore.instance.setEnabled(v),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      l10n.settingsPerformanceModeDescription,
+                                      style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12, height: 1.4),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 24),
+                          _sectionLabel(l10n.settingsSectionNotifications),
+                          AnimatedBuilder(
+                            animation: NotificationPrefsStore.instance,
+                            builder: (context, _) {
+                              final prefs = NotificationPrefsStore.instance;
+                              return GlassPanel(
+                                opacity: 0.08,
+                                borderRadius: BorderRadius.circular(18),
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(Icons.volume_up_rounded, color: context.onSurfaceFaded(0.7), size: 18),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(l10n.settingsSoundOnMessage, style: TextStyle(color: context.onSurface)),
+                                        ),
+                                        Switch(
+                                          value: prefs.soundEnabled,
+                                          activeColor: const Color(0xFF6C5CE7),
+                                          onChanged: (v) => prefs.setSoundEnabled(v),
+                                        ),
+                                      ],
+                                    ),
+                                    Divider(color: context.borderSubtle, height: 24),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.vibration_rounded, color: context.onSurfaceFaded(0.7), size: 18),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(l10n.settingsVibrationOnMessage, style: TextStyle(color: context.onSurface)),
+                                        ),
+                                        Switch(
+                                          value: prefs.vibrationEnabled,
+                                          activeColor: const Color(0xFF6C5CE7),
+                                          onChanged: (v) => prefs.setVibrationEnabled(v),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 24),
+                          _sectionLabel(l10n.settingsSectionVoice),
                           AnimatedBuilder(
                             animation: widget.voiceStore,
                             builder: (context, _) {
@@ -251,7 +347,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         ),
                                         const SizedBox(width: 12),
                                         Expanded(
-                                          child: Text('Голосовые кнопки в чате', style: TextStyle(color: context.onSurface, fontSize: 13.5)),
+                                          child: Text(l10n.settingsVoiceButtonsInChat, style: TextStyle(color: context.onSurface, fontSize: 13.5)),
                                         ),
                                         Switch(
                                           value: voice.settings.voiceUiEnabled,
@@ -274,7 +370,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  'Выбор голоса и распознавание речи',
+                                                  l10n.settingsVoiceAndSpeechRecognition,
                                                   style: TextStyle(color: context.onSurfaceFaded(0.75), fontSize: 13),
                                                 ),
                                               ),
@@ -290,7 +386,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             },
                           ),
                           const SizedBox(height: 24),
-                          _sectionLabel('БЕЗОПАСНОСТЬ'),
+                          _sectionLabel(l10n.settingsSectionSecurity),
                           if (_biometricSupported)
                             GlassPanel(
                               opacity: 0.08,
@@ -306,8 +402,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         color: context.onSurfaceFaded(0.7),
                                       ),
                                       const SizedBox(width: 12),
-                                       Expanded(
-                                        child: Text('Вход по биометрии', style: TextStyle(color: context.onSurface, fontSize: 13.5)),
+                                      Expanded(
+                                        child: Text(l10n.settingsBiometricLogin, style: TextStyle(color: context.onSurface, fontSize: 13.5)),
                                       ),
                                       if (_isBiometricBusy)
                                         const SizedBox(
@@ -343,14 +439,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               borderRadius: BorderRadius.circular(18),
                               padding: const EdgeInsets.all(16),
                               child: Text(
-                                'На этом устройстве не настроена биометрия (Face ID/отпечаток) — включи её в настройках самого устройства, если хочешь использовать здесь.',
+                                l10n.settingsBiometricNotSupported,
                                 style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12.5),
                               ),
                             ),
                           const SizedBox(height: 24),
-                          _sectionLabel('НАПОМИНАНИЯ'),
+                          _sectionLabel(l10n.settingsSectionReminders),
                           Text(
-                            'Раз в день, в выбранное время (например, когда ты обычно уже дома) — просто предложит заглянуть, если захочется поговорить.',
+                            l10n.settingsReminderDescription,
                             style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12),
                           ),
                           const SizedBox(height: 10),
@@ -369,7 +465,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     ),
                                     const SizedBox(width: 12),
                                     Expanded(
-                                      child: Text('Ежедневное напоминание', style: TextStyle(color: context.onSurface, fontSize: 13.5)),
+                                      child: Text(l10n.settingsDailyReminder, style: TextStyle(color: context.onSurface, fontSize: 13.5)),
                                     ),
                                     if (_isReminderBusy)
                                       const SizedBox(
@@ -397,7 +493,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         child: Row(
                                           children: [
                                             Expanded(
-                                              child: Text('Время', style: TextStyle(color: context.onSurfaceFaded(0.75), fontSize: 13)),
+                                              child: Text(l10n.settingsReminderTimeLabel, style: TextStyle(color: context.onSurfaceFaded(0.75), fontSize: 13)),
                                             ),
                                             Text(
                                               TimeOfDay(hour: _reminderHour, minute: _reminderMinute).format(context),
@@ -426,7 +522,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          _sectionLabel('АККАУНТ'),
+                          _sectionLabel(l10n.settingsSectionAccount),
                           GlassPanel(
                             opacity: 0.08,
                             borderRadius: BorderRadius.circular(18),
@@ -435,13 +531,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(18),
                                 onTap: () => confirmAndLogout(context, widget.authStore),
-                                child:  Padding(
-                                  padding: EdgeInsets.all(16),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
                                   child: Row(
                                     children: [
                                       Icon(Icons.logout_rounded, color: context.onSurfaceFaded(0.7)),
-                                      SizedBox(width: 12),
-                                      Text('Выйти из аккаунта', style: TextStyle(color: context.onSurface)),
+                                      const SizedBox(width: 12),
+                                      Text(l10n.settingsLogoutButton, style: TextStyle(color: context.onSurface)),
                                     ],
                                   ),
                                 ),
@@ -449,7 +545,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          _sectionLabel('О ПРИЛОЖЕНИИ'),
+                          _sectionLabel(l10n.settingsSectionAbout),
                           GlassPanel(
                             opacity: 0.08,
                             borderRadius: BorderRadius.circular(18),
@@ -457,19 +553,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('AI Glass Chat', style: TextStyle(color: context.onSurface, fontWeight: FontWeight.w600)),
+                                Text(l10n.appTitle, style: TextStyle(color: context.onSurface, fontWeight: FontWeight.w600)),
                                 const SizedBox(height: 4),
-                                Text('Версия 1.0.0', style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12.5)),
+                                Text(l10n.settingsAppVersion, style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12.5)),
                                 const SizedBox(height: 8),
                                 Text(
-                                  'Модель по умолчанию: gemma4:e2b через локальный Ollama.',
+                                  l10n.settingsModelInfo,
                                   style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12.5),
                                 ),
                               ],
                             ),
                           ),
                           const SizedBox(height: 24),
-                          _sectionLabel('ОПАСНАЯ ЗОНА'),
+                          _sectionLabel(l10n.settingsSectionDangerZone),
                           GlassPanel(
                             opacity: 0.08,
                             borderRadius: BorderRadius.circular(18),
@@ -478,15 +574,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(18),
                                 onTap: () => _showDeleteAccountDialog(context, widget.authStore),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(16),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.delete_forever_rounded, color: Color(0xFFFF6B6B)),
-                                      SizedBox(width: 12),
+                                      const Icon(Icons.delete_forever_rounded, color: Color(0xFFFF6B6B)),
+                                      const SizedBox(width: 12),
                                       Text(
-                                        'Удалить аккаунт',
-                                        style: TextStyle(color: Color(0xFFFFB4B4), fontWeight: FontWeight.w500),
+                                        l10n.settingsDeleteAccountButton,
+                                        style: const TextStyle(color: Color(0xFFFFB4B4), fontWeight: FontWeight.w500),
                                       ),
                                     ],
                                   ),
@@ -581,6 +677,7 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       backgroundColor: Colors.transparent,
       child: GlassPanel(
@@ -593,21 +690,18 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-               Text(
-                'Удалить аккаунт?',
+              Text(
+                l10n.settingsDeleteAccountDialogTitle,
                 style: TextStyle(color: context.onSurface, fontSize: 17, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
               Text(
-                'Это необратимо: аккаунт, история обращений в поддержку и '
-                'статистика использования будут удалены полностью. История '
-                'переписки на этом устройстве останется — она никогда не '
-                'хранилась на сервере, и её можно удалить отдельно.',
+                l10n.settingsDeleteAccountWarning,
                 style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 13, height: 1.45),
               ),
               const SizedBox(height: 16),
               Text(
-                'Подтверди паролем',
+                l10n.settingsConfirmWithPassword,
                 style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12),
               ),
               const SizedBox(height: 8),
@@ -622,7 +716,7 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
                   fillColor: context.onSurfaceFaded(0.08),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  hintText: 'Пароль',
+                  hintText: l10n.authPasswordHint,
                   hintStyle: TextStyle(color: context.onSurfaceFaded(0.3)),
                 ),
               ),
@@ -636,106 +730,25 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
                 children: [
                   TextButton(
                     onPressed: _isBusy ? null : () => Navigator.of(context).pop(),
-                    child: Text('Отмена', style: TextStyle(color: context.onSurfaceFaded(0.6))),
+                    child: Text(l10n.commonCancel, style: TextStyle(color: context.onSurfaceFaded(0.6))),
                   ),
                   const SizedBox(width: 8),
                   FilledButton(
                     style: FilledButton.styleFrom(backgroundColor: const Color(0xFFFF6B6B)),
                     onPressed: _isBusy ? null : _confirmDelete,
                     child: _isBusy
-                        ?  SizedBox(
+                        ? SizedBox(
                             width: 16,
                             height: 16,
                             child: CircularProgressIndicator(strokeWidth: 2, color: context.onSurface),
                           )
-                        : const Text('Удалить навсегда'),
+                        : Text(l10n.settingsDeleteForeverButton),
                   ),
                 ],
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _VariantSwatch extends StatelessWidget {
-  final BackgroundVariant variant;
-  final bool selected;
-  final VoidCallback onTap;
-  const _VariantSwatch({required this.variant, required this.selected, required this.onTap});
-
-  List<Color> get _colors {
-    switch (variant) {
-      case BackgroundVariant.violet:
-        return const [Color(0xFF6C5CE7), Color(0xFF00D9C0)];
-      case BackgroundVariant.ocean:
-        return const [Color(0xFF00B4D8), Color(0xFF4DD0C4)];
-      case BackgroundVariant.midnight:
-        return const [Color(0xFF3A3A5C), Color(0xFF5B4B8A)];
-      case BackgroundVariant.sunset:
-        return const [Color(0xFFFF7E5F), Color(0xFFFEB47B)];
-      case BackgroundVariant.forest:
-        return const [Color(0xFF2E8B57), Color(0xFF6FCF97)];
-      case BackgroundVariant.rose:
-        return const [Color(0xFFE0568C), Color(0xFFFF9EBB)];
-      case BackgroundVariant.amber:
-        return const [Color(0xFFE8A33D), Color(0xFFFFD166)];
-      case BackgroundVariant.slate:
-        return const [Color(0xFF5C7A99), Color(0xFF8FA8BF)];
-      case BackgroundVariant.mint:
-        return const [Color(0xFF00D9C0), Color(0xFF6FE7D4)];
-    }
-  }
-
-  String get _label {
-    switch (variant) {
-      case BackgroundVariant.violet:
-        return 'Фиолетовый';
-      case BackgroundVariant.ocean:
-        return 'Океан';
-      case BackgroundVariant.midnight:
-        return 'Полночь';
-      case BackgroundVariant.sunset:
-        return 'Закат';
-      case BackgroundVariant.forest:
-        return 'Лес';
-      case BackgroundVariant.rose:
-        return 'Розовый';
-      case BackgroundVariant.amber:
-        return 'Янтарь';
-      case BackgroundVariant.slate:
-        return 'Графит';
-      case BackgroundVariant.mint:
-        return 'Мята';
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(colors: _colors),
-              border: Border.all(
-                color: selected ? context.onSurface : context.onSurfaceFaded(0.15),
-                width: selected ? 2.5 : 1,
-              ),
-            ),
-            child: selected
-                ? const Icon(Icons.check_rounded, color: Colors.white, size: 20)
-                : null,
-          ),
-          const SizedBox(height: 6),
-          Text(_label, style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 10.5)),
-        ],
       ),
     );
   }

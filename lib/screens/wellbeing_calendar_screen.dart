@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../models/custom_test.dart';
 import '../services/asrs_service.dart';
+import '../services/custom_tests_service.dart';
 import '../services/gad7_service.dart';
 import '../services/phq9_service.dart';
 import '../services/wellbeing_service.dart';
+import '../state/auth_store.dart';
 import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
@@ -26,7 +29,8 @@ class _DayEntry {
 /// (месяц, отметки дней), полноценный пакет ради этого не нужен.
 class WellbeingCalendarScreen extends StatefulWidget {
   final String userId;
-  const WellbeingCalendarScreen({super.key, required this.userId});
+  final AuthStore? authStore;
+  const WellbeingCalendarScreen({super.key, required this.userId, this.authStore});
 
   @override
   State<WellbeingCalendarScreen> createState() => _WellbeingCalendarScreenState();
@@ -55,6 +59,19 @@ class _WellbeingCalendarScreenState extends State<WellbeingCalendarScreen> {
     final phq9 = await Phq9Service().loadCheckins(widget.userId);
     final gad7 = await Gad7Service().loadCheckins(widget.userId);
     final asrs = await AsrsService().loadCheckins(widget.userId);
+    // свои тесты (конструктор в админке) - отдельный сервис, нужен токен,
+    // не просто userId, как у остальных четырёх; если токена нет (не должно
+    // случиться на этом экране, но на всякий случай) - просто пропускаем,
+    // остальной календарь всё равно должен показаться
+    List<CustomTestResultHistory> customResults = [];
+    final token = widget.authStore?.token;
+    if (token != null) {
+      try {
+        customResults = await CustomTestsService().myResults(baseUrl: widget.authStore!.baseUrl, token: token);
+      } on CustomTestsException {
+        customResults = [];
+      }
+    }
 
     final map = <DateTime, List<_DayEntry>>{};
 
@@ -95,6 +112,17 @@ class _WellbeingCalendarScreenState extends State<WellbeingCalendarScreen> {
         color: c.suggestsFurtherAssessment ? const Color(0xFFFFD166) : const Color(0xFF00E6A0),
       ));
     }
+    for (final r in customResults) {
+      // у своих тестов нет встроенного понятия "стоит обратить внимание" -
+      // подпись результата и есть вся интерпретация, отдельным цветом
+      // тревоги её дублировать не пытаемся
+      add(_DayEntry(
+        date: r.createdAt,
+        label: r.testTitle,
+        score: r.resultLabel ?? '${r.totalScore} балл(ов)',
+        color: const Color(0xFF6C5CE7),
+      ));
+    }
 
     if (!mounted) return;
     setState(() {
@@ -127,10 +155,10 @@ class _WellbeingCalendarScreenState extends State<WellbeingCalendarScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
+                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                     Expanded(
+                    Expanded(
                       child: Text(
                         'Календарь самочувствия',
                         style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
@@ -141,7 +169,7 @@ class _WellbeingCalendarScreenState extends State<WellbeingCalendarScreen> {
                         // возвращаемся сюда после теста - обновляем
                         // календарь, чтобы свежая запись сразу появилась
                         await Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => WellbeingScreen(userId: widget.userId)),
+                          MaterialPageRoute(builder: (_) => WellbeingScreen(userId: widget.userId, authStore: widget.authStore)),
                         );
                         _load();
                       },

@@ -6,6 +6,7 @@ import '../models/operator_stats.dart';
 import '../services/admin_users_service.dart';
 import '../services/operators_service.dart';
 import '../state/auth_store.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 import 'help_session_chat_screen.dart';
@@ -90,22 +91,22 @@ class _OperatorDetailScreenState extends State<OperatorDetailScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Выдать выговор', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                Text('Выдать выговор', style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
-                Text(widget.operator.email, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12.5)),
+                Text(widget.operator.email, style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12.5)),
                 const SizedBox(height: 14),
                 TextField(
                   controller: controller,
                   autofocus: true,
                   maxLines: 3,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: context.onSurface),
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Colors.white.withOpacity(0.08),
+                    fillColor: context.onSurfaceFaded(0.08),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
                     contentPadding: const EdgeInsets.all(12),
                     hintText: 'За что — эта причина сохранится в истории',
-                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                    hintStyle: TextStyle(color: context.onSurfaceFaded(0.3)),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -114,7 +115,7 @@ class _OperatorDetailScreenState extends State<OperatorDetailScreen> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: Text('Отмена', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                      child: Text('Отмена', style: TextStyle(color: context.onSurfaceFaded(0.6))),
                     ),
                     const SizedBox(width: 8),
                     FilledButton(
@@ -216,16 +217,16 @@ class _OperatorDetailScreenState extends State<OperatorDetailScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                Text(title, style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 8),
-                Text(body, style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, height: 1.5)),
+                Text(body, style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 13, height: 1.5)),
                 const SizedBox(height: 18),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(false),
-                      child: Text('Отмена', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                      child: Text('Отмена', style: TextStyle(color: context.onSurfaceFaded(0.6))),
                     ),
                     const SizedBox(width: 8),
                     FilledButton(
@@ -256,14 +257,14 @@ class _OperatorDetailScreenState extends State<OperatorDetailScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     Expanded(
                       child: Text(
                         widget.operator.email,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                        style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ],
@@ -292,7 +293,7 @@ class _OperatorDetailScreenState extends State<OperatorDetailScreen> {
                                       const SizedBox(height: 20),
                                       Text(
                                         'ВЫГОВОРЫ (${_warnings.length})',
-                                        style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+                                        style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
                                       ),
                                       const SizedBox(height: 8),
                                       ..._warnings.map(_buildWarningTile),
@@ -300,14 +301,14 @@ class _OperatorDetailScreenState extends State<OperatorDetailScreen> {
                                     const SizedBox(height: 20),
                                     Text(
                                       'ОБРАЩЕНИЯ (${_sessions.length})',
-                                      style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+                                      style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
                                     ),
                                     const SizedBox(height: 8),
                                     if (_sessions.isEmpty)
                                       Padding(
                                         padding: const EdgeInsets.symmetric(vertical: 20),
                                         child: Center(
-                                          child: Text('Ещё не принимал обращений', style: TextStyle(color: Colors.white.withOpacity(0.4))),
+                                          child: Text('Ещё не принимал обращений', style: TextStyle(color: context.onSurfaceFaded(0.4))),
                                         ),
                                       )
                                     else
@@ -347,7 +348,7 @@ class _OperatorDetailScreenState extends State<OperatorDetailScreen> {
           child: OutlinedButton.icon(
             onPressed: _isBusy ? null : _revokeAccess,
             style: OutlinedButton.styleFrom(
-              side: BorderSide(color: Colors.white.withOpacity(0.16)),
+              side: BorderSide(color: context.onSurfaceFaded(0.16)),
               foregroundColor: Colors.white70,
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),
@@ -386,16 +387,16 @@ class _OperatorDetailScreenState extends State<OperatorDetailScreen> {
                 const SizedBox(width: 6),
                 Text(
                   DateFormat.yMMMd().add_Hm().format(warning.createdAt),
-                  style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11),
+                  style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11),
                 ),
                 if (warning.issuedByEmail != null) ...[
                   const SizedBox(width: 6),
-                  Text('· ${warning.issuedByEmail}', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 11)),
+                  Text('· ${warning.issuedByEmail}', style: TextStyle(color: context.onSurfaceFaded(0.3), fontSize: 11)),
                 ],
               ],
             ),
             const SizedBox(height: 4),
-            Text(warning.reason, style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.4)),
+            Text(warning.reason, style: TextStyle(color: context.onSurface, fontSize: 13, height: 1.4)),
           ],
         ),
       ),
@@ -430,12 +431,12 @@ class _OperatorDetailScreenState extends State<OperatorDetailScreen> {
                       children: [
                         Text(
                           session.userEmail ?? 'неизвестно',
-                          style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
+                          style: TextStyle(color: context.onSurface, fontSize: 13, fontWeight: FontWeight.w500),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           DateFormat.yMMMd().add_Hm().format(session.createdAt),
-                          style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11),
+                          style: TextStyle(color: context.onSurfaceFaded(0.35), fontSize: 11),
                         ),
                         if (session.ratingComment != null && session.ratingComment!.isNotEmpty) ...[
                           const SizedBox(height: 4),
@@ -443,7 +444,7 @@ class _OperatorDetailScreenState extends State<OperatorDetailScreen> {
                             '«${session.ratingComment}»',
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 11.5, fontStyle: FontStyle.italic),
+                            style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 11.5, fontStyle: FontStyle.italic),
                           ),
                         ],
                       ],
@@ -459,12 +460,12 @@ class _OperatorDetailScreenState extends State<OperatorDetailScreen> {
                           size: 13,
                           color: i < session.rating!
                               ? (session.rating! <= 2 ? const Color(0xFFFF6B6B) : const Color(0xFFFFD166))
-                              : Colors.white.withOpacity(0.2),
+                              : context.onSurfaceFaded(0.2),
                         ),
                       ),
                     )
                   else
-                    Text('без оценки', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 11)),
+                    Text('без оценки', style: TextStyle(color: context.onSurfaceFaded(0.3), fontSize: 11)),
                 ],
               ),
             ),

@@ -183,5 +183,40 @@ class ChatApiService {
     }
   }
 
+  // Раньше врачу при подключении показывалась сырая переписка (до 15
+  // последних сообщений) целиком. Теперь вместо этого - короткая сводка
+  // от третьего лица: тот же /api/chat, тот же стриминг, только с
+  // отдельным одноразовым запросом на резюме вместо обычной реплики.
+  // Отдельного бэкенд-эндпоинта под это не заводили - незачем дублировать
+  // всю системную обвязку (безопасность, тон, персону), которая тут не
+  // мешает, просто не запускать это как обычный разговор.
+  Future<String> generateDoctorSummary({
+    required String baseUrl,
+    required List<ChatMessage> recentMessages,
+    required String? authToken,
+  }) async {
+    final request = ChatMessage(
+      id: 'doctor-summary-request',
+      role: MessageRole.user,
+      content: 'Кратко, в 2-3 предложениях, от третьего лица опиши врачу '
+          'состояние человека на основе этого разговора — что беспокоит, '
+          'как давно, что уже обсуждалось. Пиши для врача как для коллеги, '
+          'не для самого человека, и не используй обращение "ты"/"вы".',
+    );
+    final buffer = StringBuffer();
+    await for (final event in sendMessage(
+      baseUrl: baseUrl,
+      history: [...recentMessages, request],
+      authToken: authToken,
+    )) {
+      if (event.error != null) {
+        throw Exception(event.error);
+      }
+      buffer.write(event.token);
+      if (event.done) break;
+    }
+    return buffer.toString().trim();
+  }
+
   void dispose() => _client.close();
 }

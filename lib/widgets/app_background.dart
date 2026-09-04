@@ -1,40 +1,113 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
+import '../state/performance_mode_store.dart';
 import '../state/theme_store.dart';
 import '../theme/background_variant.dart';
 
 // анимированный фон с плавающими цветными бликами - база глазморфизма.
-// У каждого из 9 вариантов своя палитра для тёмного и светлого режима
-class AppBackground extends StatefulWidget {
+// У каждого из 9 вариантов своя палитра для тёмного и светлого режима.
+//
+// enabled: false - когда несколько экранов с этим фоном могут быть живы
+// ОДНОВРЕМЕННО (например IndexedStack в main_shell_screen.dart держит
+// все вкладки смонтированными разом, не только видимую) - без этого
+// каждая вкладка держала бы СВОЙ отдельный таймер и анимацию бликов,
+// работающие постоянно, даже когда сама вкладка не видна. При
+// enabled: false ничего похожего на _AnimatedAppBackground вообще не
+// создаётся - не просто скрыто, а физически не существует, никакого
+// Timer/State для него нет.
+class AppBackground extends StatelessWidget {
   final Widget child;
-  const AppBackground({super.key, required this.child});
+  final bool enabled;
+  const AppBackground({super.key, required this.child, this.enabled = true});
 
   @override
-  State<AppBackground> createState() => _AppBackgroundState();
+  Widget build(BuildContext context) {
+    if (!enabled) return child;
+    return _AnimatedAppBackground(child: child);
+  }
 }
 
-class _AppBackgroundState extends State<AppBackground>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
+class _AnimatedAppBackground extends StatefulWidget {
+  final Widget child;
+  const _AnimatedAppBackground({required this.child});
+
+  @override
+  State<_AnimatedAppBackground> createState() => _AnimatedAppBackgroundState();
+}
+
+class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
+  // Раньше здесь был AnimationController..repeat() - тикает на полной
+  // частоте обновления экрана (обычно 60 раз/сек) БЕСКОНЕЧНО, пока хоть
+  // один из ~20 экранов с этим фоном смонтирован (то есть почти всегда,
+  // пока приложение открыто).
+  //
+  // Подтверждено реальным профилем в Chrome DevTools (Performance panel):
+  // Interaction to Next Paint доходил до 2500-6250мс даже на самом
+  // простом экране входа, где сама обработка клика (Processing duration)
+  // занимала всего 30-370мс - то есть проблема была не в клике, а в том,
+  // что основной поток был занят ДО и ПОСЛЕ него чем-то ещё. Отдельная
+  // трассировка показала, что "Scripting" (4383мс из 5297мс общего
+  // времени) почти целиком уходило на Google CDN - это CanvasKit
+  // (WASM+Skia), то есть непрерывный рендеринг этой самой анимации во
+  // Flutter Web, где рендеринг и обработка событий часто идут в одном
+  // потоке (в отличие от нативных платформ с отдельным Raster-потоком).
+  //
+  // Timer с редким обновлением вместо тикера на полной частоте - при
+  // 24-секундном цикле движение настолько медленное, что 12 обновлений в
+  // секунду выглядят неотличимо от 60 для человеческого глаза, а нагрузка
+  // на основной поток падает примерно в 5 раз.
+  static const _cycleDuration = Duration(seconds: 24);
+  static const _updateInterval = Duration(milliseconds: 80); // ~12.5 обновлений/сек
+
+  Timer? _timer;
+  late final DateTime _startedAt;
+  final ValueNotifier<double> _progressNotifier = ValueNotifier(0.0);
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 24),
-    )..repeat();
+    _startedAt = DateTime.now();
+    // эконом-режим - если уже включён, анимацию вообще не запускаем
+    // (статичный фон, блики застывают в начальном положении). Слушаем
+    // изменения, чтобы реагировать сразу, если человек переключит режим
+    // прямо во время использования приложения, не только при старте
+    PerformanceModeStore.instance.addListener(_onPerformanceModeChanged);
+    _updateTimerState();
+  }
+
+  void _onPerformanceModeChanged() => _updateTimerState();
+
+  void _updateTimerState() {
+    final shouldAnimate = !PerformanceModeStore.instance.enabled;
+    if (shouldAnimate && _timer == null) {
+      _timer = Timer.periodic(_updateInterval, (_) {
+        final elapsedMs = DateTime.now().difference(_startedAt).inMilliseconds;
+        final newProgress = (elapsedMs % _cycleDuration.inMilliseconds) / _cycleDuration.inMilliseconds;
+        // ValueNotifier уведомляет ТОЛЬКО свой собственный
+        // ValueListenableBuilder (сами блики), не весь build() этого
+        // виджета - настоящий контент экрана (widget.child) не
+        // перестраивается 12 раз в секунду, только он и раньше не
+        // перестраивался на все 60 раз/сек через AnimatedBuilder
+        _progressNotifier.value = newProgress;
+      });
+    } else if (!shouldAnimate && _timer != null) {
+      _timer?.cancel();
+      _timer = null;
+      _progressNotifier.value = 0.0; // фиксируем блики в одном положении
+    }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    PerformanceModeStore.instance.removeListener(_onPerformanceModeChanged);
+    _timer?.cancel();
+    _progressNotifier.dispose();
     super.dispose();
   }
 
-  _Palette _paletteFor(BackgroundVariant variant, AppThemeMode mode) {
-    final isLight = mode == AppThemeMode.light;
+  _Palette _paletteFor(BackgroundVariant variant, bool isLight) {
     switch (variant) {
       case BackgroundVariant.violet:
         return isLight
@@ -170,8 +243,14 @@ class _AppBackgroundState extends State<AppBackground>
     return AnimatedBuilder(
       animation: ThemeStore.instance,
       builder: (context, _) {
-        final isLight = ThemeStore.instance.mode == AppThemeMode.light;
-        final palette = _paletteFor(ThemeStore.instance.variant, ThemeStore.instance.mode);
+        // Theme.of(context).brightness, не ThemeStore.instance.mode
+        // напрямую - при системном режиме (AppThemeMode.system) сырой
+        // mode не равен ни light, ни dark, а разрешённая MaterialApp'ом
+        // фактическая яркость всегда корректна независимо от того, как
+        // она была выбрана (вручную или через системную тему устройства)
+        final isLight = Theme.of(context).brightness == Brightness.light;
+        final reducedContrast = ThemeStore.instance.reducedContrast;
+        final palette = _paletteFor(ThemeStore.instance.variant, isLight);
         return Stack(
           fit: StackFit.expand,
           children: [
@@ -184,45 +263,59 @@ class _AppBackgroundState extends State<AppBackground>
                 ),
               ),
             ),
-            AnimatedBuilder(
-              animation: _controller,
-              builder: (context, _) {
-                final t = _controller.value * 2 * math.pi;
-                return Stack(
-                  children: [
-                    _blob(
-                      color: palette.blob1,
-                      alignment: Alignment(math.sin(t) * 0.8, -0.9 + math.cos(t) * 0.3),
-                      size: 420,
-                      // раньше 0.22 + плёнка 0.45 ниже почти полностью
-                      // вымывали цвет - фон казался "пропавшим". Теперь
-                      // блики заметно ярче, плёнка снята почти до нуля -
-                      // мягкость обеспечивают уже сами пастельные базовые
-                      // цвета палитры (см. _paletteFor выше), не плёнка
-                      opacity: isLight ? 0.4 : 0.55,
-                    ),
-                    _blob(
-                      color: palette.blob2,
-                      alignment: Alignment(-0.9 + math.sin(t * 0.7) * 0.4, math.cos(t) * 0.9),
-                      size: 380,
-                      opacity: isLight ? 0.4 : 0.55,
-                    ),
-                    _blob(
-                      color: palette.blob3,
-                      alignment: Alignment(0.9 * math.cos(t * 0.5), 0.9 * math.sin(t * 0.9)),
-                      size: 340,
-                      opacity: isLight ? 0.4 : 0.55,
-                    ),
-                  ],
-                );
-              },
+            // RepaintBoundary - эта анимация крутится непрерывно (24 сек
+            // цикл, тикает на частоте обновления экрана) на фоне примерно
+            // 20 экранов приложения ВСЁ время, пока приложение открыто, в
+            // отличие от анимаций конкретных упражнений, которые идут
+            // только пока человек на том самом экране. Без изоляции слоя
+            // перерисовки её собственный повторный рендер на каждом кадре
+            // мог бы заставлять GPU лишний раз обрабатывать соседние
+            // слои композиции - стандартный, безопасный приём Flutter,
+            // не меняющий ничего визуально.
+            RepaintBoundary(
+              child: ValueListenableBuilder<double>(
+                valueListenable: _progressNotifier,
+                builder: (context, progress, _) {
+                  final t = progress * 2 * math.pi;
+                  return Stack(
+                    children: [
+                      _blob(
+                        color: palette.blob1,
+                        alignment: Alignment(math.sin(t) * 0.8, -0.9 + math.cos(t) * 0.3),
+                        size: 420,
+                        // раньше 0.22 + плёнка 0.45 ниже почти полностью
+                        // вымывали цвет - фон казался "пропавшим". Теперь
+                        // блики заметно ярче, плёнка снята почти до нуля -
+                        // мягкость обеспечивают уже сами пастельные базовые
+                        // цвета палитры (см. _paletteFor выше), не плёнка.
+                        // reducedContrast - "сегодня мигрень/усталость" в
+                        // Самочувствии - снова притушивает, отдельно от темы
+                        opacity: (isLight ? 0.4 : 0.55) * (reducedContrast ? 0.55 : 1.0),
+                      ),
+                      _blob(
+                        color: palette.blob2,
+                        alignment: Alignment(-0.9 + math.sin(t * 0.7) * 0.4, math.cos(t) * 0.9),
+                        size: 380,
+                        opacity: (isLight ? 0.4 : 0.55) * (reducedContrast ? 0.55 : 1.0),
+                      ),
+                      _blob(
+                        color: palette.blob3,
+                        alignment: Alignment(0.9 * math.cos(t * 0.5), 0.9 * math.sin(t * 0.9)),
+                        size: 340,
+                        opacity: (isLight ? 0.4 : 0.55) * (reducedContrast ? 0.55 : 1.0),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
             // тёмный режим: чёрная плёнка притушивает блики, чтобы они не
             // резали глаз на тёмном фоне. Светлый режим - лёгкая белая
             // плёнка, почти незаметная - только слегка смягчает края
-            // бликов, не вымывает цвет целиком
-            if (isLight) Container(color: Colors.white.withOpacity(0.12)),
-            if (!isLight) Container(color: Colors.black.withOpacity(0.25)),
+            // бликов, не вымывает цвет целиком. При reducedContrast обе
+            // плёнки усилены - именно это и означает "снизить контрастность"
+            if (isLight) Container(color: Colors.white.withOpacity(reducedContrast ? 0.32 : 0.12)),
+            if (!isLight) Container(color: Colors.black.withOpacity(reducedContrast ? 0.42 : 0.25)),
             widget.child,
           ],
         );

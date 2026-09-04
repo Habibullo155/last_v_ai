@@ -167,15 +167,13 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                title: const Text('Камера'),
-                textColor: Colors.white,
-                iconColor: Colors.white,
+                leading: const Icon(Icons.photo_camera_rounded, color: Colors.white),
+                title: const Text('Сделать фото', style: TextStyle(color: Colors.white)),
                 onTap: () => Navigator.of(context).pop(ImageSource.camera),
               ),
               ListTile(
-                title: const Text('Галерея'),
-                textColor: Colors.white,
-                iconColor: Colors.white,
+                leading: const Icon(Icons.photo_library_rounded, color: Colors.white),
+                title: const Text('Выбрать из галереи', style: TextStyle(color: Colors.white)),
                 onTap: () => Navigator.of(context).pop(ImageSource.gallery),
               ),
             ],
@@ -262,10 +260,7 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Выберите опросник',
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              ),
+              const Text('Какой результат отправить?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15)),
               const SizedBox(height: 12),
               if (hasWeekData)
                 _resultTile(
@@ -427,7 +422,7 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
+                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     Expanded(
@@ -552,7 +547,7 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
                                               width: 18,
                                               height: 18,
                                               decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFFFF6B6B)),
-                                              color: Colors.white
+                                              child: const Icon(Icons.close_rounded, color: Colors.white, size: 12),
                                             ),
                                           ),
                                         ),

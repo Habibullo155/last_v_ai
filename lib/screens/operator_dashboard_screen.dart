@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../models/help_session.dart';
 import '../services/help_service.dart';
 import '../state/auth_store.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 import 'help_session_chat_screen.dart';
@@ -107,12 +108,12 @@ class _OperatorDashboardScreenState extends State<OperatorDashboardScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Text(
+                    Text(
                       'Кабинет оператора',
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -138,7 +139,7 @@ class _OperatorDashboardScreenState extends State<OperatorDashboardScreen> {
                                     if (_active.isNotEmpty) ...[
                                       Text(
                                         'МОИ АКТИВНЫЕ (${_active.length})',
-                                        style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+                                        style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
                                       ),
                                       const SizedBox(height: 10),
                                       ..._active.map(_buildActiveTile),
@@ -146,14 +147,14 @@ class _OperatorDashboardScreenState extends State<OperatorDashboardScreen> {
                                     ],
                                     Text(
                                       'ОЖИДАЮТ ПОДКЛЮЧЕНИЯ (${_pending.length})',
-                                      style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+                                      style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
                                     ),
                                     const SizedBox(height: 10),
                                     if (_pending.isEmpty)
                                       Padding(
                                         padding: const EdgeInsets.symmetric(vertical: 20),
                                         child: Center(
-                                          child: Text('Пока никто не ждёт подключения', style: TextStyle(color: Colors.white.withOpacity(0.4))),
+                                          child: Text('Пока никто не ждёт подключения', style: TextStyle(color: context.onSurfaceFaded(0.4))),
                                         ),
                                       )
                                     else
@@ -190,19 +191,19 @@ class _OperatorDashboardScreenState extends State<OperatorDashboardScreen> {
                 children: [
                   Text(
                     session.userEmail ?? 'неизвестно',
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13.5),
+                    style: TextStyle(color: context.onSurface, fontWeight: FontWeight.w600, fontSize: 13.5),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     session.reason?.isNotEmpty == true ? session.reason! : 'Без описания',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                    style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     DateFormat.Hm().format(session.createdAt),
-                    style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 11),
+                    style: TextStyle(color: context.onSurfaceFaded(0.3), fontSize: 11),
                   ),
                 ],
               ),
@@ -260,10 +261,10 @@ class _OperatorDashboardScreenState extends State<OperatorDashboardScreen> {
                   Expanded(
                     child: Text(
                       session.userEmail ?? 'неизвестно',
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13.5),
+                      style: TextStyle(color: context.onSurface, fontWeight: FontWeight.w600, fontSize: 13.5),
                     ),
                   ),
-                  Icon(Icons.chevron_right_rounded, color: Colors.white.withOpacity(0.3)),
+                  Icon(Icons.chevron_right_rounded, color: context.onSurfaceFaded(0.3)),
                 ],
               ),
             ),

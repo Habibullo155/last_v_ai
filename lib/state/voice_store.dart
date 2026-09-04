@@ -53,7 +53,7 @@ class VoiceStore extends ChangeNotifier {
 
   bool isVoiceFeatureEnabled = true; // глобальный тумблер админа, не про железо
 
-  bool isCloudTtsAvailable = false; // настроен ли Silero-сервер в .env
+  bool isCloudTtsAvailable = false; // настроен ли ключ ElevenLabs в .env
 
   // и админ должен разрешить, и юзер сам не выключил у себя
   bool get isVoiceAvailable => isVoiceFeatureEnabled && settings.voiceUiEnabled;
@@ -63,9 +63,10 @@ class VoiceStore extends ChangeNotifier {
   List<Map<String, String>> availableVoices = [];
   String? lastError;
 
-  // потоковое чтение: Silero сам не умеет стримить (отдаёт готовый WAV
-  // целиком), но можно синтезировать и играть по одному предложению -
-  // пока играет N, уже синтезируется N+1, звучит почти непрерывно
+  // потоковое чтение: облачная озвучка сама не умеет стримить (отдаёт
+  // готовый файл целиком), но можно синтезировать и играть по одному
+  // предложению - пока играет N, уже синтезируется N+1, звучит почти
+  // непрерывно
   String? _streamingMessageId;
   String _streamingBuffer = '';
   int _streamingSpokenLength = 0;
@@ -88,10 +89,10 @@ class VoiceStore extends ChangeNotifier {
     // голос стал недействителен. Не различаем "выбрал сам то же самое,
     // что дефолт" от "просто остался дефолт" - редкий крайний случай
     if (isCloudTtsAvailable) {
-      final currentIsValid = sileroCloudVoices.any((v) => v.name == settings.cloudVoiceName);
-      final adminDefaultIsValid = sileroCloudVoices.any((v) => v.name == publicSettings.defaultVoice);
+      final currentIsValid = elevenLabsCloudVoices.any((v) => v.name == settings.cloudVoiceName);
+      final adminDefaultIsValid = elevenLabsCloudVoices.any((v) => v.name == publicSettings.defaultVoice);
       if (!hadSavedSettings || !currentIsValid) {
-        final fallback = adminDefaultIsValid ? publicSettings.defaultVoice : sileroCloudVoices.first.name;
+        final fallback = adminDefaultIsValid ? publicSettings.defaultVoice : elevenLabsCloudVoices.first.name;
         settings = settings.copyWith(cloudVoiceName: fallback);
         await _settingsService.save(settings);
       }
@@ -240,10 +241,11 @@ class VoiceStore extends ChangeNotifier {
     return _transliterateLatinFallback(result);
   }
 
-  // голоса Silero - русские модели, латиницу либо пропускают, либо
-  // коверкают. Для важных слов (бренды, термины) лучше словарь
-  // произношения; это запасной вариант для всего остального -
-  // побуквенная транслитерация на слух, не точное произношение
+  // голос устройства (flutter_tts, запасной вариант без облачной
+  // озвучки) - русские голоса латиницу либо пропускают, либо коверкают.
+  // Для важных слов (бренды, термины) лучше словарь произношения; это
+  // запасной вариант для всего остального - побуквенная транслитерация
+  // на слух, не точное произношение
   String _transliterateLatinFallback(String text) {
     if (!_hasLatinLetters.hasMatch(text)) return text;
     return text.splitMapJoin(

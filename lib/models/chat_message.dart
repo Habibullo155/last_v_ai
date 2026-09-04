@@ -21,6 +21,26 @@ class ChatMessage {
   // локальное хранилище истории чатов. В отличие от sources — реальный
   // контент пользователя, сохраняется вместе с остальным сообщением.
   List<String>? images;
+  // true, если это сообщение содержало маркер [[OFFER_TEST]] от ИИ (сам
+  // маркер к этому моменту уже вырезан из content). Не сохраняется между
+  // сессиями - раз пользователь ответил да/нет, кнопки под старым
+  // сообщением при следующем открытии чата уже не нужны.
+  bool offersTestPrompt;
+  // после ответа (да или нет) прячем кнопки под этим конкретным
+  // сообщением, не удаляя сам факт предложения из истории
+  bool testPromptAnswered;
+  // маркер [[OFFER_THEME_PICKER]] от ИИ - вместо того чтобы силой менять
+  // тему или заставлять модель помнить, какие варианты уже предлагались
+  // (ненадёжно), под сообщением показывается весь набор образцов темы,
+  // человек сам решает
+  bool offersThemePicker;
+  bool themePickerAnswered;
+  // сообщение остаётся в истории (нужно ИИ для связности на будущих
+  // ходах разговора - например, "пользователь отказался от теста сейчас"),
+  // но не отображается пузырём в интерфейсе. Используется, когда кнопка
+  // ("Нет, не сейчас" и т.п.) продолжает разговор без видимого
+  // сообщения, будто напечатанного пользователем вручную
+  bool isHidden;
 
   ChatMessage({
     required this.id,
@@ -32,6 +52,11 @@ class ChatMessage {
     this.liked,
     this.sources,
     this.images,
+    this.offersTestPrompt = false,
+    this.testPromptAnswered = false,
+    this.offersThemePicker = false,
+    this.themePickerAnswered = false,
+    this.isHidden = false,
   }) : createdAt = createdAt ?? DateTime.now();
 
   String get roleKey => switch (role) {
@@ -47,6 +72,11 @@ class ChatMessage {
         'createdAt': createdAt.toIso8601String(),
         'liked': liked,
         'images': images,
+        // в отличие от offersTestPrompt/themePickerAnswered и т.п. (те
+        // сознательно не переживают перезапуск) - isHidden обязан
+        // сохраняться, иначе после перезапуска скрытое "продолжи
+        // разговор" сообщение вдруг стало бы видимым обычным пузырём
+        'isHidden': isHidden,
       };
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
@@ -63,6 +93,7 @@ class ChatMessage {
           DateTime.now(),
       liked: json['liked'] as bool?,
       images: (json['images'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      isHidden: json['isHidden'] as bool? ?? false,
     );
   }
 }

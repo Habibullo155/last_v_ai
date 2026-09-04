@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../models/help_session.dart';
 import '../services/help_service.dart';
 import '../state/auth_store.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/crisis_resources_panel.dart';
 import '../widgets/glass_panel.dart';
@@ -100,12 +101,12 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Text(
+                    Text(
                       'Живая помощь',
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -129,30 +130,30 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
+                                    Text(
                                       'Позвать человека на помощь',
-                                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
+                                      style: TextStyle(color: context.onSurface, fontWeight: FontWeight.w600, fontSize: 15),
                                     ),
                                     const SizedBox(height: 6),
                                     Text(
                                       'Подключится врач или специалист из команды. Это не '
                                       'замена экстренной службе — если ситуация требует срочной '
                                       'медицинской помощи, звони 103 или обратись в скорую напрямую.',
-                                      style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5, height: 1.5),
+                                      style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 12.5, height: 1.5),
                                     ),
                                     const SizedBox(height: 14),
                                     TextField(
                                       controller: _reasonController,
                                       minLines: 1,
                                       maxLines: 3,
-                                      style: const TextStyle(color: Colors.white, fontSize: 13.5),
+                                      style: TextStyle(color: context.onSurface, fontSize: 13.5),
                                       decoration: InputDecoration(
                                         filled: true,
-                                        fillColor: Colors.white.withOpacity(0.07),
+                                        fillColor: context.onSurfaceFaded(0.07),
                                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
                                         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                                         hintText: 'Коротко, что случилось (необязательно)',
-                                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                                        hintStyle: TextStyle(color: context.onSurfaceFaded(0.3)),
                                       ),
                                     ),
                                     const SizedBox(height: 14),
@@ -191,7 +192,7 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
                                 const SizedBox(height: 20),
                                 Text(
                                   'МОИ ОБРАЩЕНИЯ',
-                                  style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+                                  style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
                                 ),
                                 const SizedBox(height: 10),
                                 ..._sessions.map(_buildSessionTile),
@@ -238,7 +239,7 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
                       children: [
                         Text(
                           DateFormat.yMMMd().add_Hm().format(session.createdAt),
-                          style: const TextStyle(color: Colors.white, fontSize: 13.5, fontWeight: FontWeight.w500),
+                          style: TextStyle(color: context.onSurface, fontSize: 13.5, fontWeight: FontWeight.w500),
                         ),
                         if (session.reason != null && session.reason!.isNotEmpty) ...[
                           const SizedBox(height: 2),
@@ -246,7 +247,7 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
                             session.reason!,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 12),
+                            style: TextStyle(color: context.onSurfaceFaded(0.45), fontSize: 12),
                           ),
                         ],
                       ],

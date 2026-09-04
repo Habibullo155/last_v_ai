@@ -12,9 +12,9 @@ class ChatInputBar extends StatefulWidget {
   final bool enabled;
   final void Function(String text, {List<String>? images}) onSend;
   final VoiceStore? voiceStore;
-  final VoidCallback? onCallHelp;
+  final VoidCallback? onQuickStart;
 
-  const ChatInputBar({super.key, required this.enabled, required this.onSend, this.voiceStore, this.onCallHelp});
+  const ChatInputBar({super.key, required this.enabled, required this.onSend, this.voiceStore, this.onQuickStart});
 
   @override
   State<ChatInputBar> createState() => _ChatInputBarState();
@@ -163,8 +163,8 @@ class _ChatInputBarState extends State<ChatInputBar> {
             ),
           Row(
             children: [
-              if (widget.onCallHelp != null) ...[
-                _HelpButton(onTap: widget.onCallHelp!),
+              if (widget.onQuickStart != null) ...[
+                _QuickStartButton(onTap: widget.onQuickStart!),
                 const SizedBox(width: 6),
               ],
               _AttachButton(onTap: widget.enabled ? _showImageSourceSheet : null),
@@ -246,9 +246,9 @@ class _AttachButton extends StatelessWidget {
   }
 }
 
-class _HelpButton extends StatelessWidget {
+class _QuickStartButton extends StatelessWidget {
   final VoidCallback onTap;
-  const _HelpButton({required this.onTap});
+  const _QuickStartButton({required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -264,7 +264,7 @@ class _HelpButton extends StatelessWidget {
             shape: BoxShape.circle,
             color: context.onSurfaceFaded(0.06),
           ),
-          child: Icon(Icons.support_agent_rounded, color: context.onSurfaceFaded(0.7), size: 20),
+          child: Icon(Icons.forum_outlined, color: context.onSurfaceFaded(0.7), size: 20),
         ),
       ),
     );

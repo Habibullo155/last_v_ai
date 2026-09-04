@@ -1,10 +1,13 @@
+import 'package:ai_last_v/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ai_last_v/l10n/app_localizations.dart';
 
 import '../state/auth_store.dart';
 import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
+import 'forgot_password_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   final AuthStore store;
@@ -17,13 +20,16 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _isRegisterMode = false;
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -32,6 +38,9 @@ class _AuthScreenState extends State<AuthScreen> {
     final password = _passwordController.text;
     if (email.isEmpty || password.isEmpty) return;
     if (_isRegisterMode && password.length < 8) return;
+    // защита от опечатки при регистрации - два поля должны совпадать,
+    // при входе подтверждение не показывается вообще, там сверять нечего
+    if (_isRegisterMode && password != _confirmPasswordController.text) return;
 
     final ok = _isRegisterMode
         ? await widget.store.register(email, password)
@@ -45,11 +54,13 @@ class _AuthScreenState extends State<AuthScreen> {
       // autofillHints правильно.
       TextInput.finishAutofillContext();
       _passwordController.clear();
+      _confirmPasswordController.clear();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: AppBackground(
@@ -71,8 +82,11 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _buildForm(BuildContext context) {
+  Widget _buildForm(
+    BuildContext context,
+  ) {
     final store = widget.store;
+    final l10n = AppLocalizations.of(context)!;
 
     return GlassPanel(
       opacity: 0.12,
@@ -96,9 +110,9 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
           const SizedBox(height: 20),
           Text(
-            _isRegisterMode ? 'Создать аккаунт' : 'Вход в AI Chat',
+            _isRegisterMode ? l10n.authCreateAccount : l10n.authSignInTitle,
             textAlign: TextAlign.center,
-            style:  TextStyle(
+            style: TextStyle(
               color: context.onSurface,
               fontSize: 22,
               fontWeight: FontWeight.w600,
@@ -111,7 +125,7 @@ class _AuthScreenState extends State<AuthScreen> {
               children: [
                 _buildField(
                   controller: _emailController,
-                  hint: 'Email',
+                  hint: l10n.authEmailHint,
                   icon: Icons.alternate_email_rounded,
                   keyboardType: TextInputType.emailAddress,
                   autofillHints: const [AutofillHints.email],
@@ -119,30 +133,82 @@ class _AuthScreenState extends State<AuthScreen> {
                 const SizedBox(height: 12),
                 _buildField(
                   controller: _passwordController,
-                  hint: 'Пароль',
+                  hint: l10n.authPasswordHint,
                   icon: Icons.lock_outline_rounded,
                   obscureText: _obscurePassword,
                   // newPassword при регистрации — сигнал ОС/браузеру, что
                   // это НОВЫЙ пароль (может предложить сгенерировать
                   // надёжный и сохранить его), а не подставить старый.
-                  autofillHints: [_isRegisterMode ? AutofillHints.newPassword : AutofillHints.password],
+                  autofillHints: [
+                    _isRegisterMode
+                        ? AutofillHints.newPassword
+                        : AutofillHints.password
+                  ],
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                      _obscurePassword
+                          ? Icons.visibility_off_rounded
+                          : Icons.visibility_rounded,
                       color: context.onSurfaceFaded(0.5),
                       size: 20,
                     ),
-                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
                   ),
                   onChanged: _isRegisterMode ? (_) => setState(() {}) : null,
-                  onSubmitted: (_) => store.isBusy ? null : _submit(),
+                  onSubmitted: _isRegisterMode
+                      ? null
+                      : (_) => store.isBusy ? null : _submit(),
                 ),
+                if (_isRegisterMode) ...[
+                  const SizedBox(height: 12),
+                  _buildField(
+                    controller: _confirmPasswordController,
+                    hint: l10n.authRepeatPasswordHint,
+                    icon: Icons.lock_outline_rounded,
+                    obscureText: _obscureConfirmPassword,
+                    autofillHints: const [AutofillHints.newPassword],
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureConfirmPassword
+                            ? Icons.visibility_off_rounded
+                            : Icons.visibility_rounded,
+                        color: context.onSurfaceFaded(0.5),
+                        size: 20,
+                      ),
+                      onPressed: () => setState(() =>
+                          _obscureConfirmPassword = !_obscureConfirmPassword),
+                    ),
+                    onChanged: (_) => setState(() {}),
+                    onSubmitted: (_) => store.isBusy ? null : _submit(),
+                  ),
+                ],
               ],
             ),
           ),
           if (_isRegisterMode) ...[
             const SizedBox(height: 8),
             _buildPasswordHint(),
+            if (_confirmPasswordController.text.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              _buildPasswordMatchHint(),
+            ],
+          ],
+          if (!_isRegisterMode) ...[
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (_) =>
+                          ForgotPasswordScreen(store: widget.store)),
+                ),
+                child: Text(l10n.authForgotPassword,
+                    style: TextStyle(
+                        color: context.onSurfaceFaded(0.6), fontSize: 12.5)),
+              ),
+            ),
           ],
           if (store.lastError != null) ...[
             const SizedBox(height: 14),
@@ -154,17 +220,18 @@ class _AuthScreenState extends State<AuthScreen> {
           const SizedBox(height: 20),
           _SubmitButton(
             isBusy: store.isBusy,
-            label: _isRegisterMode ? 'Зарегистрироваться' : 'Войти',
+            label: _isRegisterMode
+                ? l10n.authRegisterButton
+                : l10n.authLoginButton,
             onTap: _submit,
           ),
           const SizedBox(height: 16),
           Center(
             child: TextButton(
-              onPressed: () => setState(() => _isRegisterMode = !_isRegisterMode),
+              onPressed: () =>
+                  setState(() => _isRegisterMode = !_isRegisterMode),
               child: Text(
-                _isRegisterMode
-                    ? 'Уже есть аккаунт? Войти'
-                    : 'Нет аккаунта? Зарегистрироваться',
+                _isRegisterMode ? l10n.authHaveAccount : l10n.authNoAccount,
                 style: TextStyle(color: context.onSurfaceFaded(0.7)),
               ),
             ),
@@ -216,6 +283,7 @@ class _AuthScreenState extends State<AuthScreen> {
   /// единственная обратная связь была — ошибка сервера уже ПОСЛЕ отправки
   /// формы, что неудобно и непонятно на этапе ввода.
   Widget _buildPasswordHint() {
+    final l10n = AppLocalizations.of(context)!;
     final length = _passwordController.text.length;
     const minLength = 8;
     final isValid = length >= minLength;
@@ -224,13 +292,40 @@ class _AuthScreenState extends State<AuthScreen> {
         Icon(
           isValid ? Icons.check_circle_rounded : Icons.circle_outlined,
           size: 14,
-          color: isValid ? const Color(0xFF00E6A0) : context.onSurfaceFaded(0.35),
+          color:
+              isValid ? const Color(0xFF00E6A0) : context.onSurfaceFaded(0.35),
         ),
         const SizedBox(width: 6),
         Text(
-          isValid ? 'Длина пароля подходит' : 'Минимум $minLength символов (введено: $length)',
+          isValid
+              ? l10n.authPasswordLengthOk
+              : l10n.authPasswordLengthHint(minLength, length),
           style: TextStyle(
-            color: isValid ? const Color(0xFF00E6A0) : context.onSurfaceFaded(0.45),
+            color: isValid
+                ? const Color(0xFF00E6A0)
+                : context.onSurfaceFaded(0.45),
+            fontSize: 12,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPasswordMatchHint() {
+    final l10n = AppLocalizations.of(context)!;
+    final matches = _passwordController.text == _confirmPasswordController.text;
+    return Row(
+      children: [
+        Icon(
+          matches ? Icons.check_circle_rounded : Icons.error_outline_rounded,
+          size: 14,
+          color: matches ? const Color(0xFF00E6A0) : const Color(0xFFFFB4B4),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          matches ? l10n.authPasswordsMatch : l10n.authPasswordsMismatch,
+          style: TextStyle(
+            color: matches ? const Color(0xFF00E6A0) : const Color(0xFFFFB4B4),
             fontSize: 12,
           ),
         ),
@@ -243,7 +338,8 @@ class _SubmitButton extends StatelessWidget {
   final bool isBusy;
   final String label;
   final VoidCallback onTap;
-  const _SubmitButton({required this.isBusy, required this.label, required this.onTap});
+  const _SubmitButton(
+      {required this.isBusy, required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -267,11 +363,15 @@ class _SubmitButton extends StatelessWidget {
               ? const SizedBox(
                   width: 20,
                   height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Colors.white),
                 )
               : Text(
                   label,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15),
                 ),
         ),
       ),

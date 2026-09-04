@@ -168,6 +168,217 @@ class AuthService {
     return AppUser.fromJson(data);
   }
 
+  /// Backend отвечает 204 без тела при успехе - в отличие от остальных
+  /// методов здесь нечего декодировать в успешном случае, только на
+  /// ошибке приходит JSON с detail.
+  Future<void> changePassword({
+    required String baseUrl,
+    required String token,
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    http.Response res;
+    try {
+      res = await _client
+          .patch(
+            Uri.parse('$baseUrl/api/auth/me/password'),
+            headers: {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'},
+            body: jsonEncode({'current_password': currentPassword, 'new_password': newPassword}),
+          )
+          .timeout(const Duration(seconds: 15));
+    } catch (e) {
+      throw AuthException('Не удалось связаться с сервером.\n$e');
+    }
+
+    if (res.statusCode >= 400) {
+      Map<String, dynamic> data;
+      try {
+        data = jsonDecode(res.body) as Map<String, dynamic>;
+      } catch (_) {
+        throw AuthException('Сервер вернул неожиданный ответ (код ${res.statusCode}).');
+      }
+      throw AuthException(_extractErrorMessage(data));
+    }
+  }
+
+  /// Первый шаг смены почты - код уходит на НОВЫЙ адрес, сама почта
+  /// пока не меняется (см. подтверждение ниже).
+  Future<void> requestEmailChange({
+    required String baseUrl,
+    required String token,
+    required String newEmail,
+    required String currentPassword,
+  }) async {
+    http.Response res;
+    try {
+      res = await _client
+          .post(
+            Uri.parse('$baseUrl/api/auth/me/email/request-change'),
+            headers: {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'},
+            body: jsonEncode({'new_email': newEmail, 'current_password': currentPassword}),
+          )
+          .timeout(const Duration(seconds: 15));
+    } catch (e) {
+      throw AuthException('Не удалось связаться с сервером.\n$e');
+    }
+
+    if (res.statusCode >= 400) {
+      Map<String, dynamic> data;
+      try {
+        data = jsonDecode(res.body) as Map<String, dynamic>;
+      } catch (_) {
+        throw AuthException('Сервер вернул неожиданный ответ (код ${res.statusCode}).');
+      }
+      throw AuthException(_extractErrorMessage(data));
+    }
+  }
+
+  /// Второй шаг - код, присланный на новый адрес, применяет смену.
+  Future<AppUser> confirmEmailChange({
+    required String baseUrl,
+    required String token,
+    required String changeToken,
+  }) async {
+    http.Response res;
+    try {
+      res = await _client
+          .post(
+            Uri.parse('$baseUrl/api/auth/me/email/confirm-change'),
+            headers: {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'},
+            body: jsonEncode({'token': changeToken}),
+          )
+          .timeout(const Duration(seconds: 15));
+    } catch (e) {
+      throw AuthException('Не удалось связаться с сервером.\n$e');
+    }
+
+    final Map<String, dynamic> data;
+    try {
+      data = jsonDecode(res.body) as Map<String, dynamic>;
+    } catch (_) {
+      throw AuthException('Сервер вернул неожиданный ответ (код ${res.statusCode}).');
+    }
+
+    if (res.statusCode >= 400) {
+      throw AuthException(_extractErrorMessage(data));
+    }
+
+    return AppUser.fromJson(data);
+  }
+
+  /// Всегда завершается успешно (сервер намеренно отвечает одинаково, есть
+  /// такой email или нет - см. комментарий в routers_auth.py), кроме
+  /// реальных сетевых сбоев или превышения лимита запросов (429).
+  Future<void> forgotPassword({required String baseUrl, required String email}) async {
+    http.Response res;
+    try {
+      res = await _client
+          .post(
+            Uri.parse('$baseUrl/api/auth/forgot-password'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'email': email}),
+          )
+          .timeout(const Duration(seconds: 15));
+    } catch (e) {
+      throw AuthException('Не удалось связаться с сервером.\n$e');
+    }
+
+    if (res.statusCode >= 400) {
+      Map<String, dynamic> data;
+      try {
+        data = jsonDecode(res.body) as Map<String, dynamic>;
+      } catch (_) {
+        throw AuthException('Не удалось отправить запрос (код ${res.statusCode}).');
+      }
+      throw AuthException(_extractErrorMessage(data));
+    }
+  }
+
+  Future<void> resetPassword({
+    required String baseUrl,
+    required String token,
+    required String newPassword,
+  }) async {
+    http.Response res;
+    try {
+      res = await _client
+          .post(
+            Uri.parse('$baseUrl/api/auth/reset-password'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'token': token, 'new_password': newPassword}),
+          )
+          .timeout(const Duration(seconds: 15));
+    } catch (e) {
+      throw AuthException('Не удалось связаться с сервером.\n$e');
+    }
+
+    if (res.statusCode >= 400) {
+      Map<String, dynamic> data;
+      try {
+        data = jsonDecode(res.body) as Map<String, dynamic>;
+      } catch (_) {
+        throw AuthException('Не удалось сменить пароль (код ${res.statusCode}).');
+      }
+      throw AuthException(_extractErrorMessage(data));
+    }
+  }
+
+  /// Возвращает свежие данные пользователя (is_email_verified теперь true) -
+  /// вызывающий код (AuthStore) должен обновить своё поле user этим
+  /// результатом, иначе баннер "подтвердите почту" не пропадёт до
+  /// следующего перезапуска приложения.
+  Future<AppUser> verifyEmail({required String baseUrl, required String token}) async {
+    http.Response res;
+    try {
+      res = await _client
+          .post(
+            Uri.parse('$baseUrl/api/auth/verify-email'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'token': token}),
+          )
+          .timeout(const Duration(seconds: 15));
+    } catch (e) {
+      throw AuthException('Не удалось связаться с сервером.\n$e');
+    }
+
+    final Map<String, dynamic> data;
+    try {
+      data = jsonDecode(res.body) as Map<String, dynamic>;
+    } catch (_) {
+      throw AuthException('Сервер вернул неожиданный ответ (код ${res.statusCode}).');
+    }
+
+    if (res.statusCode >= 400) {
+      throw AuthException(_extractErrorMessage(data));
+    }
+
+    return AppUser.fromJson(data);
+  }
+
+  Future<void> resendVerification({required String baseUrl, required String token}) async {
+    http.Response res;
+    try {
+      res = await _client
+          .post(
+            Uri.parse('$baseUrl/api/auth/resend-verification'),
+            headers: {'Authorization': 'Bearer $token'},
+          )
+          .timeout(const Duration(seconds: 15));
+    } catch (e) {
+      throw AuthException('Не удалось связаться с сервером.\n$e');
+    }
+
+    if (res.statusCode >= 400) {
+      Map<String, dynamic> data;
+      try {
+        data = jsonDecode(res.body) as Map<String, dynamic>;
+      } catch (_) {
+        throw AuthException('Не удалось отправить код повторно (код ${res.statusCode}).');
+      }
+      throw AuthException(_extractErrorMessage(data));
+    }
+  }
+
   /// FastAPI отдаёт ошибки в двух разных формах:
   /// - {"detail": "текст"} — наши собственные HTTPException;
   /// - {"detail": [{"msg": "...", "loc": [...]}, ...]} — автоматическая

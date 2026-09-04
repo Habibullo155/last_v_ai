@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 
 import '../models/gratitude_entry.dart';
 import '../services/gratitude_service.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
@@ -86,12 +87,12 @@ class _GratitudeJournalScreenState extends State<GratitudeJournalScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Text(
+                    Text(
                       'Дневник благодарности',
-                      style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 17, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -114,25 +115,25 @@ class _GratitudeJournalScreenState extends State<GratitudeJournalScreen> {
                               children: [
                                 Text(
                                   'Три вещи, за которые ты сегодня благодарен(на)',
-                                  style: TextStyle(color: Colors.white.withOpacity(0.85), fontWeight: FontWeight.w600, fontSize: 14.5),
+                                  style: TextStyle(color: context.onSurfaceFaded(0.85), fontWeight: FontWeight.w600, fontSize: 14.5),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   'Не обязательно что-то большое — подойдёт и мелочь.',
-                                  style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+                                  style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12),
                                 ),
                                 const SizedBox(height: 16),
                                 for (var i = 0; i < 3; i++) ...[
                                   TextField(
                                     controller: _controllers[i],
-                                    style: const TextStyle(color: Colors.white, fontSize: 13.5),
+                                    style: TextStyle(color: context.onSurface, fontSize: 13.5),
                                     decoration: InputDecoration(
                                       filled: true,
-                                      fillColor: Colors.white.withOpacity(0.07),
+                                      fillColor: context.onSurfaceFaded(0.07),
                                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
                                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                                       hintText: '${i + 1}.',
-                                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.25)),
+                                      hintStyle: TextStyle(color: context.onSurfaceFaded(0.25)),
                                     ),
                                   ),
                                   if (i < 2) const SizedBox(height: 10),
@@ -167,7 +168,7 @@ class _GratitudeJournalScreenState extends State<GratitudeJournalScreen> {
                             const SizedBox(height: 20),
                             Text(
                               'ЗАПИСИ',
-                              style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+                              style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
                             ),
                             const SizedBox(height: 10),
                             if (_isLoading)
@@ -201,12 +202,12 @@ class _GratitudeJournalScreenState extends State<GratitudeJournalScreen> {
           children: [
             Text(
               DateFormat.yMMMd().add_Hm().format(entry.date),
-              style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11),
+              style: TextStyle(color: context.onSurfaceFaded(0.35), fontSize: 11),
             ),
             const SizedBox(height: 6),
             ...entry.items.map((item) => Padding(
                   padding: const EdgeInsets.only(top: 2),
-                  child: Text('· $item', style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.4)),
+                  child: Text('· $item', style: TextStyle(color: context.onSurface, fontSize: 13, height: 1.4)),
                 )),
           ],
         ),

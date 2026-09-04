@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/cloud_voice.dart';
 import '../state/voice_store.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
@@ -54,12 +55,12 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Text(
+                    Text(
                       'Голос',
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -94,11 +95,11 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.mic_off_rounded, color: Colors.white.withOpacity(0.4), size: 28),
+            Icon(Icons.mic_off_rounded, color: context.onSurfaceFaded(0.4), size: 28),
             const SizedBox(height: 12),
             Text(
               'Голосовые функции временно выключены администратором.',
-              style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13.5, height: 1.4),
+              style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 13.5, height: 1.4),
             ),
           ],
         ),
@@ -116,11 +117,11 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
             children: [
               Icon(
                 voice.settings.voiceUiEnabled ? Icons.record_voice_over_rounded : Icons.voice_over_off_rounded,
-                color: Colors.white70,
+                color: context.onSurfaceFaded(0.7),
               ),
               const SizedBox(width: 12),
-              const Expanded(
-                child: Text('Использовать голос', style: TextStyle(color: Colors.white)),
+              Expanded(
+                child: Text('Использовать голос', style: TextStyle(color: context.onSurface)),
               ),
               Switch(
                 value: voice.settings.voiceUiEnabled,
@@ -136,7 +137,7 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Text(
               'Микрофон и озвучка ответов скрыты. Включи переключатель выше, чтобы вернуть их.',
-              style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12.5, height: 1.4),
+              style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12.5, height: 1.4),
             ),
           ),
         ] else ...[
@@ -173,7 +174,7 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
                   voice.isSttAvailable
                       ? 'Микрофон доступен — кнопка появится рядом с полем ввода'
                       : 'Микрофон недоступен на этом устройстве (нет разрешения или движка распознавания)',
-                  style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5),
+                  style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 12.5),
                 ),
               ),
             ],
@@ -187,8 +188,8 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: Row(
             children: [
-              const Expanded(
-                child: Text('Озвучивать ответы автоматически', style: TextStyle(color: Colors.white)),
+              Expanded(
+                child: Text('Озвучивать ответы автоматически', style: TextStyle(color: context.onSurface)),
               ),
               Switch(
                 value: voice.settings.autoReadEnabled,
@@ -205,15 +206,15 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
           Text(
             'Прослушай каждый и выбери тот, что звучит для тебя спокойнее — '
             'на слух это надёжнее, чем описание.',
-            style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.5),
+            style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11.5),
           ),
           const SizedBox(height: 10),
-          ...sileroCloudVoices.map((v) => _buildCloudVoiceTile(voice, v)),
+          ...elevenLabsCloudVoices.map((v) => _buildCloudVoiceTile(voice, v)),
         ] else if (voice.availableVoices.isEmpty) ...[
           const SizedBox(height: 16),
           Text(
             'Голоса ещё не загрузились или недоступны на этом устройстве.',
-            style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12.5),
+            style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12.5),
           ),
         ] else ...[
           if (femaleVoices.isNotEmpty) ...[
@@ -231,7 +232,7 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
             _sectionLabel('ДРУГИЕ ВАРИАНТЫ'),
             Text(
               'Не удалось определить голос по имени — просто послушай и выбери.',
-              style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11.5),
+              style: TextStyle(color: context.onSurfaceFaded(0.35), fontSize: 11.5),
             ),
             const SizedBox(height: 8),
             ...otherVoices.map((v) => _buildVoiceTile(voice, v)),
@@ -260,15 +261,15 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
                 children: [
                   Icon(
                     v.isFemale ? Icons.face_3_rounded : Icons.face_6_rounded,
-                    color: Colors.white.withOpacity(0.6),
+                    color: context.onSurfaceFaded(0.6),
                     size: 18,
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: Text(v.label, style: const TextStyle(color: Colors.white, fontSize: 13.5)),
+                    child: Text(v.label, style: TextStyle(color: context.onSurface, fontSize: 13.5)),
                   ),
                   IconButton(
-                    icon: Icon(Icons.play_circle_outline_rounded, color: Colors.white.withOpacity(0.6), size: 20),
+                    icon: Icon(Icons.play_circle_outline_rounded, color: context.onSurfaceFaded(0.6), size: 20),
                     tooltip: 'Прослушать',
                     onPressed: () => voice.previewCloudVoice(v.name),
                   ),
@@ -307,16 +308,16 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
                       children: [
                         Text(
                           v['name'] ?? '',
-                          style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 13),
+                          style: TextStyle(color: context.onSurfaceFaded(0.9), fontSize: 13),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        Text(v['locale'] ?? '', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11)),
+                        Text(v['locale'] ?? '', style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11)),
                       ],
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.play_circle_outline_rounded, color: Colors.white.withOpacity(0.6), size: 20),
+                    icon: Icon(Icons.play_circle_outline_rounded, color: context.onSurfaceFaded(0.6), size: 20),
                     tooltip: 'Прослушать',
                     onPressed: () => voice.previewVoice(v['name'] ?? '', v['locale'] ?? ''),
                   ),
@@ -335,7 +336,7 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
         child: Text(
           text,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.4),
+            color: context.onSurfaceFaded(0.4),
             fontSize: 11,
             letterSpacing: 1.2,
             fontWeight: FontWeight.w600,

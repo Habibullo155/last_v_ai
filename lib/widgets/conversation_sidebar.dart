@@ -13,8 +13,9 @@ class ConversationSidebar extends StatelessWidget {
   final ChatStore store;
   final AuthStore authStore;
   final VoidCallback? onSelected;
+  final VoidCallback? onCallHelp;
 
-  const ConversationSidebar({super.key, required this.store, required this.authStore, this.onSelected});
+  const ConversationSidebar({super.key, required this.store, required this.authStore, this.onSelected, this.onCallHelp});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +50,7 @@ class ConversationSidebar extends StatelessWidget {
               final userId = authStore.user?.id.toString();
               if (userId == null) return;
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => WellbeingCalendarScreen(userId: userId)),
+                MaterialPageRoute(builder: (_) => WellbeingCalendarScreen(userId: userId, authStore: authStore)),
               );
               onSelected?.call();
             },
@@ -63,7 +64,7 @@ class ConversationSidebar extends StatelessWidget {
               final userId = authStore.user?.id.toString();
               if (userId == null) return;
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => WellbeingScreen(userId: userId)),
+                MaterialPageRoute(builder: (_) => WellbeingScreen(userId: userId, authStore: authStore)),
               );
               onSelected?.call();
             },
@@ -75,6 +76,18 @@ class ConversationSidebar extends StatelessWidget {
               onSelected?.call();
             },
           ),
+          if (onCallHelp != null) ...[
+            const SizedBox(height: 8),
+            _SidebarLinkTile(
+              icon: Icons.support_agent_rounded,
+              title: 'Позвать на помощь',
+              subtitle: 'Подключится врач или специалист',
+              onTap: () {
+                onCallHelp!.call();
+                onSelected?.call();
+              },
+            ),
+          ],
           const SizedBox(height: 16),
           Text(
             'ИСТОРИЯ',

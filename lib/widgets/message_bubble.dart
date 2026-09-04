@@ -6,9 +6,12 @@ import 'package:intl/intl.dart';
 
 import '../models/chat_message.dart';
 import '../models/chat_source.dart';
+import '../state/theme_store.dart';
 import '../theme/app_text_color.dart';
+import '../theme/background_variant.dart';
 import 'animated_ai_avatar.dart';
 import 'glass_panel.dart';
+import 'theme_variant_swatch.dart';
 
 class MessageBubble extends StatelessWidget {
   final ChatMessage message;
@@ -18,6 +21,13 @@ class MessageBubble extends StatelessWidget {
   final ValueChanged<String>? onEdit;
   final ValueChanged<bool>? onRate;
   final VoidCallback? onRegenerate;
+  // true - "да, хочу пройти тест" (открывает выбор теста), false - "нет,
+  // просто продолжим разговор" (отправляет обычное сообщение-продолжение)
+  final ValueChanged<bool>? onTestPromptResponse;
+  // вызывается один раз, когда человек либо выбрал вариант темы (тогда
+  // ThemeStore уже обновлён к этому моменту), либо закрыл предложение
+  // без выбора - в обоих случаях кнопки под сообщением нужно спрятать
+  final VoidCallback? onThemePickerDismissed;
   const MessageBubble({
     super.key,
     required this.message,
@@ -27,10 +37,17 @@ class MessageBubble extends StatelessWidget {
     this.onEdit,
     this.onRate,
     this.onRegenerate,
+    this.onTestPromptResponse,
+    this.onThemePickerDismissed,
   });
 
   @override
   Widget build(BuildContext context) {
+    // остаётся в истории для связности контекста ИИ (см. isHidden в
+    // chat_message.dart), но никогда не рисуется пузырём - нулевая высота
+    // просто не занимает места в ListView, соседние сообщения не сдвигаются
+    if (message.isHidden) return const SizedBox.shrink();
+
     final isUser = message.role == MessageRole.user;
     final time = DateFormat.Hm().format(message.createdAt);
 
@@ -69,6 +86,14 @@ class MessageBubble extends StatelessWidget {
             if (message.sources != null && message.sources!.isNotEmpty) ...[
               const SizedBox(height: 8),
               _SourcesBlock(sources: message.sources!),
+            ],
+            if (message.offersTestPrompt && !message.testPromptAnswered && onTestPromptResponse != null) ...[
+              const SizedBox(height: 10),
+              _TestOfferButtons(onAnswer: onTestPromptResponse!),
+            ],
+            if (message.offersThemePicker && !message.themePickerAnswered && onThemePickerDismissed != null) ...[
+              const SizedBox(height: 10),
+              _InlineThemePicker(onDone: onThemePickerDismissed!),
             ],
             const SizedBox(height: 6),
             Row(
@@ -443,6 +468,114 @@ class _AttachedImages extends StatelessWidget {
           ),
         );
       }).toList(),
+    );
+  }
+}
+
+/// Показывает ВСЕ доступные образцы темы прямо под сообщением ИИ, когда
+/// оно содержало маркер [[OFFER_THEME_PICKER]] - вместо того чтобы
+/// заставлять модель помнить, какие варианты уже предлагались (ненадёжно
+/// для маленькой модели), человек просто видит весь набор и выбирает сам.
+class _InlineThemePicker extends StatelessWidget {
+  final VoidCallback onDone;
+  const _InlineThemePicker({required this.onDone});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: ThemeStore.instance,
+      builder: (context, _) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Выбери, что понравится:', style: TextStyle(color: context.onSurfaceFaded(0.55), fontSize: 12)),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 70,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: BackgroundVariant.values
+                      .map((v) => Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: ThemeVariantSwatch(
+                              variant: v,
+                              selected: ThemeStore.instance.variant == v,
+                              onTap: () {
+                                ThemeStore.instance.setVariant(v);
+                                onDone();
+                              },
+                            ),
+                          ))
+                      .toList(),
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: onDone,
+              style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+              child: Text('Не сейчас', style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11.5)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Кнопки Да/Нет под сообщением ИИ, когда оно содержало маркер
+/// [[OFFER_TEST]] (обработано и вырезано в chat_store.dart). Решение
+/// всегда за человеком - ИИ только предлагает, ничего не выбирает сам.
+class _TestOfferButtons extends StatelessWidget {
+  final ValueChanged<bool> onAnswer;
+  const _TestOfferButtons({required this.onAnswer});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _AnswerChip(
+          label: 'Да, давай тест',
+          backgroundColor: const Color(0xFF6C5CE7),
+          textColor: Colors.white,
+          onTap: () => onAnswer(true),
+        ),
+        const SizedBox(width: 8),
+        _AnswerChip(
+          label: 'Нет, продолжим так',
+          backgroundColor: context.onSurfaceFaded(0.1),
+          textColor: context.onSurfaceFaded(0.8),
+          onTap: () => onAnswer(false),
+        ),
+      ],
+    );
+  }
+}
+
+class _AnswerChip extends StatelessWidget {
+  final String label;
+  final Color backgroundColor;
+  final Color textColor;
+  final VoidCallback onTap;
+  const _AnswerChip({required this.label, required this.backgroundColor, required this.textColor, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: backgroundColor,
+          ),
+          child: Text(label, style: TextStyle(color: textColor, fontSize: 12.5, fontWeight: FontWeight.w500)),
+        ),
+      ),
     );
   }
 }

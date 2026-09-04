@@ -4,18 +4,25 @@ import 'package:uuid/uuid.dart';
 
 import '../models/wellbeing_checkin.dart';
 import '../services/wellbeing_service.dart';
-import '../theme/app_text_color.dart';
+import '../state/auth_store.dart';
 import '../state/voice_store.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/crisis_resources_panel.dart';
 import '../widgets/glass_panel.dart';
-import 'breathing_exercise_screen.dart';
 import 'asrs_screen.dart';
+import 'bilateral_stimulation_screen.dart';
+import 'breathing_exercise_screen.dart';
+import 'freewriting_screen.dart';
 import 'gad7_screen.dart';
 import 'gratitude_journal_screen.dart';
 import 'grounding_exercise_screen.dart';
+import 'leaves_on_stream_screen.dart';
+import 'memory_release_screen.dart';
+import 'muscle_relaxation_screen.dart';
 import 'phq9_screen.dart';
-import 'situational_help_screen.dart';
+import 'safe_containment_screen.dart';
+import 'sleep_music_screen.dart';
 
 const _uuid = Uuid();
 
@@ -45,7 +52,19 @@ class WellbeingScreen extends StatefulWidget {
   final String userId;
   final VoiceStore? voiceStore;
   final Future<void> Function(String text)? onStartAiConversation;
-  const WellbeingScreen({super.key, required this.userId, this.voiceStore, this.onStartAiConversation});
+  final AuthStore? authStore;
+  // false - когда экран используется внутри main_shell_screen.dart
+  // (IndexedStack держит все вкладки смонтированными разом) - общий фон
+  // там уже один на всю оболочку, не нужен ещё один здесь же
+  final bool showOwnBackground;
+  const WellbeingScreen({
+    super.key,
+    required this.userId,
+    this.voiceStore,
+    this.onStartAiConversation,
+    this.authStore,
+    this.showOwnBackground = true,
+  });
 
   @override
   State<WellbeingScreen> createState() => _WellbeingScreenState();
@@ -112,6 +131,7 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: AppBackground(
+        enabled: widget.showOwnBackground,
         child: SafeArea(
           child: Column(
             children: [
@@ -120,7 +140,7 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
+                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
                       onPressed: () {
                         if (_mode != _Mode.history) {
                           setState(() => _mode = _Mode.history);
@@ -161,21 +181,6 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        _buildFeaturedTile(
-          icon: Icons.support_rounded,
-          title: 'Ситуативная помощь',
-          subtitle: 'Тревога, плохое настроение, не могу уснуть — быстрые подсказки под ситуацию',
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => SituationalHelpScreen(
-                userId: widget.userId,
-                voiceStore: widget.voiceStore,
-                onStartAiConversation: widget.onStartAiConversation,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 22),
         Text(
           'ИНСТРУМЕНТЫ',
           style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
@@ -211,6 +216,46 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
               subtitle: 'Дневник',
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => GratitudeJournalScreen(userId: widget.userId)),
+              ),
+            ),
+            _buildGridTile(
+              icon: Icons.remove_red_eye_outlined,
+              title: 'Билатеральная стимуляция',
+              subtitle: 'Слежение глазами',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const BilateralStimulationScreen()),
+              ),
+            ),
+            _buildGridTile(
+              icon: Icons.fitness_center_outlined,
+              title: 'Мышечная релаксация',
+              subtitle: 'Напряжение/отдых',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const MuscleRelaxationScreen()),
+              ),
+            ),
+            _buildGridTile(
+              icon: Icons.lock_outline_rounded,
+              title: 'Сейф',
+              subtitle: 'Убрать мысль на потом',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const SafeContainmentScreen()),
+              ),
+            ),
+            _buildGridTile(
+              icon: Icons.eco_outlined,
+              title: 'Листья на ручье',
+              subtitle: 'Отпустить мысль',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => LeavesOnStreamScreen(authStore: widget.authStore)),
+              ),
+            ),
+            _buildGridTile(
+              icon: Icons.edit_note_rounded,
+              title: 'Фрирайтинг',
+              subtitle: 'Выгрузка мыслей',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const FreewritingScreen()),
               ),
             ),
           ],
@@ -259,6 +304,26 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
             MaterialPageRoute(builder: (_) => AsrsScreen(userId: widget.userId)),
           ),
         ),
+        const SizedBox(height: 10),
+        _buildToolTile(
+          icon: Icons.local_fire_department_outlined,
+          title: 'Отпустить',
+          subtitle: 'Написать тяжёлую мысль и сжечь/разбить её',
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => MemoryReleaseScreen(authStore: widget.authStore)),
+          ),
+        ),
+        if (widget.authStore != null) ...[
+          const SizedBox(height: 10),
+          _buildToolTile(
+            icon: Icons.nightlight_outlined,
+            title: 'Музыка для сна',
+            subtitle: 'Спокойные звуки перед сном',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => SleepMusicScreen(authStore: widget.authStore!)),
+            ),
+          ),
+        ],
         if (_history.isNotEmpty) ...[
           const SizedBox(height: 22),
           Text(
@@ -296,58 +361,6 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
         const SizedBox(height: 20),
         _buildAttributionFooter(),
       ],
-    );
-  }
-
-  Widget _buildFeaturedTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(22),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(22),
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)],
-            ),
-            boxShadow: [
-              BoxShadow(color: const Color(0xFF6C5CE7).withOpacity(0.35), blurRadius: 24, offset: const Offset(0, 10)),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 52,
-                height: 52,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.18)),
-                child: Icon(icon, color: Colors.white, size: 26),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16)),
-                    const SizedBox(height: 3),
-                    Text(subtitle, style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 12.5, height: 1.3)),
-                  ],
-                ),
-              ),
-              const Icon(Icons.chevron_right_rounded, color: Colors.white, size: 22),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -626,6 +639,30 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
         if (isLow) ...[
           const SizedBox(height: 16),
           const CrisisResourcesPanel(),
+        ],
+        if (widget.onStartAiConversation != null) ...[
+          const SizedBox(height: 16),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: () {
+                final text = 'Я прошёл(ла) опросник ВОЗ-5 (общее самочувствие): '
+                    '${result.percentScore}%${isLow ? " — методика рекомендует обсудить со специалистом" : ""}. '
+                    'Можешь прокомментировать результат и поддержать меня?';
+                widget.onStartAiConversation!(text);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 13),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  gradient: const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
+                ),
+                child: const Text('Обсудить с ИИ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+              ),
+            ),
+          ),
         ],
         const SizedBox(height: 16),
         Material(

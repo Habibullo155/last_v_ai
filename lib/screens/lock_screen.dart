@@ -1,4 +1,6 @@
+import 'package:ai_last_v/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+
 
 import '../state/auth_store.dart';
 import '../widgets/app_background.dart';
@@ -44,6 +46,7 @@ class _LockScreenState extends State<LockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: AppBackground(
@@ -75,15 +78,13 @@ class _LockScreenState extends State<LockScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      const Text(
-                        'Приложение заблокировано',
-                        style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                      Text(
+                        l10n.lockScreenTitle,
+                        style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        _failed
-                            ? 'Не удалось подтвердить — попробуй ещё раз.'
-                            : 'Подтверди личность, чтобы продолжить.',
+                        _failed ? l10n.lockScreenFailedHint : l10n.lockScreenPrompt,
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13.5),
                       ),
@@ -106,14 +107,14 @@ class _LockScreenState extends State<LockScreen> {
                                     height: 18,
                                     child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                   )
-                                : const Text('Разблокировать', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                                : Text(l10n.lockScreenUnlockButton, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
                           ),
                         ),
                       ),
                       const SizedBox(height: 12),
                       TextButton(
                         onPressed: _isChecking ? null : widget.authStore.continueWithoutBiometrics,
-                        child: Text('Войти паролем', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                        child: Text(l10n.lockScreenUsePassword, style: TextStyle(color: Colors.white.withOpacity(0.6))),
                       ),
                     ],
                   ),

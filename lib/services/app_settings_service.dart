@@ -12,29 +12,26 @@ class AppSettingsException implements Exception {
 class PublicAppSettings {
   final bool voiceEnabled;
   final bool cloudTtsEnabled;
-  final String? ttsProvider; // "silero" | null
+  final String? ttsProvider; // "elevenlabs" | null
   final String defaultVoice;
-  final int? voicePitch; // null = не задано, сервер синтеза сам решает
-  final int? voiceRate;
-  final int voiceSampleRate; // 8000 | 24000 | 48000
+  final double? voiceStability; // null = не задано, ElevenLabs сам решает
+  final double? voiceSimilarityBoost;
   const PublicAppSettings({
     required this.voiceEnabled,
     required this.cloudTtsEnabled,
     required this.ttsProvider,
-    this.defaultVoice = 'baya',
-    this.voicePitch,
-    this.voiceRate,
-    this.voiceSampleRate = 48000,
+    this.defaultVoice = '21m00Tcm4TlvDq8ikWAM',
+    this.voiceStability,
+    this.voiceSimilarityBoost,
   });
 
   static PublicAppSettings fromJson(Map<String, dynamic> data) => PublicAppSettings(
         voiceEnabled: data['voice_enabled'] as bool? ?? true,
         cloudTtsEnabled: data['cloud_tts_enabled'] as bool? ?? false,
         ttsProvider: data['tts_provider'] as String?,
-        defaultVoice: data['default_voice'] as String? ?? 'baya',
-        voicePitch: data['voice_pitch'] as int?,
-        voiceRate: data['voice_rate'] as int?,
-        voiceSampleRate: data['voice_sample_rate'] as int? ?? 48000,
+        defaultVoice: data['default_voice'] as String? ?? '21m00Tcm4TlvDq8ikWAM',
+        voiceStability: (data['voice_stability'] as num?)?.toDouble(),
+        voiceSimilarityBoost: (data['voice_similarity_boost'] as num?)?.toDouble(),
       );
 }
 
@@ -55,7 +52,13 @@ class ModelSettings {
   final double temperature;
   final double topP;
   final ResponseLength responseLength;
-  const ModelSettings({this.temperature = 1.0, this.topP = 0.95, this.responseLength = ResponseLength.balanced});
+  final bool themeControlEnabled;
+  const ModelSettings({
+    this.temperature = 1.0,
+    this.topP = 0.95,
+    this.responseLength = ResponseLength.balanced,
+    this.themeControlEnabled = true,
+  });
 
   String get responseLengthKey => responseLength.name;
 
@@ -66,6 +69,7 @@ class ModelSettings {
           (v) => v.name == (data['response_length'] as String? ?? 'balanced'),
           orElse: () => ResponseLength.balanced,
         ),
+        themeControlEnabled: data['theme_control_enabled'] as bool? ?? true,
       );
 }
 
@@ -91,32 +95,19 @@ class AppSettingsService {
   }
 
   /// Только для админа — оба поля необязательны, можно поменять только
-  /// одно (та же exclude_unset-логика, что и на бэкенде).
+  /// одно (та же exclude_unset-логика, что и на бэкенде). stability/
+  /// similarity_boost - настройки ElevenLabs, живут в отдельном
+  /// приложении администратора, здесь не нужны (в основном приложении
+  /// эти поля никто не меняет, только читает через getPublicSettings).
   Future<PublicAppSettings> updateSettings({
     required String baseUrl,
     required String token,
     bool? voiceEnabled,
     String? defaultVoice,
-    int? voicePitch,
-    int? voiceRate,
-    bool clearVoicePitch = false,
-    bool clearVoiceRate = false,
-    int? voiceSampleRate,
   }) async {
     final body = <String, dynamic>{};
     if (voiceEnabled != null) body['voice_enabled'] = voiceEnabled;
     if (defaultVoice != null) body['default_voice'] = defaultVoice;
-    if (clearVoicePitch) {
-      body['clear_voice_pitch'] = true;
-    } else if (voicePitch != null) {
-      body['voice_pitch'] = voicePitch;
-    }
-    if (clearVoiceRate) {
-      body['clear_voice_rate'] = true;
-    } else if (voiceRate != null) {
-      body['voice_rate'] = voiceRate;
-    }
-    if (voiceSampleRate != null) body['voice_sample_rate'] = voiceSampleRate;
 
     final res = await _client
         .patch(
@@ -218,11 +209,13 @@ class AppSettingsService {
     double? temperature,
     double? topP,
     ResponseLength? responseLength,
+    bool? themeControlEnabled,
   }) async {
     final body = <String, dynamic>{};
     if (temperature != null) body['temperature'] = temperature;
     if (topP != null) body['top_p'] = topP;
     if (responseLength != null) body['response_length'] = responseLength.name;
+    if (themeControlEnabled != null) body['theme_control_enabled'] = themeControlEnabled;
 
     final res = await _client
         .patch(

@@ -17,7 +17,8 @@ enum _Mode { intro, testing, result }
 /// подтверждено свободное использование без разрешения). Не диагностика.
 class AsrsScreen extends StatefulWidget {
   final String userId;
-  const AsrsScreen({super.key, required this.userId});
+  final Future<void> Function(String summary)? onDiscussWithAi;
+  const AsrsScreen({super.key, required this.userId, this.onDiscussWithAi});
 
   @override
   State<AsrsScreen> createState() => _AsrsScreenState();
@@ -84,7 +85,7 @@ class _AsrsScreenState extends State<AsrsScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
+                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     Text(
@@ -350,6 +351,32 @@ class _AsrsScreenState extends State<AsrsScreen> {
             ],
           ),
         ),
+        if (widget.onDiscussWithAi != null) ...[
+          const SizedBox(height: 16),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: () async {
+                final text = 'Я прошёл(ла) скрининг ASRS-v1.1 (СДВГ): '
+                    '${result.shadedCount}/6 в зоне значимости'
+                    '${result.suggestsFurtherAssessment ? " — методика рекомендует обсудить со специалистом" : ""}. '
+                    'Можешь прокомментировать результат и поддержать меня?';
+                Navigator.of(context).pop();
+                await widget.onDiscussWithAi!(text);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 13),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  gradient: const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
+                ),
+                child: const Text('Обсудить с ИИ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+              ),
+            ),
+          ),
+        ],
         const SizedBox(height: 16),
         Material(
           color: Colors.transparent,

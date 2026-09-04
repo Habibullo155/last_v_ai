@@ -7,6 +7,7 @@ import '../theme/background_variant.dart';
 class ThemeService {
   static const _variantKey = 'background_variant_v1';
   static const _modeKey = 'app_theme_mode_v1';
+  static const _reducedContrastKey = 'reduced_contrast_v1';
 
   Future<BackgroundVariant> loadVariant() async {
     try {
@@ -48,6 +49,29 @@ class ThemeService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_modeKey, mode.name);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // "Сегодня мигрень/сильная усталость" в разделе Самочувствия -
+  // приглушает цвета и снижает контрастность по всему приложению, пока
+  // пользователь не отметит, что стало лучше. Хранится так же, как
+  // остальное оформление - переживает перезапуск приложения в тот же день.
+  Future<bool> loadReducedContrast() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getBool(_reducedContrastKey) ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> saveReducedContrast(bool value) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_reducedContrastKey, value);
       return true;
     } catch (_) {
       return false;

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../state/voice_store.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
@@ -113,15 +114,15 @@ class _GroundingExerciseScreenState extends State<GroundingExerciseScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
                       onPressed: () {
                         _stopListening();
                         Navigator.of(context).pop();
                       },
                     ),
-                    const Text(
+                    Text(
                       'Техника заземления',
-                      style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 17, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -159,7 +160,7 @@ class _GroundingExerciseScreenState extends State<GroundingExerciseScreen> {
               height: 8,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(4),
-                color: done || active ? const Color(0xFF6C5CE7) : Colors.white.withOpacity(0.15),
+                color: done || active ? const Color(0xFF6C5CE7) : context.onSurfaceFaded(0.15),
               ),
             );
           }),
@@ -167,11 +168,11 @@ class _GroundingExerciseScreenState extends State<GroundingExerciseScreen> {
         const SizedBox(height: 32),
         Text(
           '${step.count}',
-          style: const TextStyle(color: Colors.white, fontSize: 56, fontWeight: FontWeight.w700),
+          style: TextStyle(color: context.onSurface, fontSize: 56, fontWeight: FontWeight.w700),
         ),
         Text(
           step.sense.toUpperCase(),
-          style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 12, letterSpacing: 1.5),
+          style: TextStyle(color: context.onSurfaceFaded(0.45), fontSize: 12, letterSpacing: 1.5),
         ),
         const SizedBox(height: 20),
         GlassPanel(
@@ -181,7 +182,7 @@ class _GroundingExerciseScreenState extends State<GroundingExerciseScreen> {
           child: Text(
             step.prompt,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.4),
+            style: TextStyle(color: context.onSurface, fontSize: 16, height: 1.4),
           ),
         ),
         const SizedBox(height: 16),
@@ -197,7 +198,7 @@ class _GroundingExerciseScreenState extends State<GroundingExerciseScreen> {
               const SizedBox(width: 8),
               Text(
                 'Слушаю — переключусь сам, когда договоришь',
-                style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+                style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12),
               ),
             ],
           ),
@@ -230,14 +231,14 @@ class _GroundingExerciseScreenState extends State<GroundingExerciseScreen> {
       children: [
         const Icon(Icons.check_circle_rounded, color: Color(0xFF00E6A0), size: 56),
         const SizedBox(height: 16),
-        const Text(
+        Text(
           'Готово',
-          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
+          style: TextStyle(color: context.onSurface, fontSize: 20, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Text(
           'Можно повторить в любой момент.',
-          style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13),
+          style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 13),
         ),
         const SizedBox(height: 20),
         // Универсальная приписка — НЕ по итогам какого-то анализа
@@ -252,7 +253,7 @@ class _GroundingExerciseScreenState extends State<GroundingExerciseScreen> {
             'может быть недостаточно. Можно поговорить с близким человеком '
             'или специалистом.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 12, height: 1.4),
+            style: TextStyle(color: context.onSurfaceFaded(0.45), fontSize: 12, height: 1.4),
           ),
         ),
         const SizedBox(height: 24),

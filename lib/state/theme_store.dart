@@ -14,10 +14,12 @@ class ThemeStore extends ChangeNotifier {
   final ThemeService _service = ThemeService();
   BackgroundVariant variant = BackgroundVariant.violet;
   AppThemeMode mode = AppThemeMode.dark;
+  bool reducedContrast = false;
 
   Future<void> load() async {
     variant = await _service.loadVariant();
     mode = await _service.loadMode();
+    reducedContrast = await _service.loadReducedContrast();
     notifyListeners();
   }
 
@@ -31,5 +33,11 @@ class ThemeStore extends ChangeNotifier {
     mode = newMode;
     notifyListeners();
     await _service.saveMode(newMode);
+  }
+
+  Future<void> setReducedContrast(bool value) async {
+    reducedContrast = value;
+    notifyListeners();
+    await _service.saveReducedContrast(value);
   }
 }

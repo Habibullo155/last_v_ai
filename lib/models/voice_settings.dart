@@ -7,9 +7,9 @@ class VoiceSettings {
   final String? voiceLocale;
   final String? sttLocaleId;
 
-  /// Выбор из 4 фиксированных облачных голосов (Silero TTS) — см.
-  /// models/cloud_voice.dart. Используется только когда облачная озвучка
-  /// вообще доступна (сервер настроен) — иначе играет голос на устройстве.
+  /// Выбор из голосов ElevenLabs (voice_id) — см. models/cloud_voice.dart.
+  /// Используется только когда облачная озвучка вообще доступна (ключ
+  /// настроен на сервере) — иначе играет голос на устройстве.
   /// Личный словарь произношения убран — за это отвечает только
   /// глобальный словарь, который задаёт админ (routers_pronunciation.py),
   /// одного места для этого достаточно.
@@ -23,7 +23,7 @@ class VoiceSettings {
     this.voiceName,
     this.voiceLocale,
     this.sttLocaleId,
-    this.cloudVoiceName = 'baya',
+    this.cloudVoiceName = '21m00Tcm4TlvDq8ikWAM',
   });
 
   VoiceSettings copyWith({
@@ -69,7 +69,7 @@ class VoiceSettings {
       voiceName: json['voiceName'] as String?,
       voiceLocale: json['voiceLocale'] as String?,
       sttLocaleId: json['sttLocaleId'] as String?,
-      cloudVoiceName: json['cloudVoiceName'] as String? ?? 'baya',
+      cloudVoiceName: json['cloudVoiceName'] as String? ?? '21m00Tcm4TlvDq8ikWAM',
       // Старые сохранённые настройки могут ещё содержать
       // pronunciationOverrides — просто игнорируем это поле, если оно
       // есть (обратная совместимость без ошибок парсинга).

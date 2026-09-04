@@ -6,6 +6,7 @@ import '../models/usage_info.dart';
 import '../services/billing_service.dart';
 import '../services/usage_service.dart';
 import '../state/auth_store.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
@@ -118,12 +119,12 @@ class _PurchaseScreenState extends State<PurchaseScreen> with WidgetsBindingObse
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Text(
+                    Text(
                       'Подписка',
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -163,13 +164,13 @@ class _PurchaseScreenState extends State<PurchaseScreen> with WidgetsBindingObse
         const SizedBox(height: 20),
         Text(
           'ДОСТУПНЫЕ ТАРИФЫ',
-          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
+          style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),
         if (_plans.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Text('Тарифы пока не настроены.', style: TextStyle(color: Colors.white.withOpacity(0.4))),
+            child: Text('Тарифы пока не настроены.', style: TextStyle(color: context.onSurfaceFaded(0.4))),
           )
         else
           ..._plans.map(_buildPlanTile),
@@ -188,7 +189,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> with WidgetsBindingObse
         children: [
           Row(
             children: [
-              Text('Текущий тариф', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5)),
+              Text('Текущий тариф', style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 12.5)),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -205,7 +206,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> with WidgetsBindingObse
             usage.tokensLimit == null
                 ? '${usage.tokensUsedThisMonth} токенов использовано в этом месяце · без лимита'
                 : '${usage.tokensUsedThisMonth} из ${usage.tokensLimit} токенов в этом месяце',
-            style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+            style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12),
           ),
           if (fraction != null) ...[
             const SizedBox(height: 8),
@@ -214,7 +215,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> with WidgetsBindingObse
               child: LinearProgressIndicator(
                 value: fraction,
                 minHeight: 6,
-                backgroundColor: Colors.white.withOpacity(0.08),
+                backgroundColor: context.onSurfaceFaded(0.08),
                 valueColor: AlwaysStoppedAnimation(fraction > 0.85 ? const Color(0xFFFF6B6B) : const Color(0xFF6C5CE7)),
               ),
             ),
@@ -241,7 +242,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> with WidgetsBindingObse
                 children: [
                   Row(
                     children: [
-                      Text(plan.label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15)),
+                      Text(plan.label, style: TextStyle(color: context.onSurface, fontWeight: FontWeight.w600, fontSize: 15)),
                       if (isCurrent) ...[
                         const SizedBox(width: 8),
                         Container(
@@ -258,11 +259,11 @@ class _PurchaseScreenState extends State<PurchaseScreen> with WidgetsBindingObse
                   const SizedBox(height: 4),
                   Text(
                     '${plan.displayPrice} · ${plan.durationDays} дней',
-                    style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12.5),
+                    style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12.5),
                   ),
                   if (!plan.available) ...[
                     const SizedBox(height: 4),
-                    Text('Скоро будет доступно', style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11.5)),
+                    Text('Скоро будет доступно', style: TextStyle(color: context.onSurfaceFaded(0.35), fontSize: 11.5)),
                   ],
                 ],
               ),
@@ -280,7 +281,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> with WidgetsBindingObse
                     gradient: LinearGradient(
                       colors: plan.available
                           ? [const Color(0xFF6C5CE7), const Color(0xFF00B4D8)]
-                          : [Colors.white24, Colors.white10],
+                          : [context.onSurfaceFaded(0.24), context.onSurfaceFaded(0.10)],
                     ),
                   ),
                   child: isBusy

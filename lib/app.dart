@@ -1,4 +1,7 @@
+import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'config.dart';
 import 'screens/auth_screen.dart';
@@ -7,9 +10,24 @@ import 'screens/lock_screen.dart';
 import 'screens/main_shell_screen.dart';
 import 'state/auth_store.dart';
 import 'state/chat_store.dart';
+import 'state/notification_prefs_store.dart';
+import 'state/performance_mode_store.dart';
 import 'state/theme_store.dart';
 import 'state/voice_store.dart';
 import 'utils/responsive.dart';
+
+// iOS/macOS - нативный переход слайдом справа налево и жест смахивания
+// от левого края экрана назад, вместо стандартного Material-перехода
+// (затухание/масштаб). Применяется автоматически ко ВСЕМ существующим
+// Navigator.push(MaterialPageRoute(...)) по всему приложению - ни один
+// экран менять не пришлось, MaterialPageRoute сам уважает эту настройку
+// темы. Остальные платформы (Android, веб, десктоп) - поведение как было
+const _platformAdaptiveTransitions = PageTransitionsTheme(
+  builders: {
+    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+    TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+  },
+);
 
 class GlassChatApp extends StatefulWidget {
   const GlassChatApp({super.key});
@@ -31,6 +49,8 @@ class _GlassChatAppState extends State<GlassChatApp> {
     _authStore.restoreSession();
     _themeStore.addListener(_onThemeChanged);
     _themeStore.load();
+    NotificationPrefsStore.instance.load();
+    PerformanceModeStore.instance.load();
   }
 
   void _onThemeChanged() => setState(() {});
@@ -77,41 +97,45 @@ class _GlassChatAppState extends State<GlassChatApp> {
     super.dispose();
   }
 
-   @override
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'AI Glass Chat',
       debugShowCheckedModeBanner: false,
-      // Оптимизировано: если используете enum, можно оставить вашу проверку,
-      // но обычно проще привязать к _themeStore.themeMode напрямую, если это возможно.
-      themeMode: _themeStore.mode == AppThemeMode.light
-          ? ThemeMode.light
-          : ThemeMode.dark,
-
-      // Светлая тема
-      theme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.light,
+      // locale: намеренно не задаём - без явного значения Flutter сам
+      // подхватывает системный язык устройства из списка supportedLocales
+      // ниже (если системный язык не в списке - берёт первый, русский)
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('ru'),
+        Locale('en'),
+      ],
+      themeMode: switch (_themeStore.mode) {
+        AppThemeMode.light => ThemeMode.light,
+        AppThemeMode.dark => ThemeMode.dark,
+        AppThemeMode.system => ThemeMode.system,
+      },
+      theme: ThemeData.light(useMaterial3: true).copyWith(
         scaffoldBackgroundColor: const Color(0xFFF3F0FF),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF6C5CE7),
           brightness: Brightness.light,
         ),
-        fontFamily: 'Roboto',
+        pageTransitionsTheme: _platformAdaptiveTransitions,
       ),
-
-      // Тёмная тема
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
+      darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
         scaffoldBackgroundColor: const Color(0xFF0B0F1E),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF6C5CE7),
           brightness: Brightness.dark,
         ),
-        fontFamily: 'Roboto',
+        pageTransitionsTheme: _platformAdaptiveTransitions,
       ),
-
       home: _buildHome(),
     );
   }

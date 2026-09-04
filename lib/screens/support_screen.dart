@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../models/support_ticket.dart';
 import '../services/support_service.dart';
 import '../state/auth_store.dart';
+import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
@@ -93,12 +94,12 @@ class _SupportScreenState extends State<SupportScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Text(
+                    Text(
                       'Поддержка',
-                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -119,7 +120,7 @@ class _SupportScreenState extends State<SupportScreen> {
                         Text(
                           'ТВОИ ОБРАЩЕНИЯ',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.4),
+                            color: context.onSurfaceFaded(0.4),
                             fontSize: 11,
                             letterSpacing: 1.2,
                             fontWeight: FontWeight.w600,
@@ -132,7 +133,7 @@ class _SupportScreenState extends State<SupportScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 24),
                             child: Center(
-                              child: Text('Обращений пока нет', style: TextStyle(color: Colors.white.withOpacity(0.4))),
+                              child: Text('Обращений пока нет', style: TextStyle(color: context.onSurfaceFaded(0.4))),
                             ),
                           )
                         else
@@ -159,19 +160,19 @@ class _SupportScreenState extends State<SupportScreen> {
         children: [
           Text(
             'Опиши проблему — мы посмотрим и ответим',
-            style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13),
+            style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 13),
           ),
           const SizedBox(height: 10),
           TextField(
             controller: _messageController,
             maxLines: 4,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: context.onSurface),
             decoration: InputDecoration(
               filled: true,
-              fillColor: Colors.white.withOpacity(0.06),
+              fillColor: context.onSurfaceFaded(0.06),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
               hintText: 'Например: не приходит ответ от модели на длинные вопросы…',
-              hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+              hintStyle: TextStyle(color: context.onSurfaceFaded(0.3)),
               contentPadding: const EdgeInsets.all(12),
             ),
           ),
@@ -188,7 +189,7 @@ class _SupportScreenState extends State<SupportScreen> {
                   borderRadius: BorderRadius.circular(14),
                   gradient: LinearGradient(
                     colors: _isSending
-                        ? [Colors.white24, Colors.white10]
+                        ? [context.onSurfaceFaded(0.24), context.onSurfaceFaded(0.10)]
                         : [const Color(0xFF6C5CE7), const Color(0xFF00B4D8)],
                   ),
                 ),
@@ -222,12 +223,12 @@ class _SupportScreenState extends State<SupportScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: isClosed ? Colors.white.withOpacity(0.08) : const Color(0xFF00D9C0).withOpacity(0.18),
+                    color: isClosed ? context.onSurfaceFaded(0.08) : const Color(0xFF00D9C0).withOpacity(0.18),
                   ),
                   child: Text(
                     isClosed ? 'Закрыто' : 'Открыто',
                     style: TextStyle(
-                      color: isClosed ? Colors.white.withOpacity(0.5) : const Color(0xFF00D9C0),
+                      color: isClosed ? context.onSurfaceFaded(0.5) : const Color(0xFF00D9C0),
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                     ),
@@ -236,12 +237,12 @@ class _SupportScreenState extends State<SupportScreen> {
                 const Spacer(),
                 Text(
                   DateFormat.yMMMd().add_Hm().format(ticket.createdAt),
-                  style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 11),
+                  style: TextStyle(color: context.onSurfaceFaded(0.3), fontSize: 11),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Text(ticket.message, style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 13.5)),
+            Text(ticket.message, style: TextStyle(color: context.onSurfaceFaded(0.85), fontSize: 13.5)),
           ],
         ),
       ),

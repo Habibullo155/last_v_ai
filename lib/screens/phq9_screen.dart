@@ -25,7 +25,8 @@ enum _Mode { intro, testing, result }
 /// в конце вместе с общим результатом.
 class Phq9Screen extends StatefulWidget {
   final String userId;
-  const Phq9Screen({super.key, required this.userId});
+  final Future<void> Function(String summary)? onDiscussWithAi;
+  const Phq9Screen({super.key, required this.userId, this.onDiscussWithAi});
 
   @override
   State<Phq9Screen> createState() => _Phq9ScreenState();
@@ -92,7 +93,7 @@ class _Phq9ScreenState extends State<Phq9Screen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
+                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     Text(
@@ -375,6 +376,38 @@ class _Phq9ScreenState extends State<Phq9Screen> {
         if (result.hasRiskSignal || result.suggestsFurtherAssessment) ...[
           const SizedBox(height: 16),
           const CrisisResourcesPanel(),
+        ],
+        if (widget.onDiscussWithAi != null) ...[
+          const SizedBox(height: 16),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: () async {
+                // hasRiskSignal - честно упоминаем в тексте, не смягчаем:
+                // у бэкенда уже есть своя проверка на сигналы дистресса
+                // (main.py: is_distress_signal) - она должна увидеть это
+                // прямым текстом, а не через недосказанность
+                final riskNote = result.hasRiskSignal
+                    ? ' В пункте про мысли о самоповреждении был отмечен положительный ответ.'
+                    : '';
+                final text = 'Я прошёл(ла) опросник PHQ-9 (депрессивные симптомы): '
+                    '${result.rawScore}/27, методика описывает это как «${result.severityLabel}».$riskNote '
+                    'Можешь прокомментировать результат и поддержать меня?';
+                Navigator.of(context).pop();
+                await widget.onDiscussWithAi!(text);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 13),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  gradient: const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
+                ),
+                child: const Text('Обсудить с ИИ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+              ),
+            ),
+          ),
         ],
         const SizedBox(height: 16),
         Material(

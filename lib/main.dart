@@ -1,16 +1,19 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'app.dart';
 
-void main() {
+Future<void> main() async {
   // Без этого необработанное исключение в асинхронном коде (Future,
   // например ошибка внутри callback'а, который никто не await'ит) просто
   // тихо теряется — runZonedGuarded гарантирует, что она хотя бы попадёт
   // в лог, а не исчезнет незаметно.
   runZonedGuarded(
-    () {
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+
       // Дефолтный "красный экран смерти" Flutter при ошибке рендеринга —
       // не то, что должен увидеть обычный пользователь. Показываем свой
       // стилизованный экран вместо него.
@@ -21,6 +24,15 @@ void main() {
       FlutterError.onError = (FlutterErrorDetails details) {
         FlutterError.presentError(details);
       };
+
+      // 19 экранов в проекте используют DateFormat с названиями месяцев
+      // (DateFormat.yMMMd() и подобные) - без явной инициализации данных
+      // локали пакет intl бросает исключение при первом же обращении к
+      // ЛЮБОЙ локали, кроме встроенной en_US. Весь интерфейс на русском -
+      // системная локаль устройства почти наверняка 'ru', и без этого
+      // вызова такие строки просто не отрисовывались бы (ErrorWidget.builder
+      // выше маскирует это под тихую "не работающую" плитку, не явный краш).
+      await initializeDateFormatting('ru');
 
       runApp(const GlassChatApp());
     },

@@ -8,6 +8,9 @@ import '../models/chat_conversation.dart';
 import '../models/chat_message.dart';
 import '../services/chat_api_service.dart';
 import '../services/storage_service.dart';
+import 'notification_prefs_store.dart';
+import '../theme/background_variant.dart';
+import 'theme_store.dart';
 
 const _uuid = Uuid();
 
@@ -20,6 +23,19 @@ class ChatStore extends ChangeNotifier {
 
   final StorageService _storage = StorageService();
   final ChatApiService _api = ChatApiService();
+  // ИИ может сменить оформление приложения через специальный маркер в
+  // конце ответа (backend/safety.py: THEME_CONTROL_PROMPT) - не настоящий
+  // tool use, а просто текстовый сигнал, который парсится и стирается
+  // здесь, до того как текст попадёт на экран или в озвучку
+  static final _themeMarkerPattern = RegExp(r'\s*\[\[THEME:(\w+)\]\]\s*', caseSensitive: false);
+  // отдельный маркер от THEME выше - тот управляет только ЦВЕТОВОЙ
+  // палитрой фона (violet/ocean/... - 9 вариантов), не умеет переключать
+  // светлый/тёмный режим вообще. Раньше человек мог попросить "сделай
+  // белым"/"светлую тему" - ИИ физически не мог этого сделать, такой
+  // возможности не существовало в разметке промпта
+  static final _themeModeMarkerPattern = RegExp(r'\s*\[\[THEME_MODE:(\w+)\]\]\s*', caseSensitive: false);
+  static final _offerTestMarkerPattern = RegExp(r'\s*\[\[OFFER_TEST\]\]\s*', caseSensitive: false);
+  static final _offerThemePickerMarkerPattern = RegExp(r'\s*\[\[OFFER_THEME_PICKER\]\]\s*', caseSensitive: false);
 
   // задаётся один раз при сборке через --dart-define=BACKEND_URL=...
   // (config.dart), кнопку сменить адрес в приложении убрали намеренно
@@ -189,6 +205,27 @@ class ChatStore extends ChangeNotifier {
     await _streamAssistantReply(convo);
   }
 
+  // используется кнопками-развилками в чате (например, "Нет, не сейчас"
+  // под предложением теста) - продолжает разговор так, будто человек
+  // ответил, но без видимого пузыря с текстом, который на самом деле
+  // напечатала не человеческая рука. Сообщение остаётся в истории
+  // (isHidden: true) для связности контекста ИИ на будущих ходах, просто
+  // не рисуется в интерфейсе (см. MessageBubble.build())
+  Future<void> sendHiddenContinuation(String hiddenPrompt) async {
+    final convo = active;
+    if (convo == null || _sendingConversationIds.contains(convo.id)) return;
+
+    final hiddenMsg = ChatMessage(
+      id: _uuid.v4(),
+      role: MessageRole.user,
+      content: hiddenPrompt,
+      isHidden: true,
+    );
+    convo.messages.add(hiddenMsg);
+
+    await _streamAssistantReply(convo);
+  }
+
   // убирает предыдущий ответ и запрашивает новый на ту же историю,
   // без повторной отправки вопроса
   Future<void> regenerateLastResponse() async {
@@ -205,6 +242,72 @@ class ChatStore extends ChangeNotifier {
     }
 
     await _streamAssistantReply(convo);
+  }
+
+  // выключить обратно можно из админки (theme_control_enabled) - тогда
+  // ИИ вообще не получит инструкцию про маркер и этот код просто никогда
+  // не найдёт совпадение
+  void _applyThemeMarkerIfPresent(ChatMessage msg) {
+    final match = _themeMarkerPattern.firstMatch(msg.content);
+    if (match == null) return;
+
+    final variantName = match.group(1)!.toLowerCase();
+    BackgroundVariant? variant;
+    for (final v in BackgroundVariant.values) {
+      if (v.name == variantName) {
+        variant = v;
+        break;
+      }
+    }
+
+    // маркер убираем из текста в любом случае - даже если модель ошиблась
+    // с названием варианта, пользователь не должен видеть техническую
+    // разметку вместо обычного ответа
+    msg.content = msg.content.replaceFirst(match.group(0)!, ' ').trim();
+    if (variant != null) {
+      ThemeStore.instance.setVariant(variant);
+    }
+  }
+
+  // светлый/тёмный режим - отдельно от цветовой палитры выше (см.
+  // комментарий у _themeModeMarkerPattern про то, почему это два разных
+  // маркера, не один)
+  void _applyThemeModeMarkerIfPresent(ChatMessage msg) {
+    final match = _themeModeMarkerPattern.firstMatch(msg.content);
+    if (match == null) return;
+
+    final modeName = match.group(1)!.toLowerCase();
+    AppThemeMode? mode;
+    for (final m in AppThemeMode.values) {
+      if (m.name == modeName) {
+        mode = m;
+        break;
+      }
+    }
+
+    msg.content = msg.content.replaceFirst(match.group(0)!, ' ').trim();
+    if (mode != null) {
+      ThemeStore.instance.setMode(mode);
+    }
+  }
+
+  // в отличие от темы - здесь ничего не применяется автоматически, просто
+  // выставляется флаг на самом сообщении, чтобы message_bubble.dart
+  // показал кнопки "Да"/"Нет" под ним - решение остаётся за человеком
+  void _applyOfferTestMarkerIfPresent(ChatMessage msg) {
+    final match = _offerTestMarkerPattern.firstMatch(msg.content);
+    if (match == null) return;
+    msg.content = msg.content.replaceFirst(match.group(0)!, ' ').trim();
+    msg.offersTestPrompt = true;
+  }
+
+  // как и с тестом - ничего не применяется автоматически, только флаг на
+  // сообщении; сами образцы тем рендерит message_bubble.dart
+  void _applyOfferThemePickerMarkerIfPresent(ChatMessage msg) {
+    final match = _offerThemePickerMarkerPattern.firstMatch(msg.content);
+    if (match == null) return;
+    msg.content = msg.content.replaceFirst(match.group(0)!, ' ').trim();
+    msg.offersThemePicker = true;
   }
 
   Future<void> _streamAssistantReply(ChatConversation convo) async {
@@ -250,6 +353,16 @@ class ChatStore extends ChangeNotifier {
         if (event.done) {
           assistantMsg.isStreaming = false;
           if (event.sources != null) assistantMsg.sources = event.sources;
+          // до onAssistantTextChunk ниже - иначе озвучка (TTS) прочитала бы
+          // вслух сырой технический маркер, а не только человеческий текст
+          _applyThemeMarkerIfPresent(assistantMsg);
+          _applyThemeModeMarkerIfPresent(assistantMsg);
+          _applyOfferTestMarkerIfPresent(assistantMsg);
+          _applyOfferThemePickerMarkerIfPresent(assistantMsg);
+          // только на успешном завершении - неудачный ответ (см. ветку
+          // event.error выше, там return/break раньше этого места) не
+          // должен звучать как "пришло сообщение"
+          NotificationPrefsStore.instance.notifyNewMessage();
         }
         onAssistantTextChunk?.call(
           messageId: assistantMsg.id,

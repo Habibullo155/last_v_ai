@@ -14,7 +14,7 @@ class CloudTtsService {
   final http.Client _client = http.Client();
 
   /// Возвращает сырые байты MP3 — декодированные из base64, который
-  /// присылает наш бэкенд (backend/routers_tts.py). Ключ Silero (если
+  /// присылает наш бэкенд (backend/routers_tts.py). Ключ ElevenLabs (если
   /// вообще настроен на самом сервере) приложение никогда не видит.
   Future<Uint8List> synthesize({
     required String baseUrl,

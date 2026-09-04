@@ -112,6 +112,90 @@ class AuthStore extends ChangeNotifier {
   Future<bool> login(String email, String password) =>
       _attempt(() => _authService.login(baseUrl: baseUrl, email: email, password: password));
 
+  // не через _attempt() - тот выставляет token/user/status при успехе,
+  // здесь ничего из этого не происходит (только письмо уходит либо
+  // пароль меняется), нужен пароль сам должен ещё раз войти обычным login
+  Future<bool> forgotPassword(String email) async {
+    isBusy = true;
+    lastError = null;
+    notifyListeners();
+    try {
+      await _authService.forgotPassword(baseUrl: baseUrl, email: email);
+      return true;
+    } on auth_svc.AuthException catch (e) {
+      lastError = e.message;
+      return false;
+    } catch (e) {
+      lastError = 'Непредвиденная ошибка: $e';
+      return false;
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> resetPassword({required String token, required String newPassword}) async {
+    isBusy = true;
+    lastError = null;
+    notifyListeners();
+    try {
+      await _authService.resetPassword(baseUrl: baseUrl, token: token, newPassword: newPassword);
+      return true;
+    } on auth_svc.AuthException catch (e) {
+      lastError = e.message;
+      return false;
+    } catch (e) {
+      lastError = 'Непредвиденная ошибка: $e';
+      return false;
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> verifyEmail(String code) async {
+    isBusy = true;
+    lastError = null;
+    notifyListeners();
+    try {
+      // сервер возвращает свежего пользователя с is_email_verified=true -
+      // обновляем поле user сразу здесь, иначе баннер "подтвердите почту"
+      // не пропал бы до следующего /me или перезапуска приложения
+      user = await _authService.verifyEmail(baseUrl: baseUrl, token: code);
+      return true;
+    } on auth_svc.AuthException catch (e) {
+      lastError = e.message;
+      return false;
+    } catch (e) {
+      lastError = 'Непредвиденная ошибка: $e';
+      return false;
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> resendVerification() async {
+    final currentToken = token;
+    if (currentToken == null) return false;
+    isBusy = true;
+    lastError = null;
+    notifyListeners();
+    try {
+      await _authService.resendVerification(baseUrl: baseUrl, token: currentToken);
+      return true;
+    } on auth_svc.AuthException catch (e) {
+      lastError = e.message;
+      return false;
+    } catch (e) {
+      lastError = 'Непредвиденная ошибка: $e';
+      return false;
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
+  }
+
   Future<bool> _attempt(Future<auth_svc.AuthResult> Function() action) async {
     isBusy = true;
     lastError = null;
@@ -170,10 +254,12 @@ class AuthStore extends ChangeNotifier {
   Future<String?> updateProfile({
     String? fullName,
     bool clearFullName = false,
-    int? age,
-    bool clearAge = false,
+    DateTime? birthDate,
+    bool clearBirthDate = false,
     String? hobbies,
     bool clearHobbies = false,
+    String? emergencyContact,
+    bool clearEmergencyContact = false,
     String? avatarBase64,
     bool clearAvatar = false,
   }) async {
@@ -183,10 +269,16 @@ class AuthStore extends ChangeNotifier {
     final fields = <String, dynamic>{};
     if (fullName != null) fields['full_name'] = fullName;
     if (clearFullName) fields['full_name'] = null;
-    if (age != null) fields['age'] = age;
-    if (clearAge) fields['age'] = null;
+    // только дата (YYYY-MM-DD) - backend ждёт date, не datetime с временем
+    if (birthDate != null) {
+      fields['birth_date'] =
+          '${birthDate.year.toString().padLeft(4, '0')}-${birthDate.month.toString().padLeft(2, '0')}-${birthDate.day.toString().padLeft(2, '0')}';
+    }
+    if (clearBirthDate) fields['birth_date'] = null;
     if (hobbies != null) fields['hobbies'] = hobbies;
     if (clearHobbies) fields['hobbies'] = null;
+    if (emergencyContact != null) fields['emergency_contact'] = emergencyContact;
+    if (clearEmergencyContact) fields['emergency_contact'] = null;
     if (avatarBase64 != null) fields['avatar_base64'] = avatarBase64;
     if (clearAvatar) fields['clear_avatar'] = true;
 
@@ -212,5 +304,73 @@ class AuthStore extends ChangeNotifier {
   void dispose() {
     _authService.dispose();
     super.dispose();
+  }
+
+  Future<String?> changePassword({required String currentPassword, required String newPassword}) async {
+    final currentToken = token;
+    if (currentToken == null) return 'Сессия не найдена. Войди заново.';
+
+    isBusy = true;
+    notifyListeners();
+    try {
+      await _authService.changePassword(
+        baseUrl: baseUrl,
+        token: currentToken,
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
+      return null;
+    } on auth_svc.AuthException catch (e) {
+      return e.message;
+    } catch (e) {
+      return 'Непредвиденная ошибка: $e';
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<String?> requestEmailChange({required String newEmail, required String currentPassword}) async {
+    final currentToken = token;
+    if (currentToken == null) return 'Сессия не найдена. Войди заново.';
+
+    isBusy = true;
+    notifyListeners();
+    try {
+      await _authService.requestEmailChange(
+        baseUrl: baseUrl,
+        token: currentToken,
+        newEmail: newEmail,
+        currentPassword: currentPassword,
+      );
+      return null;
+    } on auth_svc.AuthException catch (e) {
+      return e.message;
+    } catch (e) {
+      return 'Непредвиденная ошибка: $e';
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<String?> confirmEmailChange({required String changeToken}) async {
+    final currentToken = token;
+    if (currentToken == null) return 'Сессия не найдена. Войди заново.';
+
+    isBusy = true;
+    notifyListeners();
+    try {
+      final updated = await _authService.confirmEmailChange(baseUrl: baseUrl, token: currentToken, changeToken: changeToken);
+      user = updated;
+      return null;
+    } on auth_svc.AuthException catch (e) {
+      return e.message;
+    } catch (e) {
+      return 'Непредвиденная ошибка: $e';
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
   }
 }
