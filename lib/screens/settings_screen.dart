@@ -1,7 +1,6 @@
-import 'package:ai_last_v/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
-
+import 'package:ai_last_v/l10n/app_localizations.dart';
 import '../services/reminder_service.dart';
 import '../state/auth_store.dart';
 import '../state/chat_store.dart';

@@ -1,7 +1,6 @@
 import 'package:ai_last_v/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ai_last_v/l10n/app_localizations.dart';
 
 import '../state/auth_store.dart';
 import '../theme/app_text_color.dart';
@@ -82,9 +81,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _buildForm(
-    BuildContext context,
-  ) {
+  Widget _buildForm(BuildContext context) {
     final store = widget.store;
     final l10n = AppLocalizations.of(context)!;
 

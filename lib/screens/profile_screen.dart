@@ -1,11 +1,10 @@
 import 'dart:convert';
 
-import 'package:ai_last_v/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-
+import 'package:ai_last_v/l10n/app_localizations.dart';
 import '../models/app_user.dart';
 import '../state/auth_store.dart';
 import '../theme/app_text_color.dart';
