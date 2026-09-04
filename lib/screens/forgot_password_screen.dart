@@ -1,7 +1,6 @@
-import 'package:ai_last_v/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
-
+import 'package:ai_last_v/l10n/app_localizations.dart';
 import '../state/auth_store.dart';
 import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';

@@ -55,11 +55,11 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
   // потоке (в отличие от нативных платформ с отдельным Raster-потоком).
   //
   // Timer с редким обновлением вместо тикера на полной частоте - при
-  // 24-секундном цикле движение настолько медленное, что 12 обновлений в
+  // 24-секундном цикле движение настолько медленное, что 8 обновлений в
   // секунду выглядят неотличимо от 60 для человеческого глаза, а нагрузка
-  // на основной поток падает примерно в 5 раз.
+  // на основной поток падает ещё заметнее, чем при более частом варианте
   static const _cycleDuration = Duration(seconds: 24);
-  static const _updateInterval = Duration(milliseconds: 80); // ~12.5 обновлений/сек
+  static const _updateInterval = Duration(milliseconds: 120); // ~8 обновлений/сек
 
   Timer? _timer;
   late final DateTime _startedAt;
@@ -273,38 +273,46 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
             // слои композиции - стандартный, безопасный приём Flutter,
             // не меняющий ничего визуально.
             RepaintBoundary(
-              child: ValueListenableBuilder<double>(
-                valueListenable: _progressNotifier,
-                builder: (context, progress, _) {
-                  final t = progress * 2 * math.pi;
-                  return Stack(
-                    children: [
-                      _blob(
-                        color: palette.blob1,
-                        alignment: Alignment(math.sin(t) * 0.8, -0.9 + math.cos(t) * 0.3),
-                        size: 420,
-                        // раньше 0.22 + плёнка 0.45 ниже почти полностью
-                        // вымывали цвет - фон казался "пропавшим". Теперь
-                        // блики заметно ярче, плёнка снята почти до нуля -
-                        // мягкость обеспечивают уже сами пастельные базовые
-                        // цвета палитры (см. _paletteFor выше), не плёнка.
-                        // reducedContrast - "сегодня мигрень/усталость" в
-                        // Самочувствии - снова притушивает, отдельно от темы
-                        opacity: (isLight ? 0.4 : 0.55) * (reducedContrast ? 0.55 : 1.0),
-                      ),
-                      _blob(
-                        color: palette.blob2,
-                        alignment: Alignment(-0.9 + math.sin(t * 0.7) * 0.4, math.cos(t) * 0.9),
-                        size: 380,
-                        opacity: (isLight ? 0.4 : 0.55) * (reducedContrast ? 0.55 : 1.0),
-                      ),
-                      _blob(
-                        color: palette.blob3,
-                        alignment: Alignment(0.9 * math.cos(t * 0.5), 0.9 * math.sin(t * 0.9)),
-                        size: 340,
-                        opacity: (isLight ? 0.4 : 0.55) * (reducedContrast ? 0.55 : 1.0),
-                      ),
-                    ],
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final parentSize = constraints.biggest;
+                  return ValueListenableBuilder<double>(
+                    valueListenable: _progressNotifier,
+                    builder: (context, progress, _) {
+                      final t = progress * 2 * math.pi;
+                      return Stack(
+                        children: [
+                          _blob(
+                            color: palette.blob1,
+                            alignment: Alignment(math.sin(t) * 0.8, -0.9 + math.cos(t) * 0.3),
+                            size: 420,
+                            // раньше 0.22 + плёнка 0.45 ниже почти полностью
+                            // вымывали цвет - фон казался "пропавшим". Теперь
+                            // блики заметно ярче, плёнка снята почти до нуля -
+                            // мягкость обеспечивают уже сами пастельные базовые
+                            // цвета палитры (см. _paletteFor выше), не плёнка.
+                            // reducedContrast - "сегодня мигрень/усталость" в
+                            // Самочувствии - снова притушивает, отдельно от темы
+                            opacity: (isLight ? 0.4 : 0.55) * (reducedContrast ? 0.55 : 1.0),
+                            parentSize: parentSize,
+                          ),
+                          _blob(
+                            color: palette.blob2,
+                            alignment: Alignment(-0.9 + math.sin(t * 0.7) * 0.4, math.cos(t) * 0.9),
+                            size: 380,
+                            opacity: (isLight ? 0.4 : 0.55) * (reducedContrast ? 0.55 : 1.0),
+                            parentSize: parentSize,
+                          ),
+                          _blob(
+                            color: palette.blob3,
+                            alignment: Alignment(0.9 * math.cos(t * 0.5), 0.9 * math.sin(t * 0.9)),
+                            size: 340,
+                            opacity: (isLight ? 0.4 : 0.55) * (reducedContrast ? 0.55 : 1.0),
+                            parentSize: parentSize,
+                          ),
+                        ],
+                      );
+                    },
                   );
                 },
               ),
@@ -328,16 +336,32 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
     required Alignment alignment,
     required double size,
     required double opacity,
+    required Size parentSize,
   }) {
-    return Align(
-      alignment: alignment,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: RadialGradient(
-            colors: [color.withOpacity(opacity), color.withOpacity(0.0)],
+    // та же формула, что и внутри Align (RenderPositionedBox) - без этого
+    // Transform.translate сдвигал бы блик в другое место, не то, что
+    // раньше давал Align с тем же значением alignment
+    final dx = (parentSize.width - size) / 2 * (1 + alignment.x);
+    final dy = (parentSize.height - size) / 2 * (1 + alignment.y);
+    return Transform.translate(
+      offset: Offset(dx, dy),
+      // Transform - матрица, применяемая на этапе отрисовки, не участвует
+      // в раскладке (layout) вообще, в отличие от alignment у Align,
+      // смена которого раньше требовала пересчёта позиции при каждом
+      // кадре. Внутренний RepaintBoundary (см. комментарий выше) кэширует
+      // сам градиент как готовый слой - Transform просто говорит
+      // компоновщику, куда его сдвинуть, не трогая содержимое слоя
+      child: RepaintBoundary(
+        child: SizedBox(
+          width: size,
+          height: size,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [color.withOpacity(opacity), color.withOpacity(0.0)],
+              ),
+            ),
           ),
         ),
       ),

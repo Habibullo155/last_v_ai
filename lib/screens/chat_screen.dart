@@ -1,8 +1,7 @@
-import 'package:ai_last_v/l10n/app_localizations.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
-
+import 'package:ai_last_v/l10n/app_localizations.dart';
 import '../models/chat_message.dart';
 import '../models/sound_asset.dart';
 import '../services/sounds_service.dart';
