@@ -560,4 +560,221 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileSendCodeButton => 'Send code';
+
+  @override
+  String get sidebarCalendarTitle => 'Calendar';
+
+  @override
+  String get sidebarCalendarSubtitle => 'Questionnaire results by day';
+
+  @override
+  String get sidebarWellbeingSubtitle => 'Take a test, situational support';
+
+  @override
+  String get sidebarCallHelpTitle => 'Call for help';
+
+  @override
+  String get sidebarCallHelpSubtitle => 'A doctor or specialist will join';
+
+  @override
+  String get sidebarHistoryLabel => 'HISTORY';
+
+  @override
+  String get sidebarNoConversations => 'No conversations yet';
+
+  @override
+  String get sidebarRenameChatTitle => 'Rename chat';
+
+  @override
+  String get sidebarDeleteChatTitle => 'Delete chat?';
+
+  @override
+  String sidebarDeleteChatBody(Object title) {
+    return 'The conversation \"$title\" will be deleted permanently.';
+  }
+
+  @override
+  String get sidebarEmptyConversation => 'Empty';
+
+  @override
+  String get crisisResourcesDefaultTitle => 'If you feel like talking to someone';
+
+  @override
+  String get crisisResourcesBody => '• Emergency psychological support for adults and children in Russia, 24/7 and free: 8-800-100-49-94\n• Child and teen helpline (Russia): 8-800-2000-122 (short number: 124)\n\nIf you\'re not in Russia, search for a local crisis line for your country; in the US and Canada you can call or text 988.';
+
+  @override
+  String get navChat => 'Chat';
+
+  @override
+  String get navProfile => 'Profile';
+
+  @override
+  String get navSleep => 'Sleep';
+
+  @override
+  String get navWellbeing => 'Care';
+
+  @override
+  String get sleepMusicTitle => 'Sleep music';
+
+  @override
+  String get sleepMusicNoneUploaded => 'No music uploaded yet — the admin hasn\'t added any.';
+
+  @override
+  String get customTestListTitle => 'Tests';
+
+  @override
+  String get customTestListEmpty => 'No tests available yet.';
+
+  @override
+  String get blogTitle => 'Blog';
+
+  @override
+  String get blogListEmpty => 'No posts yet — check back later.';
+
+  @override
+  String get who5Q1 => 'I have felt cheerful and in good spirits';
+
+  @override
+  String get who5Q2 => 'I have felt calm and relaxed';
+
+  @override
+  String get who5Q3 => 'I have felt active and vigorous';
+
+  @override
+  String get who5Q4 => 'I woke up feeling fresh and rested';
+
+  @override
+  String get who5Q5 => 'My daily life has been filled with things that interest me';
+
+  @override
+  String get who5ScaleAllTime => 'All of the time';
+
+  @override
+  String get who5ScaleMostTime => 'Most of the time';
+
+  @override
+  String get who5ScaleMoreThanHalf => 'More than half of the time';
+
+  @override
+  String get who5ScaleLessThanHalf => 'Less than half of the time';
+
+  @override
+  String get who5ScaleSomeTime => 'Some of the time';
+
+  @override
+  String get who5ScaleNever => 'At no time';
+
+  @override
+  String get wellbeingSaveFailed => 'Couldn\'t save the result locally. You can take it again.';
+
+  @override
+  String get wellbeingToolsSection => 'TOOLS';
+
+  @override
+  String get wellbeingBreathingTitle => 'Breathing';
+
+  @override
+  String get wellbeingGroundingTitle => 'Grounding';
+
+  @override
+  String get wellbeingGratitudeTitle => 'Gratitude';
+
+  @override
+  String get wellbeingGratitudeSubtitle => 'Journal';
+
+  @override
+  String get wellbeingBilateralTitle => 'Bilateral stimulation';
+
+  @override
+  String get wellbeingBilateralSubtitle => 'Eye tracking';
+
+  @override
+  String get wellbeingMuscleRelaxationTitle => 'Muscle relaxation';
+
+  @override
+  String get wellbeingMuscleRelaxationSubtitle => 'Tense/release';
+
+  @override
+  String get wellbeingSafeTitle => 'Safe';
+
+  @override
+  String get wellbeingSafeSubtitle => 'Set a thought aside';
+
+  @override
+  String get wellbeingLeavesTitle => 'Leaves on a stream';
+
+  @override
+  String get wellbeingLeavesSubtitle => 'Let a thought go';
+
+  @override
+  String get wellbeingFreewritingTitle => 'Freewriting';
+
+  @override
+  String get wellbeingFreewritingSubtitle => 'Unload your thoughts';
+
+  @override
+  String get wellbeingQuestionnairesSection => 'QUESTIONNAIRES';
+
+  @override
+  String get wellbeingQuestionnairesDisclaimer => 'Official, freely distributed tools. Not a diagnosis — just self-screening.';
+
+  @override
+  String get who5CardTitle => 'WHO-5 — general wellbeing';
+
+  @override
+  String get wellbeingReleaseTitle => 'Let go';
+
+  @override
+  String get wellbeingReleaseSubtitle => 'Write down a heavy thought and burn/smash it';
+
+  @override
+  String get wellbeingSleepMusicTitle => 'Sleep music';
+
+  @override
+  String get wellbeingSleepMusicSubtitle => 'Calm sounds before bed';
+
+  @override
+  String get who5HistorySection => 'WHO-5 HISTORY';
+
+  @override
+  String get who5Instructions => 'Mark what\'s closest to how you\'ve felt over the last two weeks.';
+
+  @override
+  String get commonBack => 'Back';
+
+  @override
+  String get commonNext => 'Next';
+
+  @override
+  String get who5ShowResult => 'Show result';
+
+  @override
+  String get who5ResultLow => 'Below-average score';
+
+  @override
+  String get who5ResultNormal => 'Score within the normal range';
+
+  @override
+  String get who5DescriptionLow => 'This isn\'t a diagnosis. Under the WHO method, a score below 50% is a reason to see a specialist for a more accurate assessment, especially if this has continued for more than two weeks.';
+
+  @override
+  String get who5DescriptionNormal => 'The official WHO method considers this result a sign of normal psychological wellbeing over the last two weeks.';
+
+  @override
+  String who5DiscussPrompt(Object result) {
+    return 'I took the WHO-5 well-being questionnaire: $result. Can you comment on the result and support me?';
+  }
+
+  @override
+  String get who5DiscussButton => 'Discuss with AI';
+
+  @override
+  String get who5BackToHistory => 'Back to history';
+
+  @override
+  String get wellbeingAiDisclaimer => 'The AI and automatic scoring can make mistakes. This questionnaire is a self-monitoring tool, not a diagnosis. For an accurate assessment of your psychological state, see a doctor or therapist.';
+
+  @override
+  String get who5LicenseAttribution => 'Questionnaire: World Health Organization-Five Well-Being Index (WHO-5), © World Health Organization 2024, licensed under CC BY-NC-SA 3.0 IGO. WHO endorsement of this application is not implied.';
 }

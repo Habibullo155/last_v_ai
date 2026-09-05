@@ -1,5 +1,7 @@
+import 'package:ai_last_v/l10n/app_localizations.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+
 
 import '../models/sound_asset.dart';
 import '../services/sounds_service.dart';
@@ -104,6 +106,7 @@ class _SleepMusicScreenState extends State<SleepMusicScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     SoundAsset? playingSound;
     if (_playingId != null) {
       final idx = _sounds.indexWhere((s) => s.id == _playingId);
@@ -120,12 +123,15 @@ class _SleepMusicScreenState extends State<SleepMusicScreen> {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    IconButton(
-                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
+                    if (widget.showOwnBackground)
+                      IconButton(
+                        icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
+                        onPressed: () => Navigator.of(context).pop(),
+                      )
+                    else
+                      const SizedBox(width: 8),
                     Text(
-                      'Музыка для сна',
+                      l10n.sleepMusicTitle,
                       style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
@@ -151,7 +157,7 @@ class _SleepMusicScreenState extends State<SleepMusicScreen> {
                                     padding: const EdgeInsets.symmetric(vertical: 30),
                                     child: Center(
                                       child: Text(
-                                        'Пока нет загруженной музыки — админ ещё не добавил её.',
+                                        l10n.sleepMusicNoneUploaded,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(color: context.onSurfaceFaded(0.4)),
                                       ),

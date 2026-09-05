@@ -1,7 +1,7 @@
-import 'package:ai_last_v/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
+import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:flutter/services.dart';
 import '../state/auth_store.dart';
 import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
@@ -136,26 +136,17 @@ class _AuthScreenState extends State<AuthScreen> {
                   // newPassword при регистрации — сигнал ОС/браузеру, что
                   // это НОВЫЙ пароль (может предложить сгенерировать
                   // надёжный и сохранить его), а не подставить старый.
-                  autofillHints: [
-                    _isRegisterMode
-                        ? AutofillHints.newPassword
-                        : AutofillHints.password
-                  ],
+                  autofillHints: [_isRegisterMode ? AutofillHints.newPassword : AutofillHints.password],
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_off_rounded
-                          : Icons.visibility_rounded,
+                      _obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
                       color: context.onSurfaceFaded(0.5),
                       size: 20,
                     ),
-                    onPressed: () =>
-                        setState(() => _obscurePassword = !_obscurePassword),
+                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                   ),
                   onChanged: _isRegisterMode ? (_) => setState(() {}) : null,
-                  onSubmitted: _isRegisterMode
-                      ? null
-                      : (_) => store.isBusy ? null : _submit(),
+                  onSubmitted: _isRegisterMode ? null : (_) => store.isBusy ? null : _submit(),
                 ),
                 if (_isRegisterMode) ...[
                   const SizedBox(height: 12),
@@ -167,14 +158,11 @@ class _AuthScreenState extends State<AuthScreen> {
                     autofillHints: const [AutofillHints.newPassword],
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscureConfirmPassword
-                            ? Icons.visibility_off_rounded
-                            : Icons.visibility_rounded,
+                        _obscureConfirmPassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
                         color: context.onSurfaceFaded(0.5),
                         size: 20,
                       ),
-                      onPressed: () => setState(() =>
-                          _obscureConfirmPassword = !_obscureConfirmPassword),
+                      onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                     ),
                     onChanged: (_) => setState(() {}),
                     onSubmitted: (_) => store.isBusy ? null : _submit(),
@@ -197,13 +185,9 @@ class _AuthScreenState extends State<AuthScreen> {
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (_) =>
-                          ForgotPasswordScreen(store: widget.store)),
+                  MaterialPageRoute(builder: (_) => ForgotPasswordScreen(store: widget.store)),
                 ),
-                child: Text(l10n.authForgotPassword,
-                    style: TextStyle(
-                        color: context.onSurfaceFaded(0.6), fontSize: 12.5)),
+                child: Text(l10n.authForgotPassword, style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 12.5)),
               ),
             ),
           ],
@@ -217,18 +201,17 @@ class _AuthScreenState extends State<AuthScreen> {
           const SizedBox(height: 20),
           _SubmitButton(
             isBusy: store.isBusy,
-            label: _isRegisterMode
-                ? l10n.authRegisterButton
-                : l10n.authLoginButton,
+            label: _isRegisterMode ? l10n.authRegisterButton : l10n.authLoginButton,
             onTap: _submit,
           ),
           const SizedBox(height: 16),
           Center(
             child: TextButton(
-              onPressed: () =>
-                  setState(() => _isRegisterMode = !_isRegisterMode),
+              onPressed: () => setState(() => _isRegisterMode = !_isRegisterMode),
               child: Text(
-                _isRegisterMode ? l10n.authHaveAccount : l10n.authNoAccount,
+                _isRegisterMode
+                    ? l10n.authHaveAccount
+                    : l10n.authNoAccount,
                 style: TextStyle(color: context.onSurfaceFaded(0.7)),
               ),
             ),
@@ -289,18 +272,13 @@ class _AuthScreenState extends State<AuthScreen> {
         Icon(
           isValid ? Icons.check_circle_rounded : Icons.circle_outlined,
           size: 14,
-          color:
-              isValid ? const Color(0xFF00E6A0) : context.onSurfaceFaded(0.35),
+          color: isValid ? const Color(0xFF00E6A0) : context.onSurfaceFaded(0.35),
         ),
         const SizedBox(width: 6),
         Text(
-          isValid
-              ? l10n.authPasswordLengthOk
-              : l10n.authPasswordLengthHint(minLength, length),
+          isValid ? l10n.authPasswordLengthOk : l10n.authPasswordLengthHint(minLength, length),
           style: TextStyle(
-            color: isValid
-                ? const Color(0xFF00E6A0)
-                : context.onSurfaceFaded(0.45),
+            color: isValid ? const Color(0xFF00E6A0) : context.onSurfaceFaded(0.45),
             fontSize: 12,
           ),
         ),
@@ -335,8 +313,7 @@ class _SubmitButton extends StatelessWidget {
   final bool isBusy;
   final String label;
   final VoidCallback onTap;
-  const _SubmitButton(
-      {required this.isBusy, required this.label, required this.onTap});
+  const _SubmitButton({required this.isBusy, required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -360,15 +337,11 @@ class _SubmitButton extends StatelessWidget {
               ? const SizedBox(
                   width: 20,
                   height: 20,
-                  child: CircularProgressIndicator(
-                      strokeWidth: 2, color: Colors.white),
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                 )
               : Text(
                   label,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
                 ),
         ),
       ),

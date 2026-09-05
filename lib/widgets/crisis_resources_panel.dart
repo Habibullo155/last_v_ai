@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:ai_last_v/l10n/app_localizations.dart';
 import 'glass_panel.dart';
 
 /// Тот же текст и номера, что уже использовались в чек-ине ВОЗ-5 —
@@ -12,6 +13,7 @@ class CrisisResourcesPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return GlassPanel(
       opacity: 0.08,
       borderRadius: BorderRadius.circular(18),
@@ -20,15 +22,12 @@ class CrisisResourcesPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title ?? 'Если хочется поговорить с кем-то',
+            title ?? l10n.crisisResourcesDefaultTitle,
             style: TextStyle(color: Colors.white.withOpacity(0.85), fontWeight: FontWeight.w600, fontSize: 13.5),
           ),
           const SizedBox(height: 8),
           Text(
-            '• Экстренная психологическая помощь для взрослых и детей, '
-            'круглосуточно и бесплатно: 8-800-100-49-94\n'
-            '• Детский и подростковый телефон доверия: 8-800-2000-122 '
-            '(короткий номер — 124)',
+            l10n.crisisResourcesBody,
             style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5, height: 1.6),
           ),
         ],

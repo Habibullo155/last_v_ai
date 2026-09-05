@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'config.dart';
+
 import 'screens/auth_screen.dart';
 import 'screens/chat_screen.dart';
 import 'screens/lock_screen.dart';

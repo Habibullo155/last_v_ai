@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'package:ai_last_v/l10n/app_localizations.dart';
 import '../models/chat_conversation.dart';
 import '../state/auth_store.dart';
 import '../state/chat_store.dart';
@@ -19,6 +20,7 @@ class ConversationSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return GlassPanel(
       opacity: 0.08,
       borderRadius: BorderRadius.circular(28),
@@ -44,8 +46,8 @@ class ConversationSidebar extends StatelessWidget {
           const SizedBox(height: 16),
           _SidebarLinkTile(
             icon: Icons.calendar_month_rounded,
-            title: 'Календарь',
-            subtitle: 'Результаты опросников по дням',
+            title: l10n.sidebarCalendarTitle,
+            subtitle: l10n.sidebarCalendarSubtitle,
             onTap: () {
               final userId = authStore.user?.id.toString();
               if (userId == null) return;
@@ -58,8 +60,8 @@ class ConversationSidebar extends StatelessWidget {
           const SizedBox(height: 8),
           _SidebarLinkTile(
             icon: Icons.self_improvement_rounded,
-            title: 'Самочувствие',
-            subtitle: 'Пройти тест, ситуативная помощь',
+            title: l10n.chatMenuWellbeing,
+            subtitle: l10n.sidebarWellbeingSubtitle,
             onTap: () {
               final userId = authStore.user?.id.toString();
               if (userId == null) return;
@@ -71,6 +73,7 @@ class ConversationSidebar extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _NewChatButton(
+            label: l10n.chatNewChatTitle,
             onTap: () {
               store.createNewChat();
               onSelected?.call();
@@ -80,8 +83,8 @@ class ConversationSidebar extends StatelessWidget {
             const SizedBox(height: 8),
             _SidebarLinkTile(
               icon: Icons.support_agent_rounded,
-              title: 'Позвать на помощь',
-              subtitle: 'Подключится врач или специалист',
+              title: l10n.sidebarCallHelpTitle,
+              subtitle: l10n.sidebarCallHelpSubtitle,
               onTap: () {
                 onCallHelp!.call();
                 onSelected?.call();
@@ -90,7 +93,7 @@ class ConversationSidebar extends StatelessWidget {
           ],
           const SizedBox(height: 16),
           Text(
-            'ИСТОРИЯ',
+            l10n.sidebarHistoryLabel,
             style: TextStyle(
               color: context.onSurfaceFaded(0.4),
               fontSize: 11,
@@ -106,7 +109,7 @@ class ConversationSidebar extends StatelessWidget {
                 if (store.conversations.isEmpty) {
                   return Center(
                     child: Text(
-                      'Пока нет диалогов',
+                      l10n.sidebarNoConversations,
                       style: TextStyle(color: context.onSurfaceFaded(0.4)),
                     ),
                   );
@@ -192,8 +195,9 @@ class _SidebarLinkTile extends StatelessWidget {
 }
 
 class _NewChatButton extends StatelessWidget {
+  final String label;
   final VoidCallback onTap;
-  const _NewChatButton({required this.onTap});
+  const _NewChatButton({required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -211,12 +215,12 @@ class _NewChatButton extends StatelessWidget {
             ),
           ),
           child: Row(
-            children: const [
-              Icon(Icons.add_rounded, color: Colors.white, size: 20),
-              SizedBox(width: 8),
+            children: [
+              const Icon(Icons.add_rounded, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
               Text(
-                'Новый чат',
-                style: TextStyle(
+                label,
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
                 ),
@@ -247,6 +251,7 @@ class _ConversationTile extends StatelessWidget {
   });
 
   Future<void> _showRenameDialog(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: convo.title);
     await showDialog(
       context: context,
@@ -263,7 +268,7 @@ class _ConversationTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Переименовать чат',
+                  l10n.sidebarRenameChatTitle,
                   style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 12),
@@ -288,7 +293,7 @@ class _ConversationTile extends StatelessWidget {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: Text('Отмена', style: TextStyle(color: context.onSurfaceFaded(0.6))),
+                      child: Text(l10n.commonCancel, style: TextStyle(color: context.onSurfaceFaded(0.6))),
                     ),
                     const SizedBox(width: 8),
                     FilledButton(
@@ -297,7 +302,7 @@ class _ConversationTile extends StatelessWidget {
                         onRename(controller.text);
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Сохранить'),
+                      child: Text(l10n.commonSave),
                     ),
                   ],
                 ),
@@ -310,6 +315,7 @@ class _ConversationTile extends StatelessWidget {
   }
 
   Future<void> _confirmDelete(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => Dialog(
@@ -325,12 +331,12 @@ class _ConversationTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Удалить чат?',
+                  l10n.sidebarDeleteChatTitle,
                   style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Переписка «${convo.title}» будет удалена без возможности восстановить.',
+                  l10n.sidebarDeleteChatBody(convo.title),
                   style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 13, height: 1.4),
                 ),
                 const SizedBox(height: 18),
@@ -339,13 +345,13 @@ class _ConversationTile extends StatelessWidget {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(false),
-                      child: Text('Отмена', style: TextStyle(color: context.onSurfaceFaded(0.6))),
+                      child: Text(l10n.commonCancel, style: TextStyle(color: context.onSurfaceFaded(0.6))),
                     ),
                     const SizedBox(width: 8),
                     FilledButton(
                       style: FilledButton.styleFrom(backgroundColor: const Color(0xFFFF6B6B)),
                       onPressed: () => Navigator.of(context).pop(true),
-                      child: const Text('Удалить'),
+                      child: Text(l10n.commonDelete),
                     ),
                   ],
                 ),
@@ -361,7 +367,7 @@ class _ConversationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final subtitle = convo.messages.isEmpty
-        ? 'Пусто'
+        ? AppLocalizations.of(context)!.sidebarEmptyConversation
         : convo.messages.last.content.replaceAll('\n', ' ');
 
     return Material(

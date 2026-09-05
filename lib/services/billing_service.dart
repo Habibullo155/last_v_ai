@@ -25,19 +25,22 @@ class BillingService {
     return list.map((e) => BillingPlan.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  /// Возвращает ссылку на страницу оплаты Stripe (hosted checkout) —
-  /// открывается во внешнем браузере, наш код не видит и не обрабатывает
-  /// данные карты вообще (см. backend/billing.py).
+  /// provider - "stripe" | "yoomoney", человек сам выбирает на экране
+  /// покупки. Возвращает ссылку на страницу оплаты (hosted checkout
+  /// Stripe либо quickpay-ссылка YooMoney) — открывается во внешнем
+  /// браузере, наш код не видит и не обрабатывает данные карты вообще
+  /// (см. backend/routers_billing.py).
   Future<String> createCheckoutUrl({
     required String baseUrl,
     required String token,
     required String tariff,
+    required String provider,
   }) async {
     final res = await _client
         .post(
           Uri.parse('$baseUrl/api/billing/checkout'),
           headers: {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'},
-          body: jsonEncode({'tariff': tariff}),
+          body: jsonEncode({'tariff': tariff, 'provider': provider}),
         )
         .timeout(const Duration(seconds: 15));
     if (res.statusCode >= 400) {

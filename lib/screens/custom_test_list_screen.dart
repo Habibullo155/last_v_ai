@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:ai_last_v/l10n/app_localizations.dart';
 import '../models/custom_test.dart';
 import '../services/custom_tests_service.dart';
 import '../state/auth_store.dart';
@@ -54,6 +55,7 @@ class _CustomTestListScreenState extends State<CustomTestListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: AppBackground(
@@ -69,7 +71,7 @@ class _CustomTestListScreenState extends State<CustomTestListScreen> {
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     Text(
-                      'Тесты',
+                      l10n.customTestListTitle,
                       style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
@@ -97,7 +99,7 @@ class _CustomTestListScreenState extends State<CustomTestListScreen> {
                                           padding: const EdgeInsets.symmetric(vertical: 40),
                                           child: Center(
                                             child: Text(
-                                              'Пока нет доступных тестов.',
+                                              l10n.customTestListEmpty,
                                               style: TextStyle(color: context.onSurfaceFaded(0.4)),
                                             ),
                                           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'package:ai_last_v/l10n/app_localizations.dart';
 import '../models/blog_post.dart';
 import '../services/blog_service.dart';
 import '../state/auth_store.dart';
@@ -54,6 +55,7 @@ class _BlogListScreenState extends State<BlogListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: AppBackground(
@@ -69,7 +71,7 @@ class _BlogListScreenState extends State<BlogListScreen> {
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     Text(
-                      'Блог',
+                      l10n.blogTitle,
                       style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
@@ -88,7 +90,7 @@ class _BlogListScreenState extends State<BlogListScreen> {
                             : _posts.isEmpty
                                 ? Center(
                                     child: Text(
-                                      'Постов пока нет — загляни позже.',
+                                      l10n.blogListEmpty,
                                       style: TextStyle(color: context.onSurfaceFaded(0.4)),
                                     ),
                                   )

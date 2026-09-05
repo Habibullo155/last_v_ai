@@ -141,10 +141,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    IconButton(
-                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
+                    if (widget.showOwnBackground)
+                      IconButton(
+                        icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
+                        onPressed: () => Navigator.of(context).pop(),
+                      )
+                    else
+                      const SizedBox(width: 8),
                     const SizedBox(width: 4),
                     Text(
                       l10n.profileTitle,

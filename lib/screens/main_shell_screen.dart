@@ -1,6 +1,7 @@
 import 'package:ai_last_v/widgets/app_background.dart';
 import 'package:flutter/material.dart';
 
+import 'package:ai_last_v/l10n/app_localizations.dart';
 import '../state/auth_store.dart';
 import '../state/chat_store.dart';
 import '../state/theme_store.dart';
@@ -110,15 +111,15 @@ class _GlassBottomNav extends StatelessWidget {
   final ValueChanged<int> onTap;
   const _GlassBottomNav({required this.index, required this.onTap});
 
-  static const _items = [
-    (icon: Icons.spa_rounded, label: 'Чат'),
-    (icon: Icons.self_improvement_rounded, label: 'Самочувствие'),
-    (icon: Icons.person_rounded, label: 'Профиль'),
-    (icon: Icons.nightlight_rounded, label: 'Сон'),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final items = [
+      (icon: Icons.spa_rounded, label: l10n.navChat),
+      (icon: Icons.self_improvement_rounded, label: l10n.navWellbeing),
+      (icon: Icons.person_rounded, label: l10n.navProfile),
+      (icon: Icons.nightlight_rounded, label: l10n.navSleep),
+    ];
     return SafeArea(
       top: false,
       child: Padding(
@@ -131,7 +132,7 @@ class _GlassBottomNav extends StatelessWidget {
             height: 62,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(_items.length, (i) => _buildItem(i)),
+              children: List.generate(items.length, (i) => _buildItem(i, items)),
             ),
           ),
         ),
@@ -139,9 +140,9 @@ class _GlassBottomNav extends StatelessWidget {
     );
   }
 
-  Widget _buildItem(int i) {
+  Widget _buildItem(int i, List<({IconData icon, String label})> items) {
     final selected = i == index;
-    final item = _items[i];
+    final item = items[i];
     return Expanded(
       child: Material(
         color: Colors.transparent,

@@ -1168,6 +1168,432 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Send code'**
   String get profileSendCodeButton;
+
+  /// No description provided for @sidebarCalendarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get sidebarCalendarTitle;
+
+  /// No description provided for @sidebarCalendarSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Questionnaire results by day'**
+  String get sidebarCalendarSubtitle;
+
+  /// No description provided for @sidebarWellbeingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a test, situational support'**
+  String get sidebarWellbeingSubtitle;
+
+  /// No description provided for @sidebarCallHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Call for help'**
+  String get sidebarCallHelpTitle;
+
+  /// No description provided for @sidebarCallHelpSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A doctor or specialist will join'**
+  String get sidebarCallHelpSubtitle;
+
+  /// No description provided for @sidebarHistoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'HISTORY'**
+  String get sidebarHistoryLabel;
+
+  /// No description provided for @sidebarNoConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet'**
+  String get sidebarNoConversations;
+
+  /// No description provided for @sidebarRenameChatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename chat'**
+  String get sidebarRenameChatTitle;
+
+  /// No description provided for @sidebarDeleteChatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete chat?'**
+  String get sidebarDeleteChatTitle;
+
+  /// No description provided for @sidebarDeleteChatBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The conversation \"{title}\" will be deleted permanently.'**
+  String sidebarDeleteChatBody(Object title);
+
+  /// No description provided for @sidebarEmptyConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty'**
+  String get sidebarEmptyConversation;
+
+  /// No description provided for @crisisResourcesDefaultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'If you feel like talking to someone'**
+  String get crisisResourcesDefaultTitle;
+
+  /// No description provided for @crisisResourcesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'• Emergency psychological support for adults and children in Russia, 24/7 and free: 8-800-100-49-94\n• Child and teen helpline (Russia): 8-800-2000-122 (short number: 124)\n\nIf you\'re not in Russia, search for a local crisis line for your country; in the US and Canada you can call or text 988.'**
+  String get crisisResourcesBody;
+
+  /// No description provided for @navChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get navChat;
+
+  /// No description provided for @navProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get navProfile;
+
+  /// No description provided for @navSleep.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep'**
+  String get navSleep;
+
+  /// No description provided for @navWellbeing.
+  ///
+  /// In en, this message translates to:
+  /// **'Care'**
+  String get navWellbeing;
+
+  /// No description provided for @sleepMusicTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep music'**
+  String get sleepMusicTitle;
+
+  /// No description provided for @sleepMusicNoneUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'No music uploaded yet — the admin hasn\'t added any.'**
+  String get sleepMusicNoneUploaded;
+
+  /// No description provided for @customTestListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tests'**
+  String get customTestListTitle;
+
+  /// No description provided for @customTestListEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No tests available yet.'**
+  String get customTestListEmpty;
+
+  /// No description provided for @blogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Blog'**
+  String get blogTitle;
+
+  /// No description provided for @blogListEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No posts yet — check back later.'**
+  String get blogListEmpty;
+
+  /// No description provided for @who5Q1.
+  ///
+  /// In en, this message translates to:
+  /// **'I have felt cheerful and in good spirits'**
+  String get who5Q1;
+
+  /// No description provided for @who5Q2.
+  ///
+  /// In en, this message translates to:
+  /// **'I have felt calm and relaxed'**
+  String get who5Q2;
+
+  /// No description provided for @who5Q3.
+  ///
+  /// In en, this message translates to:
+  /// **'I have felt active and vigorous'**
+  String get who5Q3;
+
+  /// No description provided for @who5Q4.
+  ///
+  /// In en, this message translates to:
+  /// **'I woke up feeling fresh and rested'**
+  String get who5Q4;
+
+  /// No description provided for @who5Q5.
+  ///
+  /// In en, this message translates to:
+  /// **'My daily life has been filled with things that interest me'**
+  String get who5Q5;
+
+  /// No description provided for @who5ScaleAllTime.
+  ///
+  /// In en, this message translates to:
+  /// **'All of the time'**
+  String get who5ScaleAllTime;
+
+  /// No description provided for @who5ScaleMostTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Most of the time'**
+  String get who5ScaleMostTime;
+
+  /// No description provided for @who5ScaleMoreThanHalf.
+  ///
+  /// In en, this message translates to:
+  /// **'More than half of the time'**
+  String get who5ScaleMoreThanHalf;
+
+  /// No description provided for @who5ScaleLessThanHalf.
+  ///
+  /// In en, this message translates to:
+  /// **'Less than half of the time'**
+  String get who5ScaleLessThanHalf;
+
+  /// No description provided for @who5ScaleSomeTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Some of the time'**
+  String get who5ScaleSomeTime;
+
+  /// No description provided for @who5ScaleNever.
+  ///
+  /// In en, this message translates to:
+  /// **'At no time'**
+  String get who5ScaleNever;
+
+  /// No description provided for @wellbeingSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the result locally. You can take it again.'**
+  String get wellbeingSaveFailed;
+
+  /// No description provided for @wellbeingToolsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'TOOLS'**
+  String get wellbeingToolsSection;
+
+  /// No description provided for @wellbeingBreathingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Breathing'**
+  String get wellbeingBreathingTitle;
+
+  /// No description provided for @wellbeingGroundingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Grounding'**
+  String get wellbeingGroundingTitle;
+
+  /// No description provided for @wellbeingGratitudeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Gratitude'**
+  String get wellbeingGratitudeTitle;
+
+  /// No description provided for @wellbeingGratitudeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Journal'**
+  String get wellbeingGratitudeSubtitle;
+
+  /// No description provided for @wellbeingBilateralTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bilateral stimulation'**
+  String get wellbeingBilateralTitle;
+
+  /// No description provided for @wellbeingBilateralSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Eye tracking'**
+  String get wellbeingBilateralSubtitle;
+
+  /// No description provided for @wellbeingMuscleRelaxationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Muscle relaxation'**
+  String get wellbeingMuscleRelaxationTitle;
+
+  /// No description provided for @wellbeingMuscleRelaxationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tense/release'**
+  String get wellbeingMuscleRelaxationSubtitle;
+
+  /// No description provided for @wellbeingSafeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Safe'**
+  String get wellbeingSafeTitle;
+
+  /// No description provided for @wellbeingSafeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a thought aside'**
+  String get wellbeingSafeSubtitle;
+
+  /// No description provided for @wellbeingLeavesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leaves on a stream'**
+  String get wellbeingLeavesTitle;
+
+  /// No description provided for @wellbeingLeavesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Let a thought go'**
+  String get wellbeingLeavesSubtitle;
+
+  /// No description provided for @wellbeingFreewritingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Freewriting'**
+  String get wellbeingFreewritingTitle;
+
+  /// No description provided for @wellbeingFreewritingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unload your thoughts'**
+  String get wellbeingFreewritingSubtitle;
+
+  /// No description provided for @wellbeingQuestionnairesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'QUESTIONNAIRES'**
+  String get wellbeingQuestionnairesSection;
+
+  /// No description provided for @wellbeingQuestionnairesDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Official, freely distributed tools. Not a diagnosis — just self-screening.'**
+  String get wellbeingQuestionnairesDisclaimer;
+
+  /// No description provided for @who5CardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'WHO-5 — general wellbeing'**
+  String get who5CardTitle;
+
+  /// No description provided for @wellbeingReleaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Let go'**
+  String get wellbeingReleaseTitle;
+
+  /// No description provided for @wellbeingReleaseSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Write down a heavy thought and burn/smash it'**
+  String get wellbeingReleaseSubtitle;
+
+  /// No description provided for @wellbeingSleepMusicTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep music'**
+  String get wellbeingSleepMusicTitle;
+
+  /// No description provided for @wellbeingSleepMusicSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Calm sounds before bed'**
+  String get wellbeingSleepMusicSubtitle;
+
+  /// No description provided for @who5HistorySection.
+  ///
+  /// In en, this message translates to:
+  /// **'WHO-5 HISTORY'**
+  String get who5HistorySection;
+
+  /// No description provided for @who5Instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark what\'s closest to how you\'ve felt over the last two weeks.'**
+  String get who5Instructions;
+
+  /// No description provided for @commonBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get commonBack;
+
+  /// No description provided for @commonNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get commonNext;
+
+  /// No description provided for @who5ShowResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Show result'**
+  String get who5ShowResult;
+
+  /// No description provided for @who5ResultLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Below-average score'**
+  String get who5ResultLow;
+
+  /// No description provided for @who5ResultNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Score within the normal range'**
+  String get who5ResultNormal;
+
+  /// No description provided for @who5DescriptionLow.
+  ///
+  /// In en, this message translates to:
+  /// **'This isn\'t a diagnosis. Under the WHO method, a score below 50% is a reason to see a specialist for a more accurate assessment, especially if this has continued for more than two weeks.'**
+  String get who5DescriptionLow;
+
+  /// No description provided for @who5DescriptionNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'The official WHO method considers this result a sign of normal psychological wellbeing over the last two weeks.'**
+  String get who5DescriptionNormal;
+
+  /// No description provided for @who5DiscussPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'I took the WHO-5 well-being questionnaire: {result}. Can you comment on the result and support me?'**
+  String who5DiscussPrompt(Object result);
+
+  /// No description provided for @who5DiscussButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Discuss with AI'**
+  String get who5DiscussButton;
+
+  /// No description provided for @who5BackToHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to history'**
+  String get who5BackToHistory;
+
+  /// No description provided for @wellbeingAiDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'The AI and automatic scoring can make mistakes. This questionnaire is a self-monitoring tool, not a diagnosis. For an accurate assessment of your psychological state, see a doctor or therapist.'**
+  String get wellbeingAiDisclaimer;
+
+  /// No description provided for @who5LicenseAttribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Questionnaire: World Health Organization-Five Well-Being Index (WHO-5), © World Health Organization 2024, licensed under CC BY-NC-SA 3.0 IGO. WHO endorsement of this application is not implied.'**
+  String get who5LicenseAttribution;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

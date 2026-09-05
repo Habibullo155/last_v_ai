@@ -562,4 +562,221 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileSendCodeButton => 'Отправить код';
+
+  @override
+  String get sidebarCalendarTitle => 'Календарь';
+
+  @override
+  String get sidebarCalendarSubtitle => 'Результаты опросников по дням';
+
+  @override
+  String get sidebarWellbeingSubtitle => 'Пройти тест, ситуативная помощь';
+
+  @override
+  String get sidebarCallHelpTitle => 'Позвать на помощь';
+
+  @override
+  String get sidebarCallHelpSubtitle => 'Подключится врач или специалист';
+
+  @override
+  String get sidebarHistoryLabel => 'ИСТОРИЯ';
+
+  @override
+  String get sidebarNoConversations => 'Пока нет диалогов';
+
+  @override
+  String get sidebarRenameChatTitle => 'Переименовать чат';
+
+  @override
+  String get sidebarDeleteChatTitle => 'Удалить чат?';
+
+  @override
+  String sidebarDeleteChatBody(Object title) {
+    return 'Переписка «$title» будет удалена без возможности восстановить.';
+  }
+
+  @override
+  String get sidebarEmptyConversation => 'Пусто';
+
+  @override
+  String get crisisResourcesDefaultTitle => 'Если хочется поговорить с кем-то';
+
+  @override
+  String get crisisResourcesBody => '• Экстренная психологическая помощь для взрослых и детей в России, круглосуточно и бесплатно: 8-800-100-49-94\n• Детский и подростковый телефон доверия: 8-800-2000-122 (короткий номер — 124)\n\nЕсли ты не в России — поищи местную кризисную линию по запросу «suicide crisis line» и название своей страны; в США и Канаде можно позвонить или написать на 988.';
+
+  @override
+  String get navChat => 'Чат';
+
+  @override
+  String get navProfile => 'Профиль';
+
+  @override
+  String get navSleep => 'Сон';
+
+  @override
+  String get navWellbeing => 'Забота';
+
+  @override
+  String get sleepMusicTitle => 'Музыка для сна';
+
+  @override
+  String get sleepMusicNoneUploaded => 'Пока нет загруженной музыки — админ ещё не добавил её.';
+
+  @override
+  String get customTestListTitle => 'Тесты';
+
+  @override
+  String get customTestListEmpty => 'Пока нет доступных тестов.';
+
+  @override
+  String get blogTitle => 'Блог';
+
+  @override
+  String get blogListEmpty => 'Постов пока нет — загляни позже.';
+
+  @override
+  String get who5Q1 => 'Я чувствую себя бодрой(-ым) и в хорошем настроении';
+
+  @override
+  String get who5Q2 => 'Я чувствую себя спокойной(-ым) и раскованной(-ым)';
+
+  @override
+  String get who5Q3 => 'Я чувствую себя активной(-ым) и энергичной(-ым)';
+
+  @override
+  String get who5Q4 => 'Я просыпаюсь и чувствую себя свежей(-им) и отдохнувшей(-им)';
+
+  @override
+  String get who5Q5 => 'Каждый день со мной происходят вещи, представляющие для меня интерес';
+
+  @override
+  String get who5ScaleAllTime => 'Всё время';
+
+  @override
+  String get who5ScaleMostTime => 'Большую часть времени';
+
+  @override
+  String get who5ScaleMoreThanHalf => 'Более половины времени';
+
+  @override
+  String get who5ScaleLessThanHalf => 'Менее половины времени';
+
+  @override
+  String get who5ScaleSomeTime => 'Некоторое время';
+
+  @override
+  String get who5ScaleNever => 'Никогда';
+
+  @override
+  String get wellbeingSaveFailed => 'Не удалось сохранить результат локально. Можно пройти ещё раз.';
+
+  @override
+  String get wellbeingToolsSection => 'ИНСТРУМЕНТЫ';
+
+  @override
+  String get wellbeingBreathingTitle => 'Дыхание';
+
+  @override
+  String get wellbeingGroundingTitle => 'Заземление';
+
+  @override
+  String get wellbeingGratitudeTitle => 'Благодарность';
+
+  @override
+  String get wellbeingGratitudeSubtitle => 'Дневник';
+
+  @override
+  String get wellbeingBilateralTitle => 'Билатеральная стимуляция';
+
+  @override
+  String get wellbeingBilateralSubtitle => 'Слежение глазами';
+
+  @override
+  String get wellbeingMuscleRelaxationTitle => 'Мышечная релаксация';
+
+  @override
+  String get wellbeingMuscleRelaxationSubtitle => 'Напряжение/отдых';
+
+  @override
+  String get wellbeingSafeTitle => 'Сейф';
+
+  @override
+  String get wellbeingSafeSubtitle => 'Убрать мысль на потом';
+
+  @override
+  String get wellbeingLeavesTitle => 'Листья на ручье';
+
+  @override
+  String get wellbeingLeavesSubtitle => 'Отпустить мысль';
+
+  @override
+  String get wellbeingFreewritingTitle => 'Фрирайтинг';
+
+  @override
+  String get wellbeingFreewritingSubtitle => 'Выгрузка мыслей';
+
+  @override
+  String get wellbeingQuestionnairesSection => 'ОПРОСНИКИ';
+
+  @override
+  String get wellbeingQuestionnairesDisclaimer => 'Официальные, свободно распространяемые инструменты. Не диагностика — только скрининг для себя.';
+
+  @override
+  String get who5CardTitle => 'ВОЗ-5 — общее самочувствие';
+
+  @override
+  String get wellbeingReleaseTitle => 'Отпустить';
+
+  @override
+  String get wellbeingReleaseSubtitle => 'Написать тяжёлую мысль и сжечь/разбить её';
+
+  @override
+  String get wellbeingSleepMusicTitle => 'Музыка для сна';
+
+  @override
+  String get wellbeingSleepMusicSubtitle => 'Спокойные звуки перед сном';
+
+  @override
+  String get who5HistorySection => 'ИСТОРИЯ ВОЗ-5';
+
+  @override
+  String get who5Instructions => 'Отметь, что ближе всего к тому, как ты себя чувствовал(а) последние две недели.';
+
+  @override
+  String get commonBack => 'Назад';
+
+  @override
+  String get commonNext => 'Далее';
+
+  @override
+  String get who5ShowResult => 'Показать результат';
+
+  @override
+  String get who5ResultLow => 'Показатель ниже среднего';
+
+  @override
+  String get who5ResultNormal => 'Показатель в пределах нормы';
+
+  @override
+  String get who5DescriptionLow => 'Это не диагноз. По методике ВОЗ балл ниже 50% — повод обратиться к специалисту для более точной оценки состояния, особенно если так продолжается больше двух недель.';
+
+  @override
+  String get who5DescriptionNormal => 'Официальная методика ВОЗ считает такой результат признаком нормального психологического благополучия за последние две недели.';
+
+  @override
+  String who5DiscussPrompt(Object result) {
+    return 'Я прошёл(ла) опросник ВОЗ-5 (общее самочувствие): $result. Можешь прокомментировать результат и поддержать меня?';
+  }
+
+  @override
+  String get who5DiscussButton => 'Обсудить с ИИ';
+
+  @override
+  String get who5BackToHistory => 'К истории';
+
+  @override
+  String get wellbeingAiDisclaimer => 'ИИ и автоматические подсчёты могут ошибаться. Этот опросник — инструмент для самонаблюдения, а не диагностика. Для точной оценки психологического состояния обратись к врачу или психотерапевту.';
+
+  @override
+  String get who5LicenseAttribution => 'Опросник: World Health Organization-Five Well-Being Index (WHO-5), © World Health Organization 2024, лицензия CC BY-NC-SA 3.0 IGO. Использование ВОЗ этого приложения не подразумевается.';
 }

@@ -59,16 +59,12 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.adaptive.arrow_back,
-                          color: context.onSurface),
+                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     Text(
                       l10n.verifyEmailTitle,
-                      style: TextStyle(
-                          color: context.onSurface,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600),
+                      style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -92,60 +88,42 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Icon(Icons.mark_email_unread_outlined,
-                                    color: context.onSurfaceFaded(0.5),
-                                    size: 40),
+                                Icon(Icons.mark_email_unread_outlined, color: context.onSurfaceFaded(0.5), size: 40),
                                 const SizedBox(height: 16),
                                 Text(
                                   email == null
                                       ? l10n.verifyEmailPromptGeneric
                                       : l10n.verifyEmailPromptWithEmail(email),
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: context.onSurfaceFaded(0.65),
-                                      fontSize: 13.5,
-                                      height: 1.5),
+                                  style: TextStyle(color: context.onSurfaceFaded(0.65), fontSize: 13.5, height: 1.5),
                                 ),
                                 const SizedBox(height: 20),
                                 Container(
                                   decoration: BoxDecoration(
                                     color: context.onSurfaceFaded(0.06),
                                     borderRadius: BorderRadius.circular(14),
-                                    border: Border.all(
-                                        color: context.onSurfaceFaded(0.12)),
+                                    border: Border.all(color: context.onSurfaceFaded(0.12)),
                                   ),
                                   child: TextField(
                                     controller: _codeController,
-                                    onSubmitted: (_) =>
-                                        store.isBusy ? null : _verify(),
+                                    onSubmitted: (_) => store.isBusy ? null : _verify(),
                                     style: TextStyle(color: context.onSurface),
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
-                                      prefixIcon: Icon(Icons.key_outlined,
-                                          color: context.onSurfaceFaded(0.5),
-                                          size: 20),
+                                      prefixIcon: Icon(Icons.key_outlined, color: context.onSurfaceFaded(0.5), size: 20),
                                       hintText: l10n.verifyEmailCodeHint,
-                                      hintStyle: TextStyle(
-                                          color: context.onSurfaceFaded(0.35)),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              vertical: 16),
+                                      hintStyle: TextStyle(color: context.onSurfaceFaded(0.35)),
+                                      contentPadding: const EdgeInsets.symmetric(vertical: 16),
                                     ),
                                   ),
                                 ),
                                 if (_successMessage != null) ...[
                                   const SizedBox(height: 14),
-                                  Text(_successMessage!,
-                                      style: const TextStyle(
-                                          color: Color(0xFF00E6A0),
-                                          fontSize: 13)),
+                                  Text(_successMessage!, style: const TextStyle(color: Color(0xFF00E6A0), fontSize: 13)),
                                 ],
                                 if (store.lastError != null) ...[
                                   const SizedBox(height: 14),
-                                  Text(store.lastError!,
-                                      style: const TextStyle(
-                                          color: Color(0xFFFFB4B4),
-                                          fontSize: 13)),
+                                  Text(store.lastError!, style: const TextStyle(color: Color(0xFFFFB4B4), fontSize: 13)),
                                 ],
                                 const SizedBox(height: 20),
                                 Material(
@@ -160,30 +138,19 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                                         borderRadius: BorderRadius.circular(16),
                                         gradient: LinearGradient(
                                           colors: store.isBusy
-                                              ? [
-                                                  context.onSurfaceFaded(0.2),
-                                                  context.onSurfaceFaded(0.1)
-                                                ]
-                                              : [
-                                                  const Color(0xFF6C5CE7),
-                                                  const Color(0xFF00B4D8)
-                                                ],
+                                              ? [context.onSurfaceFaded(0.2), context.onSurfaceFaded(0.1)]
+                                              : [const Color(0xFF6C5CE7), const Color(0xFF00B4D8)],
                                         ),
                                       ),
                                       child: store.isBusy
                                           ? const SizedBox(
                                               width: 20,
                                               height: 20,
-                                              child: CircularProgressIndicator(
-                                                  strokeWidth: 2,
-                                                  color: Colors.white),
+                                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                             )
                                           : Text(
                                               l10n.verifyEmailSubmitButton,
-                                              style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 15),
+                                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
                                             ),
                                     ),
                                   ),
@@ -191,9 +158,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                                 const SizedBox(height: 10),
                                 TextButton(
                                   onPressed: store.isBusy ? null : _resend,
-                                  child: Text(l10n.verifyEmailResendButton,
-                                      style: TextStyle(
-                                          color: context.onSurfaceFaded(0.5))),
+                                  child: Text(l10n.verifyEmailResendButton, style: TextStyle(color: context.onSurfaceFaded(0.5))),
                                 ),
                               ],
                             ),

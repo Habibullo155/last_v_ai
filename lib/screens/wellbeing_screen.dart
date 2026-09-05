@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:ai_last_v/l10n/app_localizations.dart';
 import '../models/wellbeing_checkin.dart';
 import '../services/wellbeing_service.dart';
 import '../state/auth_store.dart';
@@ -25,26 +26,6 @@ import 'safe_containment_screen.dart';
 import 'sleep_music_screen.dart';
 
 const _uuid = Uuid();
-
-/// Пять официальных утверждений ВОЗ-5 (World Health Organization-Five
-/// Well-Being Index), русский перевод — официальный, с сайта who.int/ru
-/// (Psychiatric Research Unit, WHO Collaborating Centre in Mental Health).
-const List<String> _who5Statements = [
-  'Я чувствую себя бодрой(-ым) и в хорошем настроении',
-  'Я чувствую себя спокойной(-ым) и раскованной(-ым)',
-  'Я чувствую себя активной(-ым) и энергичной(-ым)',
-  'Я просыпаюсь и чувствую себя свежей(-им) и отдохнувшей(-им)',
-  'Каждый день со мной происходят вещи, представляющие для меня интерес',
-];
-
-const List<String> _who5Options = [
-  'Всё время',
-  'Большую часть времени',
-  'Более половины времени',
-  'Менее половины времени',
-  'Некоторое время',
-  'Никогда',
-];
 
 enum _Mode { history, testing, result }
 
@@ -139,16 +120,19 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    IconButton(
-                      icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
-                      onPressed: () {
-                        if (_mode != _Mode.history) {
-                          setState(() => _mode = _Mode.history);
-                        } else {
-                          Navigator.of(context).pop();
-                        }
-                      },
-                    ),
+                    if (_mode != _Mode.history || widget.showOwnBackground)
+                      IconButton(
+                        icon: Icon(Icons.adaptive.arrow_back, color: context.onSurface),
+                        onPressed: () {
+                          if (_mode != _Mode.history) {
+                            setState(() => _mode = _Mode.history);
+                          } else {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                      )
+                    else
+                      const SizedBox(width: 8),
                     Text(
                       'Самочувствие',
                       style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
@@ -550,6 +534,21 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
   }
 
   Widget _buildQuestion(int index) {
+    final l10n = AppLocalizations.of(context)!;
+    // Пять официальных утверждений ВОЗ-5 (World Health Organization-Five
+    // Well-Being Index) и шкала ответов - официальный русский перевод,
+    // с сайта who.int/ru (Psychiatric Research Unit, WHO Collaborating
+    // Centre in Mental Health); английский - официальная публикация ВОЗ,
+    // не свободный перевод (важно для валидности инструмента скрининга)
+    final statements = [l10n.who5Q1, l10n.who5Q2, l10n.who5Q3, l10n.who5Q4, l10n.who5Q5];
+    final options = [
+      l10n.who5ScaleAllTime,
+      l10n.who5ScaleMostTime,
+      l10n.who5ScaleMoreThanHalf,
+      l10n.who5ScaleLessThanHalf,
+      l10n.who5ScaleSomeTime,
+      l10n.who5ScaleNever,
+    ];
     return GlassPanel(
       opacity: 0.08,
       blurred: false,
@@ -559,19 +558,19 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _who5Statements[index],
+            statements[index],
             style: TextStyle(color: context.onSurface, fontSize: 15.5, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 14),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: List.generate(_who5Options.length, (optionIdx) {
+            children: List.generate(options.length, (optionIdx) {
               // Шкала ВОЗ-5: "Всё время" = 5 баллов ... "Никогда" = 0.
               final value = 5 - optionIdx;
               final selected = _currentAnswers[index] == value;
               return ChoiceChip(
-                label: Text(_who5Options[optionIdx]),
+                label: Text(options[optionIdx]),
                 selected: selected,
                 onSelected: (_) => setState(() => _currentAnswers[index] = value),
                 labelStyle: TextStyle(
