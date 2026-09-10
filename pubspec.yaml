@@ -1,0 +1,83 @@
+name: ai_last_v
+description: "AI чат (Gemma 4 E2B через локальный Ollama + FastAPI) с эффектом глазморфизма, адаптивный для мобильных, планшетов, десктопа и веба."
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.10.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  http: ^1.2.2
+  # только Android/iOS - на вебе и десктопе SDK не работает вообще, см.
+  # ad_service.dart про то, как это учитывается
+  google_mobile_ads: ^5.2.0
+  shared_preferences: ^2.3.2
+  flutter_secure_storage: ^9.2.2
+  uuid: ^4.5.1
+  intl: ^0.20.2
+  file_picker: ^8.1.3
+  speech_to_text: ^7.0.0
+  flutter_tts: ^4.2.0
+  url_launcher: ^6.3.1
+  audioplayers: ^6.1.0
+  local_auth: ^2.3.0
+  flutter_local_notifications: ^22.3.0
+  timezone: ^0.11.1
+  image_picker: ^1.2.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.1
+  flutter_native_splash: ^2.4.3
+
+flutter:
+  uses-material-design: true
+  generate: true
+  assets:
+    - assets/icon/
+
+# Иконка приложения на всех платформах — генерируется командой:
+#   dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  min_sdk_android: 21
+  # adaptive-иконка (Android 8+) - Android сам обрежет foreground по маске
+  # формы (круг/квадрат/капля - зависит от лаунчера производителя) и
+  # подложит сплошной фон под неё, поэтому foreground должен быть
+  # прозрачным с содержимым в безопасной зоне по центру (см. как
+  # сгенерирован app_icon_foreground.png)
+  adaptive_icon_background: "#6C5CE7"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+  web:
+    generate: true
+    image_path: "assets/icon/app_icon.png"
+    background_color: "#0B0F1E"
+    theme_color: "#6C5CE7"
+  windows:
+    generate: true
+    image_path: "assets/icon/app_icon.png"
+  macos:
+    generate: true
+    image_path: "assets/icon/app_icon.png"
+
+# Нативный экран загрузки (показывается ОС, пока движок Flutter ещё не
+# успел инициализироваться, - без этого пользователь видит короткую
+# белую вспышку между запуском иконки и первым кадром самого
+# приложения). Файл assets/icon/splash_logo.png уже существовал в
+# проекте, просто не был подключён ни к какой конфигурации - подключил
+# сюда, не создавал заново. Сгенерировать конфиг во все платформы:
+#   dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#0B0F1E"
+  image: assets/icon/splash_logo.png
+  android_12:
+    color: "#0B0F1E"
+    image: assets/icon/splash_logo.png
