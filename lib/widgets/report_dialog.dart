@@ -115,7 +115,7 @@ class _ReportDialogState extends State<_ReportDialog> {
         Text(
           l10n.reportSentBody,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.6),
+            color: Colors.white.withValues(alpha: 0.6),
             fontSize: 13,
             height: 1.4,
           ),
@@ -153,7 +153,7 @@ class _ReportDialogState extends State<_ReportDialog> {
         Text(
           l10n.reportDialogBody,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.55),
+            color: Colors.white.withValues(alpha: 0.55),
             fontSize: 12.5,
             height: 1.4,
           ),
@@ -166,14 +166,14 @@ class _ReportDialogState extends State<_ReportDialog> {
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.white.withOpacity(0.08),
+            fillColor: Colors.white.withValues(alpha: 0.08),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide.none,
             ),
             contentPadding: const EdgeInsets.all(12),
             hintText: l10n.reportReasonHint,
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
           ),
         ),
         if (_error != null) ...[
@@ -191,7 +191,7 @@ class _ReportDialogState extends State<_ReportDialog> {
               onPressed: _isBusy ? null : () => Navigator.of(context).pop(),
               child: Text(
                 l10n.commonCancel,
-                style: TextStyle(color: Colors.white.withOpacity(0.6)),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
               ),
             ),
             const SizedBox(width: 8),

@@ -332,7 +332,7 @@ class _CustomTestTakingScreenState extends State<CustomTestTakingScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             color: selected
-                ? const Color(0xFF6C5CE7).withOpacity(0.25)
+                ? const Color(0xFF6C5CE7).withValues(alpha: 0.25)
                 : context.onSurfaceFaded(0.05),
             border: Border.all(
               color: selected

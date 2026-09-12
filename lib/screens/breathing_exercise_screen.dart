@@ -147,7 +147,7 @@ class _BreathingExerciseScreenState extends State<BreathingExerciseScreen>
                                 BoxShadow(
                                   color: const Color(
                                     0xFF4DD0C4,
-                                  ).withOpacity(0.35),
+                                  ).withValues(alpha: 0.35),
                                   blurRadius: 40,
                                 ),
                               ],
@@ -209,7 +209,7 @@ class _BreathingExerciseScreenState extends State<BreathingExerciseScreen>
                   child: Text(
                     l10n.breathingDisclaimer,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.4),
+                      color: Colors.white.withValues(alpha: 0.4),
                       fontSize: 11.5,
                       height: 1.4,
                     ),

@@ -28,5 +28,17 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+		<!-- Описание для доступа к микрофону (голос) -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Приложению требуется доступ к микрофону для записи голоса.</string>
+
+	<!-- Описание для доступа к камере (сделать фото) -->
+	<key>NSCameraUsageDescription</key>
+	<string>Приложению требуется доступ к камере, чтобы делать фотографии.</string>
+
+	<!-- Описание для доступа к фотогалерее -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Приложению требуется доступ к галерее для выбора фотографий.</string>
+
 </dict>
 </plist>

@@ -17,9 +17,7 @@ class _MuscleStep {
     required this.muscleGroup,
     required this.tenseInstruction,
     required this.releaseInstruction,
-    this.tenseSeconds = 5,
-    this.releaseSeconds = 10,
-  });
+  }) : releaseSeconds = 10, tenseSeconds = 5;
 }
 
 // функция, а не константный список - l10n.of(context) требует

@@ -110,7 +110,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                                     child: Text(
                                       l10n.myReportsNoneYet,
                                       style: TextStyle(
-                                        color: Colors.white.withOpacity(0.4),
+                                        color: Colors.white.withValues(alpha: 0.4),
                                       ),
                                     ),
                                   ),
@@ -172,7 +172,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                         (isResolved
                                 ? const Color(0xFF00E6A0)
                                 : const Color(0xFFFFD166))
-                            .withOpacity(0.18),
+                            .withValues(alpha: 0.18),
                   ),
                   child: Text(
                     isResolved
@@ -191,7 +191,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                 Text(
                   DateFormat.yMMMd().add_Hm().format(report.createdAt),
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.3),
                     fontSize: 11,
                   ),
                 ),
@@ -201,20 +201,20 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
             _buildLabeledText(
               l10n.myReportsYourQuestion,
               report.userMessage,
-              Colors.white.withOpacity(0.55),
+              Colors.white.withValues(alpha: 0.55),
             ),
             const SizedBox(height: 6),
             _buildLabeledText(
               l10n.myReportsAiResponseLabel,
               report.aiResponse,
-              Colors.white.withOpacity(0.7),
+              Colors.white.withValues(alpha: 0.7),
             ),
             if (report.reason != null && report.reason!.trim().isNotEmpty) ...[
               const SizedBox(height: 6),
               _buildLabeledText(
                 l10n.myReportsReasonLabel,
                 report.reason!,
-                Colors.white.withOpacity(0.6),
+                Colors.white.withValues(alpha: 0.6),
               ),
             ],
             if (hasReply) ...[
@@ -223,9 +223,9 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: const Color(0xFF6C5CE7).withOpacity(0.12),
+                  color: const Color(0xFF6C5CE7).withValues(alpha: 0.12),
                   border: Border.all(
-                    color: const Color(0xFF6C5CE7).withOpacity(0.3),
+                    color: const Color(0xFF6C5CE7).withValues(alpha: 0.3),
                   ),
                 ),
                 child: Column(
@@ -234,7 +234,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                     Text(
                       l10n.myReportsTeamResponseSection,
                       style: TextStyle(
-                        color: const Color(0xFF6C5CE7).withOpacity(0.8),
+                        color: const Color(0xFF6C5CE7).withValues(alpha: 0.8),
                         fontSize: 10,
                         letterSpacing: 0.8,
                       ),
@@ -265,7 +265,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
         Text(
           label.toUpperCase(),
           style: TextStyle(
-            color: Colors.white.withOpacity(0.35),
+            color: Colors.white.withValues(alpha: 0.35),
             fontSize: 10,
             letterSpacing: 0.8,
           ),

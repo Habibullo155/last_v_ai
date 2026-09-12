@@ -291,8 +291,8 @@ class _StreamPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          const Color(0xFF0B3B4A).withOpacity(0.05),
-          const Color(0xFF0B3B4A).withOpacity(0.22),
+          const Color(0xFF0B3B4A).withValues(alpha: 0.05),
+          const Color(0xFF0B3B4A).withValues(alpha: 0.22),
         ],
       ).createShader(Offset.zero & size);
     canvas.drawRect(Offset.zero & size, gradient);
@@ -313,7 +313,7 @@ class _StreamPainter extends CustomPainter {
     canvas.rotate(angle);
     canvas.saveLayer(
       const Rect.fromLTWH(-90, -90, 180, 180),
-      Paint()..color = Colors.white.withOpacity(opacity),
+      Paint()..color = Colors.white.withValues(alpha: opacity),
     );
 
     _paintLeafShape(canvas, text.hashCode);
@@ -350,7 +350,7 @@ class _StreamPainter extends CustomPainter {
     canvas.drawPath(
       vein,
       Paint()
-        ..color = Colors.white.withOpacity(0.25)
+        ..color = Colors.white.withValues(alpha: 0.25)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.4,
     );

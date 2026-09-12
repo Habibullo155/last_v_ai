@@ -227,11 +227,11 @@ abstract class AppLocalizations {
   /// **'Password length is fine'**
   String get authPasswordLengthOk;
 
-  /// No description provided for @authPasswordLengthHint.
+  /// Подсказка о минимальной длине пароля при регистрации
   ///
   /// In en, this message translates to:
   /// **'At least {minLength} characters ({length} entered)'**
-  String authPasswordLengthHint(Object length, Object minLength);
+  String authPasswordLengthHint(int minLength, int length);
 
   /// No description provided for @authPasswordsMatch.
   ///
@@ -353,11 +353,11 @@ abstract class AppLocalizations {
   /// **'Enter the code sent to your email at sign-up.'**
   String get verifyEmailPromptGeneric;
 
-  /// No description provided for @verifyEmailPromptWithEmail.
+  /// Подсказка с адресом почты, на который отправлен код
   ///
   /// In en, this message translates to:
   /// **'Enter the code sent to {email}.'**
-  String verifyEmailPromptWithEmail(Object email);
+  String verifyEmailPromptWithEmail(String email);
 
   /// No description provided for @verifyEmailCodeHint.
   ///
@@ -953,11 +953,11 @@ abstract class AppLocalizations {
   /// **'Date of birth'**
   String get profileBirthDateHelpText;
 
-  /// No description provided for @profileAgeYears.
+  /// Возраст в годах с правильным склонением
   ///
   /// In en, this message translates to:
   /// **'{age, plural, one {{age} year} other {{age} years}}'**
-  String profileAgeYears(num age);
+  String profileAgeYears(int age);
 
   /// No description provided for @profileTakePhoto.
   ///
@@ -1143,7 +1143,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Currently: {email}'**
-  String profileCurrentEmailLabel(Object email);
+  String profileCurrentEmailLabel(String email);
 
   /// No description provided for @profileNewEmailLabel.
   ///
@@ -1155,7 +1155,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Code sent to {email}. Enter it below to complete the change.'**
-  String profileCodeSentMessage(Object email);
+  String profileCodeSentMessage(String email);
 
   /// No description provided for @profileCodeFromEmailLabel.
   ///
@@ -1227,7 +1227,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'The conversation \"{title}\" will be deleted permanently.'**
-  String sidebarDeleteChatBody(Object title);
+  String sidebarDeleteChatBody(String title);
 
   /// No description provided for @sidebarEmptyConversation.
   ///
@@ -1569,7 +1569,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'I took the WHO-5 well-being questionnaire: {score}%{extra}. Can you comment on the result and support me?'**
-  String who5DiscussPrompt(Object extra, Object score);
+  String who5DiscussPrompt(String score, String extra);
 
   /// No description provided for @who5RecommendSpecialist.
   ///
@@ -1671,7 +1671,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{count} entries'**
-  String helpWeekSummaryScore(Object count);
+  String helpWeekSummaryScore(int count);
 
   /// No description provided for @helpWeekSummaryHeader.
   ///
@@ -1683,25 +1683,25 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'• WHO-5 ({date}): {percent}%'**
-  String helpWeekLineWho5(Object date, Object percent);
+  String helpWeekLineWho5(String date, int percent);
 
   /// No description provided for @helpWeekLinePhq9.
   ///
   /// In en, this message translates to:
   /// **'• PHQ-9 ({date}): {score}/27, \"{severity}\"{risk}'**
-  String helpWeekLinePhq9(Object date, Object risk, Object score, Object severity);
+  String helpWeekLinePhq9(String date, int score, String severity, String risk);
 
   /// No description provided for @helpWeekLineGad7.
   ///
   /// In en, this message translates to:
   /// **'• GAD-7 ({date}): {score}/21, \"{severity}\"'**
-  String helpWeekLineGad7(Object date, Object score, Object severity);
+  String helpWeekLineGad7(String date, int score, String severity);
 
   /// No description provided for @helpWeekLineAsrs.
   ///
   /// In en, this message translates to:
   /// **'• ASRS-v1.1 ({date}): {shaded}/6'**
-  String helpWeekLineAsrs(Object date, Object shaded);
+  String helpWeekLineAsrs(String date, int shaded);
 
   /// No description provided for @helpRiskSignalPhq9Week.
   ///
@@ -1713,13 +1713,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'WHO-5 questionnaire result ({date}): {percent}%{extra}.'**
-  String helpSingleWho5Result(Object date, Object extra, Object percent);
+  String helpSingleWho5Result(String date, int percent, String extra);
 
   /// No description provided for @helpSinglePhq9Result.
   ///
   /// In en, this message translates to:
   /// **'PHQ-9 questionnaire result ({date}): {score}/27, the method describes this as \"{severity}\"{risk}.'**
-  String helpSinglePhq9Result(Object date, Object risk, Object score, Object severity);
+  String helpSinglePhq9Result(String date, int score, String severity, String risk);
 
   /// No description provided for @helpPhq9RiskNote.
   ///
@@ -1731,13 +1731,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'GAD-7 questionnaire result ({date}): {score}/21, the method describes this as \"{severity}\".'**
-  String helpSingleGad7Result(Object date, Object score, Object severity);
+  String helpSingleGad7Result(String date, int score, String severity);
 
   /// No description provided for @helpSingleAsrsResult.
   ///
   /// In en, this message translates to:
   /// **'ASRS-v1.1 questionnaire result ({date}): {shaded}/6 in the significant range{extra}.'**
-  String helpSingleAsrsResult(Object date, Object extra, Object shaded);
+  String helpSingleAsrsResult(String date, int shaded, String extra);
 
   /// No description provided for @helpClosedStatus.
   ///
@@ -1749,7 +1749,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Connected: {email}'**
-  String helpConnectedStatus(Object email);
+  String helpConnectedStatus(String email);
 
   /// No description provided for @helpWaitingStatus.
   ///
@@ -2025,7 +2025,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'The method describes this result as: {severity}.'**
-  String pfizerSeverityDescription(Object severity);
+  String pfizerSeverityDescription(String severity);
 
   /// No description provided for @pfizerSuggestAssessment.
   ///
@@ -2049,13 +2049,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'I took the PHQ-9 questionnaire (depression symptoms): {score}/27, the method describes this as \"{severity}\".{riskNote} Can you comment on the result and support me?'**
-  String phq9DiscussPrompt(Object riskNote, Object score, Object severity);
+  String phq9DiscussPrompt(int score, String severity, String riskNote);
 
   /// No description provided for @gad7DiscussPrompt.
   ///
   /// In en, this message translates to:
   /// **'I took the GAD-7 questionnaire (anxiety symptoms): {score}/21, the method describes this as \"{severity}\". Can you comment on the result and support me?'**
-  String gad7DiscussPrompt(Object score, Object severity);
+  String gad7DiscussPrompt(int score, String severity);
 
   /// No description provided for @commonDone.
   ///
@@ -2067,7 +2067,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'out of {max}'**
-  String checkinMaxScoreSuffix(Object max);
+  String checkinMaxScoreSuffix(int max);
 
   /// No description provided for @purchaseAdNotReadyYet.
   ///
@@ -2133,7 +2133,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Bonus requests left from ads: {count}'**
-  String purchaseAdBonusRemaining(Object count);
+  String purchaseAdBonusRemaining(int count);
 
   /// No description provided for @purchaseCurrentPlanLabel.
   ///
@@ -2145,13 +2145,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{used} tokens used this month · no limit'**
-  String purchaseTokensUsedNoLimit(Object used);
+  String purchaseTokensUsedNoLimit(int used);
 
   /// No description provided for @purchaseTokensUsedWithLimit.
   ///
   /// In en, this message translates to:
   /// **'{used} of {limit} tokens this month'**
-  String purchaseTokensUsedWithLimit(Object limit, Object used);
+  String purchaseTokensUsedWithLimit(int used, int limit);
 
   /// No description provided for @purchaseCurrentBadge.
   ///
@@ -2163,13 +2163,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Free · {days} days'**
-  String purchaseFreeDuration(Object days);
+  String purchaseFreeDuration(int days);
 
   /// No description provided for @purchasePriceDuration.
   ///
   /// In en, this message translates to:
   /// **'{rub} / {usd} · {days} days'**
-  String purchasePriceDuration(Object days, Object rub, Object usd);
+  String purchasePriceDuration(String rub, String usd, int days);
 
   /// No description provided for @purchaseComingSoon.
   ///
@@ -2313,37 +2313,37 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Couldn\'t reach the server.\n{details}'**
-  String authNetworkError(Object details);
+  String authNetworkError(String details);
 
   /// No description provided for @authUnexpectedResponse.
   ///
   /// In en, this message translates to:
   /// **'The server returned an unexpected response (code {code}).'**
-  String authUnexpectedResponse(Object code);
+  String authUnexpectedResponse(int code);
 
   /// No description provided for @authDeleteAccountFailed.
   ///
   /// In en, this message translates to:
   /// **'Couldn\'t delete the account (code {code}).'**
-  String authDeleteAccountFailed(Object code);
+  String authDeleteAccountFailed(int code);
 
   /// No description provided for @authRequestFailed.
   ///
   /// In en, this message translates to:
   /// **'Couldn\'t send the request (code {code}).'**
-  String authRequestFailed(Object code);
+  String authRequestFailed(int code);
 
   /// No description provided for @authChangePasswordFailed.
   ///
   /// In en, this message translates to:
   /// **'Couldn\'t change the password (code {code}).'**
-  String authChangePasswordFailed(Object code);
+  String authChangePasswordFailed(int code);
 
   /// No description provided for @authResendCodeFailed.
   ///
   /// In en, this message translates to:
   /// **'Couldn\'t resend the code (code {code}).'**
-  String authResendCodeFailed(Object code);
+  String authResendCodeFailed(int code);
 
   /// No description provided for @authGenericError.
   ///
@@ -2379,7 +2379,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{email} will no longer be able to take requests. The account and history will remain.'**
-  String operatorRevokeAccessBody(Object email);
+  String operatorRevokeAccessBody(String email);
 
   /// No description provided for @operatorRevokeAccessConfirm.
   ///
@@ -2397,7 +2397,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'This is irreversible: {email} and their entire request history will be deleted. If you just need to remove access without deleting the account, use \"Revoke access\" instead.'**
-  String operatorDeleteAccountBody(Object email);
+  String operatorDeleteAccountBody(String email);
 
   /// No description provided for @operatorDeleteAccountConfirm.
   ///
@@ -2409,13 +2409,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'WARNINGS ({count})'**
-  String operatorWarningsSectionCount(Object count);
+  String operatorWarningsSectionCount(int count);
 
   /// No description provided for @operatorSessionsSectionCount.
   ///
   /// In en, this message translates to:
   /// **'REQUESTS ({count})'**
-  String operatorSessionsSectionCount(Object count);
+  String operatorSessionsSectionCount(int count);
 
   /// No description provided for @operatorNoSessionsYet.
   ///
@@ -2445,7 +2445,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'· {email}'**
-  String operatorIssuedByPrefix(Object email);
+  String operatorIssuedByPrefix(String email);
 
   /// No description provided for @operatorUnknownUser.
   ///
@@ -2463,7 +2463,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'\"{comment}\"'**
-  String operatorQuotedComment(Object comment);
+  String operatorQuotedComment(String comment);
 
   /// No description provided for @asrsQ1.
   ///
@@ -2571,7 +2571,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'I took the ASRS-v1.1 screening (ADHD): {shaded}/6 in the significant range{extra}. Can you comment on the result and support me?'**
-  String asrsDiscussPrompt(Object extra, Object shaded);
+  String asrsDiscussPrompt(int shaded, String extra);
 
   /// No description provided for @authBiometricNotConfigured.
   ///
@@ -2595,7 +2595,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Unexpected error: {error}'**
-  String authUnexpectedErrorGeneric(Object error);
+  String authUnexpectedErrorGeneric(String error);
 
   /// No description provided for @authSessionNotFound.
   ///
@@ -2667,13 +2667,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **', p. {page}'**
-  String messageSourcePageSuffix(Object page);
+  String messageSourcePageSuffix(int page);
 
   /// No description provided for @messageSourceLine.
   ///
   /// In en, this message translates to:
   /// **'{filename}{pageSuffix} · {similarity}%'**
-  String messageSourceLine(Object filename, Object pageSuffix, Object similarity);
+  String messageSourceLine(String filename, String pageSuffix, int similarity);
 
   /// No description provided for @messageChooseWhatYouLike.
   ///
@@ -2709,7 +2709,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'A code was sent to {email}. Enter it below to finish the change.'**
-  String profileCodeSentToEmail(Object email);
+  String profileCodeSentToEmail(String email);
 
   /// No description provided for @profileConfirmButton.
   ///
@@ -2739,7 +2739,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{minutes} min'**
-  String freewritingMinutesOption(Object minutes);
+  String freewritingMinutesOption(int minutes);
 
   /// No description provided for @freewritingStartButton.
   ///
@@ -2979,7 +2979,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'We\'ll tense and relax {count} muscle groups one by one. A few seconds of tension each, then release. Get comfortable so nothing restricts moving your arms/legs.'**
-  String muscleRelaxationIntro(Object count);
+  String muscleRelaxationIntro(int count);
 
   /// No description provided for @muscleStartButton.
   ///
@@ -2991,7 +2991,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{current} of {total}'**
-  String muscleStepProgress(Object current, Object total);
+  String muscleStepProgress(int current, int total);
 
   /// No description provided for @muscleDoneText.
   ///
@@ -3009,13 +3009,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'The server isn\'t responding. Check that the backend is running at {baseUrl}'**
-  String chatServerNotResponding(Object baseUrl);
+  String chatServerNotResponding(String baseUrl);
 
   /// No description provided for @chatConnectionFailed.
   ///
   /// In en, this message translates to:
   /// **'Couldn\'t connect to {baseUrl}.\n{error}'**
-  String chatConnectionFailed(Object baseUrl, Object error);
+  String chatConnectionFailed(String baseUrl, String error);
 
   /// No description provided for @chatSessionExpired.
   ///
@@ -3027,13 +3027,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'The server returned an error {code}'**
-  String chatServerErrorCode(Object code);
+  String chatServerErrorCode(int code);
 
   /// No description provided for @chatConnectionDroppedMidResponse.
   ///
   /// In en, this message translates to:
   /// **'\n\n⚠️ The connection dropped mid-response (for example, the tunnel went down). Try sending the message again.\n{error}'**
-  String chatConnectionDroppedMidResponse(Object error);
+  String chatConnectionDroppedMidResponse(String error);
 
   /// No description provided for @chatResponseTruncated.
   ///
@@ -3213,13 +3213,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{count} question(s)'**
-  String customTestQuestionCount(Object count);
+  String customTestQuestionCount(int count);
 
   /// No description provided for @customTestQuestionProgress.
   ///
   /// In en, this message translates to:
   /// **'Question {current} of {total}'**
-  String customTestQuestionProgress(Object current, Object total);
+  String customTestQuestionProgress(int current, int total);
 
   /// No description provided for @customTestPointsLabel.
   ///
@@ -3231,13 +3231,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'I took the \"{title}\" test: {score} point(s){resultNote}. Can you comment on the result and support me?'**
-  String customTestDiscussPrompt(Object resultNote, Object score, Object title);
+  String customTestDiscussPrompt(String title, int score, String resultNote);
 
   /// No description provided for @customTestResultNote.
   ///
   /// In en, this message translates to:
   /// **' — result: \"{label}\"'**
-  String customTestResultNote(Object label);
+  String customTestResultNote(String label);
 
   /// No description provided for @reportSentTitle.
   ///
@@ -3501,49 +3501,49 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Couldn\'t change the setting (code {code}).'**
-  String appSettingsChangeFailed(Object code);
+  String appSettingsChangeFailed(int code);
 
   /// No description provided for @appSettingsRestoreFailed.
   ///
   /// In en, this message translates to:
   /// **'Couldn\'t restore settings (code {code}).'**
-  String appSettingsRestoreFailed(Object code);
+  String appSettingsRestoreFailed(int code);
 
   /// No description provided for @appSettingsLoadPersonaFailed.
   ///
   /// In en, this message translates to:
   /// **'Couldn\'t load the AI persona settings (code {code}).'**
-  String appSettingsLoadPersonaFailed(Object code);
+  String appSettingsLoadPersonaFailed(int code);
 
   /// No description provided for @appSettingsSavePersonaFailed.
   ///
   /// In en, this message translates to:
   /// **'Couldn\'t save the AI persona (code {code}).'**
-  String appSettingsSavePersonaFailed(Object code);
+  String appSettingsSavePersonaFailed(int code);
 
   /// No description provided for @appSettingsResetPersonaFailed.
   ///
   /// In en, this message translates to:
   /// **'Couldn\'t reset the AI persona (code {code}).'**
-  String appSettingsResetPersonaFailed(Object code);
+  String appSettingsResetPersonaFailed(int code);
 
   /// No description provided for @appSettingsLoadModelFailed.
   ///
   /// In en, this message translates to:
   /// **'Couldn\'t load model settings (code {code}).'**
-  String appSettingsLoadModelFailed(Object code);
+  String appSettingsLoadModelFailed(int code);
 
   /// No description provided for @appSettingsSaveModelFailed.
   ///
   /// In en, this message translates to:
   /// **'Couldn\'t save model settings (code {code}).'**
-  String appSettingsSaveModelFailed(Object code);
+  String appSettingsSaveModelFailed(int code);
 
   /// No description provided for @appSettingsResetModelFailed.
   ///
   /// In en, this message translates to:
   /// **'Couldn\'t reset model settings (code {code}).'**
-  String appSettingsResetModelFailed(Object code);
+  String appSettingsResetModelFailed(int code);
 
   /// No description provided for @reminderPrompt1.
   ///
@@ -3723,13 +3723,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'MY ACTIVE ({count})'**
-  String operatorDashboardMyActiveSection(Object count);
+  String operatorDashboardMyActiveSection(int count);
 
   /// No description provided for @operatorDashboardPendingSection.
   ///
   /// In en, this message translates to:
   /// **'WAITING TO CONNECT ({count})'**
-  String operatorDashboardPendingSection(Object count);
+  String operatorDashboardPendingSection(int count);
 
   /// No description provided for @operatorDashboardNoOneWaiting.
   ///
@@ -3777,7 +3777,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'· {item}'**
-  String gratitudeBulletItem(Object item);
+  String gratitudeBulletItem(String item);
 
   /// No description provided for @wellbeingCalendarWho5Label.
   ///
@@ -3789,7 +3789,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{score} point(s)'**
-  String wellbeingCalendarScoreSuffix(Object score);
+  String wellbeingCalendarScoreSuffix(int score);
 
   /// No description provided for @wellbeingCalendarTitle.
   ///
@@ -3867,13 +3867,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{name} (female)'**
-  String cloudVoiceLabelFemale(Object name);
+  String cloudVoiceLabelFemale(String name);
 
   /// No description provided for @cloudVoiceLabelMale.
   ///
   /// In en, this message translates to:
   /// **'{name} (male)'**
-  String cloudVoiceLabelMale(Object name);
+  String cloudVoiceLabelMale(String name);
 
   /// No description provided for @modelDowngradedNotice.
   ///
@@ -3886,6 +3886,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Upgrade plan'**
   String get modelDowngradedUpgradeButton;
+
+  /// No description provided for @settingsLanguageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguageLabel;
+
+  /// No description provided for @settingsLanguageSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get settingsLanguageSystem;
+
+  /// No description provided for @settingsLanguageRussian.
+  ///
+  /// In en, this message translates to:
+  /// **'Русский'**
+  String get settingsLanguageRussian;
+
+  /// No description provided for @settingsLanguageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get settingsLanguageEnglish;
+
+  /// No description provided for @sleepMusicTabCatalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog'**
+  String get sleepMusicTabCatalog;
+
+  /// No description provided for @sleepMusicTabPlaylists.
+  ///
+  /// In en, this message translates to:
+  /// **'My playlists'**
+  String get sleepMusicTabPlaylists;
+
+  /// No description provided for @sleepMusicNoPlaylists.
+  ///
+  /// In en, this message translates to:
+  /// **'No playlists yet — create your first one.'**
+  String get sleepMusicNoPlaylists;
+
+  /// No description provided for @sleepMusicCreatePlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Create playlist'**
+  String get sleepMusicCreatePlaylist;
+
+  /// No description provided for @sleepMusicNewPlaylistHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist name'**
+  String get sleepMusicNewPlaylistHint;
+
+  /// No description provided for @sleepMusicEmptyPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'This playlist has no tracks yet.'**
+  String get sleepMusicEmptyPlaylist;
+
+  /// No description provided for @sleepMusicAddTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Add track'**
+  String get sleepMusicAddTrack;
+
+  /// No description provided for @sleepMusicAddFromCatalog.
+  ///
+  /// In en, this message translates to:
+  /// **'From catalog'**
+  String get sleepMusicAddFromCatalog;
+
+  /// No description provided for @sleepMusicUploadOwnFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload your own file'**
+  String get sleepMusicUploadOwnFile;
+
+  /// No description provided for @sleepMusicRemoveFromPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from playlist'**
+  String get sleepMusicRemoveFromPlaylist;
+
+  /// No description provided for @sleepMusicDeletePlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete playlist'**
+  String get sleepMusicDeletePlaylist;
+
+  /// No description provided for @sleepMusicDeletePlaylistConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete playlist \"{name}\"? The tracks themselves will stay in the catalog/your library.'**
+  String sleepMusicDeletePlaylistConfirm(String name);
+
+  /// No description provided for @sleepMusicOwnFileWebNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'On the web your own file will only play until the page reloads — it can\'t be saved permanently here.'**
+  String get sleepMusicOwnFileWebNotice;
+
+  /// No description provided for @sleepMusicFileReadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t read the file.'**
+  String get sleepMusicFileReadError;
+
+  /// No description provided for @sleepMusicNoTracksInCatalogYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No sounds in the catalog yet — an admin needs to add some first.'**
+  String get sleepMusicNoTracksInCatalogYet;
+
+  /// No description provided for @sleepMusicTimerCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off timer'**
+  String get sleepMusicTimerCancel;
+
+  /// No description provided for @sleepMusicTimerMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} minutes'**
+  String sleepMusicTimerMinutes(int minutes);
+
+  /// No description provided for @sleepMusicRenamePlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename playlist'**
+  String get sleepMusicRenamePlaylist;
+
+  /// No description provided for @sleepMusicLikedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Liked'**
+  String get sleepMusicLikedTitle;
+
+  /// No description provided for @sleepMusicNoLikedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No liked tracks yet — tap the heart on any track.'**
+  String get sleepMusicNoLikedYet;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

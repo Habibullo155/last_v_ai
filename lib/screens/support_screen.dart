@@ -266,7 +266,7 @@ class _SupportScreenState extends State<SupportScreen> {
                     borderRadius: BorderRadius.circular(8),
                     color: isClosed
                         ? context.onSurfaceFaded(0.08)
-                        : const Color(0xFF00D9C0).withOpacity(0.18),
+                        : const Color(0xFF00D9C0).withValues(alpha: 0.18),
                   ),
                   child: Text(
                     isClosed ? l10n.myHelpStatusClosed : l10n.supportTicketOpen,

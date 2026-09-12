@@ -29,6 +29,7 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
   final _service = HelpService();
   final _reasonController = TextEditingController();
   List<HelpSession> _sessions = [];
+  // ignore: unused_field
   bool _isLoading = true;
   bool _isCreating = false;
   String? _error;
@@ -348,7 +349,7 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
                     ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: color.withOpacity(0.18),
+                      color: color.withValues(alpha: 0.18),
                     ),
                     child: Text(
                       label,

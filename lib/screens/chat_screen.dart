@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import 'package:ai_last_v/l10n/app_localizations.dart';
@@ -12,6 +13,7 @@ import '../services/telegram_service.dart';
 import '../services/usage_service.dart';
 import '../state/auth_store.dart';
 import '../state/chat_store.dart';
+import '../state/locale_store.dart';
 import '../state/theme_store.dart';
 import '../theme/app_text_color.dart';
 import '../state/voice_store.dart';
@@ -217,8 +219,9 @@ class _ChatScreenState extends State<ChatScreen> {
         chosen = result as SoundAsset;
       }
       if (!mounted) return;
-      if (chosen.id == _playingNoiseId)
+      if (chosen.id == _playingNoiseId) {
         return; // выбрали тот же трек, что уже играет - ничего не делаем
+      }
 
       final bytes = await _soundsService.fetchAudioBytes(
         baseUrl: widget.authStore.baseUrl,
@@ -230,10 +233,11 @@ class _ChatScreenState extends State<ChatScreen> {
       await _noisePlayer.play(BytesSource(bytes));
       setState(() => _playingNoiseId = chosen!.id);
     } on SoundsException catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
     } finally {
       if (mounted) setState(() => _isLoadingNoise = false);
     }
@@ -357,7 +361,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             value: active,
                             onChanged: (v) =>
                                 ThemeStore.instance.setReducedContrast(v),
-                            activeColor: const Color(0xFF6C5CE7),
+                            activeThumbColor: const Color(0xFF6C5CE7),
                           ),
                         ],
                       ),
@@ -477,10 +481,10 @@ class _ChatScreenState extends State<ChatScreen> {
     final userId = widget.authStore.user?.id.toString();
     if (userId == null || !mounted) return;
 
-    final discuss = (String summary) async {
+    Future<void> discuss(String summary) async {
       await widget.store.sendMessage(summary);
       _scrollToBottom();
-    };
+    }
 
     final l10n = AppLocalizations.of(context)!;
     final test = await showModalBottomSheet<String>(
@@ -1022,10 +1026,11 @@ class _ChatScreenState extends State<ChatScreen> {
                                   }
                                 : null,
                             onDailyLimitResolved: () {
-                              if (mounted)
+                              if (mounted) {
                                 setState(
                                   () => messages[i].dailyLimitResolved = true,
                                 );
+                              }
                             },
                             onUpgradeSubscription:
                                 messages[i].modelDowngradedReason != null
@@ -1090,9 +1095,9 @@ class _ChatScreenState extends State<ChatScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
-              color: const Color(0xFFFFD166).withOpacity(0.12),
+              color: const Color(0xFFFFD166).withValues(alpha: 0.12),
               border: Border.all(
-                color: const Color(0xFFFFD166).withOpacity(0.3),
+                color: const Color(0xFFFFD166).withValues(alpha: 0.3),
               ),
             ),
             child: Row(
@@ -1128,10 +1133,16 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildTopBar(BuildContext context, bool showSidebar, String title) {
     final l10n = AppLocalizations.of(context)!;
+    // та же причина, что у боковой панели (conversation_sidebar.dart) -
+    // этот бар виден постоянно, пока открыт чат, прямо поверх
+    // анимированного фона. На вебе (kIsWeb) - отдельная причина, независимая
+    // от ширины окна: BackdropFilter через CanvasKit (WebGL/WASM) заметно
+    // дороже, чем нативный GPU-доступ
     return GlassPanel(
       opacity: 0.08,
       borderRadius: BorderRadius.circular(22),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      blurred: !(Responsive.isDesktopOrWider(context) || kIsWeb),
       child: Row(
         children: [
           if (!showSidebar)
@@ -1211,8 +1222,9 @@ class _ChatScreenState extends State<ChatScreen> {
                     // выше про ту же проблему: не обрываем уже идущий
                     // разговор ради нового
                     await widget.store.sendMessage(text);
-                    if (mounted)
+                    if (mounted) {
                       Navigator.of(context).popUntil((route) => route.isFirst);
+                    }
                   },
                 ),
               ),
@@ -1232,6 +1244,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   authStore: widget.authStore,
                   chatStore: widget.store,
                   themeStore: widget.themeStore,
+                  localeStore: LocaleStore.instance,
                   voiceStore: widget.voiceStore,
                 ),
               ),
@@ -1362,7 +1375,7 @@ class _EmptyState extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF6C5CE7).withOpacity(0.5),
+                    color: const Color(0xFF6C5CE7).withValues(alpha: 0.5),
                     blurRadius: 30,
                   ),
                 ],

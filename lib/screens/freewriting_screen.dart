@@ -106,7 +106,6 @@ class _FreewritingScreenState extends State<FreewritingScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: AppBackground(
@@ -238,7 +237,7 @@ class _FreewritingScreenState extends State<FreewritingScreen>
         final pulse = _pulseController.value * 0.06;
         return DecoratedBox(
           decoration: BoxDecoration(
-            color: const Color(0xFFFFD166).withOpacity(pulse),
+            color: const Color(0xFFFFD166).withValues(alpha: pulse),
           ),
           child: child,
         );

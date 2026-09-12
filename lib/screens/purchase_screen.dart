@@ -132,15 +132,17 @@ class _PurchaseScreenState extends State<PurchaseScreen>
     try {
       final ready = await _adService.preload(widget.authStore.baseUrl);
       if (!ready) {
-        if (mounted)
+        if (mounted) {
           setState(
             () => _error = AppLocalizations.of(context)!.purchaseAdNotReadyYet,
           );
+        }
         return;
       }
       final earned = await _adService.showAndWaitForReward();
-      if (!earned)
+      if (!earned) {
         return; // человек закрыл ролик раньше времени - бонус не начисляем
+      }
 
       final token = widget.authStore.token;
       if (token == null) return;
@@ -535,7 +537,7 @@ class _PurchaseScreenState extends State<PurchaseScreen>
                           ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: const Color(0xFF00E6A0).withOpacity(0.18),
+                            color: const Color(0xFF00E6A0).withValues(alpha: 0.18),
                           ),
                           child: Text(
                             l10n.purchaseCurrentBadge,

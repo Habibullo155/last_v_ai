@@ -96,7 +96,7 @@ class _LockScreenState extends State<LockScreen> {
                             : l10n.lockScreenPrompt,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.6),
+                          color: Colors.white.withValues(alpha: 0.6),
                           fontSize: 13.5,
                         ),
                       ),
@@ -142,7 +142,7 @@ class _LockScreenState extends State<LockScreen> {
                         child: Text(
                           l10n.lockScreenUsePassword,
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
+                            color: Colors.white.withValues(alpha: 0.6),
                           ),
                         ),
                       ),

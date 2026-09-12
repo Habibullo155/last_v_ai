@@ -75,7 +75,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authPasswordLengthOk => 'Password length is fine';
 
   @override
-  String authPasswordLengthHint(Object length, Object minLength) {
+  String authPasswordLengthHint(int minLength, int length) {
     return 'At least $minLength characters ($length entered)';
   }
 
@@ -140,7 +140,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get verifyEmailPromptGeneric => 'Enter the code sent to your email at sign-up.';
 
   @override
-  String verifyEmailPromptWithEmail(Object email) {
+  String verifyEmailPromptWithEmail(String email) {
     return 'Enter the code sent to $email.';
   }
 
@@ -442,7 +442,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileBirthDateHelpText => 'Date of birth';
 
   @override
-  String profileAgeYears(num age) {
+  String profileAgeYears(int age) {
     String _temp0 = intl.Intl.pluralLogic(
       age,
       locale: localeName,
@@ -543,7 +543,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileChangeEmailTitle => 'Change email';
 
   @override
-  String profileCurrentEmailLabel(Object email) {
+  String profileCurrentEmailLabel(String email) {
     return 'Currently: $email';
   }
 
@@ -551,7 +551,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileNewEmailLabel => 'New address';
 
   @override
-  String profileCodeSentMessage(Object email) {
+  String profileCodeSentMessage(String email) {
     return 'Code sent to $email. Enter it below to complete the change.';
   }
 
@@ -589,7 +589,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sidebarDeleteChatTitle => 'Delete chat?';
 
   @override
-  String sidebarDeleteChatBody(Object title) {
+  String sidebarDeleteChatBody(String title) {
     return 'The conversation \"$title\" will be deleted permanently.';
   }
 
@@ -762,7 +762,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get who5DescriptionNormal => 'The official WHO method considers this result a sign of normal psychological wellbeing over the last two weeks.';
 
   @override
-  String who5DiscussPrompt(Object extra, Object score) {
+  String who5DiscussPrompt(String score, String extra) {
     return 'I took the WHO-5 well-being questionnaire: $score%$extra. Can you comment on the result and support me?';
   }
 
@@ -815,7 +815,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpWeekSummaryTitle => 'Weekly summary';
 
   @override
-  String helpWeekSummaryScore(Object count) {
+  String helpWeekSummaryScore(int count) {
     return '$count entries';
   }
 
@@ -823,22 +823,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpWeekSummaryHeader => 'Questionnaire results over the last 7 days:';
 
   @override
-  String helpWeekLineWho5(Object date, Object percent) {
+  String helpWeekLineWho5(String date, int percent) {
     return '• WHO-5 ($date): $percent%';
   }
 
   @override
-  String helpWeekLinePhq9(Object date, Object risk, Object score, Object severity) {
+  String helpWeekLinePhq9(String date, int score, String severity, String risk) {
     return '• PHQ-9 ($date): $score/27, \"$severity\"$risk';
   }
 
   @override
-  String helpWeekLineGad7(Object date, Object score, Object severity) {
+  String helpWeekLineGad7(String date, int score, String severity) {
     return '• GAD-7 ($date): $score/21, \"$severity\"';
   }
 
   @override
-  String helpWeekLineAsrs(Object date, Object shaded) {
+  String helpWeekLineAsrs(String date, int shaded) {
     return '• ASRS-v1.1 ($date): $shaded/6';
   }
 
@@ -846,12 +846,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpRiskSignalPhq9Week => ' — self-harm thoughts noted';
 
   @override
-  String helpSingleWho5Result(Object date, Object extra, Object percent) {
+  String helpSingleWho5Result(String date, int percent, String extra) {
     return 'WHO-5 questionnaire result ($date): $percent%$extra.';
   }
 
   @override
-  String helpSinglePhq9Result(Object date, Object risk, Object score, Object severity) {
+  String helpSinglePhq9Result(String date, int score, String severity, String risk) {
     return 'PHQ-9 questionnaire result ($date): $score/27, the method describes this as \"$severity\"$risk.';
   }
 
@@ -859,12 +859,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpPhq9RiskNote => '. Self-harm thoughts noted on item 9';
 
   @override
-  String helpSingleGad7Result(Object date, Object score, Object severity) {
+  String helpSingleGad7Result(String date, int score, String severity) {
     return 'GAD-7 questionnaire result ($date): $score/21, the method describes this as \"$severity\".';
   }
 
   @override
-  String helpSingleAsrsResult(Object date, Object extra, Object shaded) {
+  String helpSingleAsrsResult(String date, int shaded, String extra) {
     return 'ASRS-v1.1 questionnaire result ($date): $shaded/6 in the significant range$extra.';
   }
 
@@ -872,7 +872,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpClosedStatus => 'Request closed';
 
   @override
-  String helpConnectedStatus(Object email) {
+  String helpConnectedStatus(String email) {
     return 'Connected: $email';
   }
 
@@ -1012,7 +1012,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get checkinIfHardRightNow => 'If it\'s hard right now';
 
   @override
-  String pfizerSeverityDescription(Object severity) {
+  String pfizerSeverityDescription(String severity) {
     return 'The method describes this result as: $severity.';
   }
 
@@ -1026,12 +1026,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phq9RiskNoteDiscuss => ' A positive response was noted on the item about thoughts of self-harm.';
 
   @override
-  String phq9DiscussPrompt(Object riskNote, Object score, Object severity) {
+  String phq9DiscussPrompt(int score, String severity, String riskNote) {
     return 'I took the PHQ-9 questionnaire (depression symptoms): $score/27, the method describes this as \"$severity\".$riskNote Can you comment on the result and support me?';
   }
 
   @override
-  String gad7DiscussPrompt(Object score, Object severity) {
+  String gad7DiscussPrompt(int score, String severity) {
     return 'I took the GAD-7 questionnaire (anxiety symptoms): $score/21, the method describes this as \"$severity\". Can you comment on the result and support me?';
   }
 
@@ -1039,7 +1039,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonDone => 'Done';
 
   @override
-  String checkinMaxScoreSuffix(Object max) {
+  String checkinMaxScoreSuffix(int max) {
     return 'out of $max';
   }
 
@@ -1074,7 +1074,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get purchaseWatchAdButton => 'Watch an ad (+3)';
 
   @override
-  String purchaseAdBonusRemaining(Object count) {
+  String purchaseAdBonusRemaining(int count) {
     return 'Bonus requests left from ads: $count';
   }
 
@@ -1082,12 +1082,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get purchaseCurrentPlanLabel => 'Current plan';
 
   @override
-  String purchaseTokensUsedNoLimit(Object used) {
+  String purchaseTokensUsedNoLimit(int used) {
     return '$used tokens used this month · no limit';
   }
 
   @override
-  String purchaseTokensUsedWithLimit(Object limit, Object used) {
+  String purchaseTokensUsedWithLimit(int used, int limit) {
     return '$used of $limit tokens this month';
   }
 
@@ -1095,12 +1095,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get purchaseCurrentBadge => 'current';
 
   @override
-  String purchaseFreeDuration(Object days) {
+  String purchaseFreeDuration(int days) {
     return 'Free · $days days';
   }
 
   @override
-  String purchasePriceDuration(Object days, Object rub, Object usd) {
+  String purchasePriceDuration(String rub, String usd, int days) {
     return '$rub / $usd · $days days';
   }
 
@@ -1174,32 +1174,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get voiceSettingsPreviewTooltip => 'Preview';
 
   @override
-  String authNetworkError(Object details) {
+  String authNetworkError(String details) {
     return 'Couldn\'t reach the server.\n$details';
   }
 
   @override
-  String authUnexpectedResponse(Object code) {
+  String authUnexpectedResponse(int code) {
     return 'The server returned an unexpected response (code $code).';
   }
 
   @override
-  String authDeleteAccountFailed(Object code) {
+  String authDeleteAccountFailed(int code) {
     return 'Couldn\'t delete the account (code $code).';
   }
 
   @override
-  String authRequestFailed(Object code) {
+  String authRequestFailed(int code) {
     return 'Couldn\'t send the request (code $code).';
   }
 
   @override
-  String authChangePasswordFailed(Object code) {
+  String authChangePasswordFailed(int code) {
     return 'Couldn\'t change the password (code $code).';
   }
 
   @override
-  String authResendCodeFailed(Object code) {
+  String authResendCodeFailed(int code) {
     return 'Couldn\'t resend the code (code $code).';
   }
 
@@ -1219,7 +1219,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get operatorRevokeAccessTitle => 'Revoke live-help access?';
 
   @override
-  String operatorRevokeAccessBody(Object email) {
+  String operatorRevokeAccessBody(String email) {
     return '$email will no longer be able to take requests. The account and history will remain.';
   }
 
@@ -1230,7 +1230,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get operatorDeleteAccountTitle => 'Delete the account entirely?';
 
   @override
-  String operatorDeleteAccountBody(Object email) {
+  String operatorDeleteAccountBody(String email) {
     return 'This is irreversible: $email and their entire request history will be deleted. If you just need to remove access without deleting the account, use \"Revoke access\" instead.';
   }
 
@@ -1238,12 +1238,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get operatorDeleteAccountConfirm => 'Delete';
 
   @override
-  String operatorWarningsSectionCount(Object count) {
+  String operatorWarningsSectionCount(int count) {
     return 'WARNINGS ($count)';
   }
 
   @override
-  String operatorSessionsSectionCount(Object count) {
+  String operatorSessionsSectionCount(int count) {
     return 'REQUESTS ($count)';
   }
 
@@ -1260,7 +1260,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get operatorDeleteAccountTooltip => 'Delete the account entirely';
 
   @override
-  String operatorIssuedByPrefix(Object email) {
+  String operatorIssuedByPrefix(String email) {
     return '· $email';
   }
 
@@ -1271,7 +1271,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get operatorNoRating => 'no rating';
 
   @override
-  String operatorQuotedComment(Object comment) {
+  String operatorQuotedComment(String comment) {
     return '\"$comment\"';
   }
 
@@ -1327,7 +1327,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get asrsNoAssessmentNeeded => 'The official method doesn\'t consider this result a reason for further assessment — but if any of this is bothering you, it\'s still worth discussing with a specialist.';
 
   @override
-  String asrsDiscussPrompt(Object extra, Object shaded) {
+  String asrsDiscussPrompt(int shaded, String extra) {
     return 'I took the ASRS-v1.1 screening (ADHD): $shaded/6 in the significant range$extra. Can you comment on the result and support me?';
   }
 
@@ -1341,7 +1341,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authBiometricConfirmFailed => 'Couldn\'t confirm — try again.';
 
   @override
-  String authUnexpectedErrorGeneric(Object error) {
+  String authUnexpectedErrorGeneric(String error) {
     return 'Unexpected error: $error';
   }
 
@@ -1379,12 +1379,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messageSourcesAdminOnly => 'SOURCES (visible to admin only)';
 
   @override
-  String messageSourcePageSuffix(Object page) {
+  String messageSourcePageSuffix(int page) {
     return ', p. $page';
   }
 
   @override
-  String messageSourceLine(Object filename, Object pageSuffix, Object similarity) {
+  String messageSourceLine(String filename, String pageSuffix, int similarity) {
     return '$filename$pageSuffix · $similarity%';
   }
 
@@ -1404,7 +1404,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profilePasswordsDontMatch => 'Passwords don\'t match.';
 
   @override
-  String profileCodeSentToEmail(Object email) {
+  String profileCodeSentToEmail(String email) {
     return 'A code was sent to $email. Enter it below to finish the change.';
   }
 
@@ -1421,7 +1421,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get freewritingHowManyMinutes => 'How many minutes?';
 
   @override
-  String freewritingMinutesOption(Object minutes) {
+  String freewritingMinutesOption(int minutes) {
     return '$minutes min';
   }
 
@@ -1543,7 +1543,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get muscleRelaxationTitle => 'Muscle relaxation';
 
   @override
-  String muscleRelaxationIntro(Object count) {
+  String muscleRelaxationIntro(int count) {
     return 'We\'ll tense and relax $count muscle groups one by one. A few seconds of tension each, then release. Get comfortable so nothing restricts moving your arms/legs.';
   }
 
@@ -1551,7 +1551,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get muscleStartButton => 'Start';
 
   @override
-  String muscleStepProgress(Object current, Object total) {
+  String muscleStepProgress(int current, int total) {
     return '$current of $total';
   }
 
@@ -1562,12 +1562,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get muscleRepeatButton => 'Do it again';
 
   @override
-  String chatServerNotResponding(Object baseUrl) {
+  String chatServerNotResponding(String baseUrl) {
     return 'The server isn\'t responding. Check that the backend is running at $baseUrl';
   }
 
   @override
-  String chatConnectionFailed(Object baseUrl, Object error) {
+  String chatConnectionFailed(String baseUrl, String error) {
     return 'Couldn\'t connect to $baseUrl.\n$error';
   }
 
@@ -1575,12 +1575,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatSessionExpired => 'Your session expired. Sign out and sign in again.';
 
   @override
-  String chatServerErrorCode(Object code) {
+  String chatServerErrorCode(int code) {
     return 'The server returned an error $code';
   }
 
   @override
-  String chatConnectionDroppedMidResponse(Object error) {
+  String chatConnectionDroppedMidResponse(String error) {
     return '\n\n⚠️ The connection dropped mid-response (for example, the tunnel went down). Try sending the message again.\n$error';
   }
 
@@ -1672,12 +1672,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customTestLoadFailed => 'Couldn\'t load the test.';
 
   @override
-  String customTestQuestionCount(Object count) {
+  String customTestQuestionCount(int count) {
     return '$count question(s)';
   }
 
   @override
-  String customTestQuestionProgress(Object current, Object total) {
+  String customTestQuestionProgress(int current, int total) {
     return 'Question $current of $total';
   }
 
@@ -1685,12 +1685,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customTestPointsLabel => 'points';
 
   @override
-  String customTestDiscussPrompt(Object resultNote, Object score, Object title) {
+  String customTestDiscussPrompt(String title, int score, String resultNote) {
     return 'I took the \"$title\" test: $score point(s)$resultNote. Can you comment on the result and support me?';
   }
 
   @override
-  String customTestResultNote(Object label) {
+  String customTestResultNote(String label) {
     return ' — result: \"$label\"';
   }
 
@@ -1824,42 +1824,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get voicePreviewPhrase => 'Hi! This is what this voice sounds like.';
 
   @override
-  String appSettingsChangeFailed(Object code) {
+  String appSettingsChangeFailed(int code) {
     return 'Couldn\'t change the setting (code $code).';
   }
 
   @override
-  String appSettingsRestoreFailed(Object code) {
+  String appSettingsRestoreFailed(int code) {
     return 'Couldn\'t restore settings (code $code).';
   }
 
   @override
-  String appSettingsLoadPersonaFailed(Object code) {
+  String appSettingsLoadPersonaFailed(int code) {
     return 'Couldn\'t load the AI persona settings (code $code).';
   }
 
   @override
-  String appSettingsSavePersonaFailed(Object code) {
+  String appSettingsSavePersonaFailed(int code) {
     return 'Couldn\'t save the AI persona (code $code).';
   }
 
   @override
-  String appSettingsResetPersonaFailed(Object code) {
+  String appSettingsResetPersonaFailed(int code) {
     return 'Couldn\'t reset the AI persona (code $code).';
   }
 
   @override
-  String appSettingsLoadModelFailed(Object code) {
+  String appSettingsLoadModelFailed(int code) {
     return 'Couldn\'t load model settings (code $code).';
   }
 
   @override
-  String appSettingsSaveModelFailed(Object code) {
+  String appSettingsSaveModelFailed(int code) {
     return 'Couldn\'t save model settings (code $code).';
   }
 
   @override
-  String appSettingsResetModelFailed(Object code) {
+  String appSettingsResetModelFailed(int code) {
     return 'Couldn\'t reset model settings (code $code).';
   }
 
@@ -1951,12 +1951,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get operatorDashboardTitle => 'Operator dashboard';
 
   @override
-  String operatorDashboardMyActiveSection(Object count) {
+  String operatorDashboardMyActiveSection(int count) {
     return 'MY ACTIVE ($count)';
   }
 
   @override
-  String operatorDashboardPendingSection(Object count) {
+  String operatorDashboardPendingSection(int count) {
     return 'WAITING TO CONNECT ($count)';
   }
 
@@ -1982,7 +1982,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gratitudeEntriesSection => 'ENTRIES';
 
   @override
-  String gratitudeBulletItem(Object item) {
+  String gratitudeBulletItem(String item) {
     return '· $item';
   }
 
@@ -1990,7 +1990,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wellbeingCalendarWho5Label => 'WHO-5';
 
   @override
-  String wellbeingCalendarScoreSuffix(Object score) {
+  String wellbeingCalendarScoreSuffix(int score) {
     return '$score point(s)';
   }
 
@@ -2031,12 +2031,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatTestDeclinedContinuation => 'The user tapped \"No, not now\" on the test suggestion. Just continue the conversation naturally, without explicitly mentioning the decline or apologizing for the suggestion.';
 
   @override
-  String cloudVoiceLabelFemale(Object name) {
+  String cloudVoiceLabelFemale(String name) {
     return '$name (female)';
   }
 
   @override
-  String cloudVoiceLabelMale(Object name) {
+  String cloudVoiceLabelMale(String name) {
     return '$name (male)';
   }
 
@@ -2045,4 +2045,80 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get modelDowngradedUpgradeButton => 'Upgrade plan';
+
+  @override
+  String get settingsLanguageLabel => 'Language';
+
+  @override
+  String get settingsLanguageSystem => 'System';
+
+  @override
+  String get settingsLanguageRussian => 'Русский';
+
+  @override
+  String get settingsLanguageEnglish => 'English';
+
+  @override
+  String get sleepMusicTabCatalog => 'Catalog';
+
+  @override
+  String get sleepMusicTabPlaylists => 'My playlists';
+
+  @override
+  String get sleepMusicNoPlaylists => 'No playlists yet — create your first one.';
+
+  @override
+  String get sleepMusicCreatePlaylist => 'Create playlist';
+
+  @override
+  String get sleepMusicNewPlaylistHint => 'Playlist name';
+
+  @override
+  String get sleepMusicEmptyPlaylist => 'This playlist has no tracks yet.';
+
+  @override
+  String get sleepMusicAddTrack => 'Add track';
+
+  @override
+  String get sleepMusicAddFromCatalog => 'From catalog';
+
+  @override
+  String get sleepMusicUploadOwnFile => 'Upload your own file';
+
+  @override
+  String get sleepMusicRemoveFromPlaylist => 'Remove from playlist';
+
+  @override
+  String get sleepMusicDeletePlaylist => 'Delete playlist';
+
+  @override
+  String sleepMusicDeletePlaylistConfirm(String name) {
+    return 'Delete playlist \"$name\"? The tracks themselves will stay in the catalog/your library.';
+  }
+
+  @override
+  String get sleepMusicOwnFileWebNotice => 'On the web your own file will only play until the page reloads — it can\'t be saved permanently here.';
+
+  @override
+  String get sleepMusicFileReadError => 'Couldn\'t read the file.';
+
+  @override
+  String get sleepMusicNoTracksInCatalogYet => 'No sounds in the catalog yet — an admin needs to add some first.';
+
+  @override
+  String get sleepMusicTimerCancel => 'Turn off timer';
+
+  @override
+  String sleepMusicTimerMinutes(int minutes) {
+    return '$minutes minutes';
+  }
+
+  @override
+  String get sleepMusicRenamePlaylist => 'Rename playlist';
+
+  @override
+  String get sleepMusicLikedTitle => 'Liked';
+
+  @override
+  String get sleepMusicNoLikedYet => 'No liked tracks yet — tap the heart on any track.';
 }

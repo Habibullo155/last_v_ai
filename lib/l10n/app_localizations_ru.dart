@@ -75,7 +75,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get authPasswordLengthOk => 'Длина пароля подходит';
 
   @override
-  String authPasswordLengthHint(Object length, Object minLength) {
+  String authPasswordLengthHint(int minLength, int length) {
     return 'Минимум $minLength символов (введено: $length)';
   }
 
@@ -140,7 +140,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get verifyEmailPromptGeneric => 'Введи код, который пришёл на почту при регистрации.';
 
   @override
-  String verifyEmailPromptWithEmail(Object email) {
+  String verifyEmailPromptWithEmail(String email) {
     return 'Введи код, который пришёл на $email.';
   }
 
@@ -442,7 +442,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileBirthDateHelpText => 'Дата рождения';
 
   @override
-  String profileAgeYears(num age) {
+  String profileAgeYears(int age) {
     String _temp0 = intl.Intl.pluralLogic(
       age,
       locale: localeName,
@@ -545,7 +545,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileChangeEmailTitle => 'Изменить почту';
 
   @override
-  String profileCurrentEmailLabel(Object email) {
+  String profileCurrentEmailLabel(String email) {
     return 'Сейчас: $email';
   }
 
@@ -553,7 +553,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileNewEmailLabel => 'Новый адрес';
 
   @override
-  String profileCodeSentMessage(Object email) {
+  String profileCodeSentMessage(String email) {
     return 'Код отправлен на $email. Введи его ниже, чтобы завершить смену.';
   }
 
@@ -591,7 +591,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sidebarDeleteChatTitle => 'Удалить чат?';
 
   @override
-  String sidebarDeleteChatBody(Object title) {
+  String sidebarDeleteChatBody(String title) {
     return 'Переписка «$title» будет удалена без возможности восстановить.';
   }
 
@@ -764,7 +764,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get who5DescriptionNormal => 'Официальная методика ВОЗ считает такой результат признаком нормального психологического благополучия за последние две недели.';
 
   @override
-  String who5DiscussPrompt(Object extra, Object score) {
+  String who5DiscussPrompt(String score, String extra) {
     return 'Я прошёл(ла) опросник ВОЗ-5 (общее самочувствие): $score%$extra. Можешь прокомментировать результат и поддержать меня?';
   }
 
@@ -817,7 +817,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get helpWeekSummaryTitle => 'Сводка за неделю';
 
   @override
-  String helpWeekSummaryScore(Object count) {
+  String helpWeekSummaryScore(int count) {
     return '$count записей';
   }
 
@@ -825,22 +825,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get helpWeekSummaryHeader => 'Результаты опросников за последние 7 дней:';
 
   @override
-  String helpWeekLineWho5(Object date, Object percent) {
+  String helpWeekLineWho5(String date, int percent) {
     return '• ВОЗ-5 ($date): $percent%';
   }
 
   @override
-  String helpWeekLinePhq9(Object date, Object risk, Object score, Object severity) {
+  String helpWeekLinePhq9(String date, int score, String severity, String risk) {
     return '• PHQ-9 ($date): $score/27, «$severity»$risk';
   }
 
   @override
-  String helpWeekLineGad7(Object date, Object score, Object severity) {
+  String helpWeekLineGad7(String date, int score, String severity) {
     return '• GAD-7 ($date): $score/21, «$severity»';
   }
 
   @override
-  String helpWeekLineAsrs(Object date, Object shaded) {
+  String helpWeekLineAsrs(String date, int shaded) {
     return '• ASRS-v1.1 ($date): $shaded/6';
   }
 
@@ -848,12 +848,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get helpRiskSignalPhq9Week => ' — отмечены мысли о самоповреждении';
 
   @override
-  String helpSingleWho5Result(Object date, Object extra, Object percent) {
+  String helpSingleWho5Result(String date, int percent, String extra) {
     return 'Результат опросника ВОЗ-5 ($date): $percent%$extra.';
   }
 
   @override
-  String helpSinglePhq9Result(Object date, Object risk, Object score, Object severity) {
+  String helpSinglePhq9Result(String date, int score, String severity, String risk) {
     return 'Результат опросника PHQ-9 ($date): $score/27, методика описывает это как «$severity»$risk.';
   }
 
@@ -861,12 +861,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get helpPhq9RiskNote => '. Отмечены мысли о самоповреждении в пункте 9';
 
   @override
-  String helpSingleGad7Result(Object date, Object score, Object severity) {
+  String helpSingleGad7Result(String date, int score, String severity) {
     return 'Результат опросника GAD-7 ($date): $score/21, методика описывает это как «$severity».';
   }
 
   @override
-  String helpSingleAsrsResult(Object date, Object extra, Object shaded) {
+  String helpSingleAsrsResult(String date, int shaded, String extra) {
     return 'Результат опросника ASRS-v1.1 ($date): $shaded/6 в зоне значимости$extra.';
   }
 
@@ -874,7 +874,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get helpClosedStatus => 'Обращение закрыто';
 
   @override
-  String helpConnectedStatus(Object email) {
+  String helpConnectedStatus(String email) {
     return 'Подключён: $email';
   }
 
@@ -1014,7 +1014,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get checkinIfHardRightNow => 'Если тебе сейчас тяжело';
 
   @override
-  String pfizerSeverityDescription(Object severity) {
+  String pfizerSeverityDescription(String severity) {
     return 'Методика описывает такой результат как: $severity.';
   }
 
@@ -1028,12 +1028,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get phq9RiskNoteDiscuss => ' В пункте про мысли о самоповреждении был отмечен положительный ответ.';
 
   @override
-  String phq9DiscussPrompt(Object riskNote, Object score, Object severity) {
+  String phq9DiscussPrompt(int score, String severity, String riskNote) {
     return 'Я прошёл(ла) опросник PHQ-9 (депрессивные симптомы): $score/27, методика описывает это как «$severity».$riskNote Можешь прокомментировать результат и поддержать меня?';
   }
 
   @override
-  String gad7DiscussPrompt(Object score, Object severity) {
+  String gad7DiscussPrompt(int score, String severity) {
     return 'Я прошёл(ла) опросник GAD-7 (тревожные симптомы): $score/21, методика описывает это как «$severity». Можешь прокомментировать результат и поддержать меня?';
   }
 
@@ -1041,7 +1041,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get commonDone => 'Готово';
 
   @override
-  String checkinMaxScoreSuffix(Object max) {
+  String checkinMaxScoreSuffix(int max) {
     return 'из $max';
   }
 
@@ -1076,7 +1076,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get purchaseWatchAdButton => 'Смотреть рекламу (+3)';
 
   @override
-  String purchaseAdBonusRemaining(Object count) {
+  String purchaseAdBonusRemaining(int count) {
     return 'Бонусных запросов от рекламы осталось: $count';
   }
 
@@ -1084,12 +1084,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get purchaseCurrentPlanLabel => 'Текущий тариф';
 
   @override
-  String purchaseTokensUsedNoLimit(Object used) {
+  String purchaseTokensUsedNoLimit(int used) {
     return '$used токенов использовано в этом месяце · без лимита';
   }
 
   @override
-  String purchaseTokensUsedWithLimit(Object limit, Object used) {
+  String purchaseTokensUsedWithLimit(int used, int limit) {
     return '$used из $limit токенов в этом месяце';
   }
 
@@ -1097,12 +1097,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get purchaseCurrentBadge => 'текущий';
 
   @override
-  String purchaseFreeDuration(Object days) {
+  String purchaseFreeDuration(int days) {
     return 'Бесплатно · $days дней';
   }
 
   @override
-  String purchasePriceDuration(Object days, Object rub, Object usd) {
+  String purchasePriceDuration(String rub, String usd, int days) {
     return '$rub / $usd · $days дней';
   }
 
@@ -1176,32 +1176,32 @@ class AppLocalizationsRu extends AppLocalizations {
   String get voiceSettingsPreviewTooltip => 'Прослушать';
 
   @override
-  String authNetworkError(Object details) {
+  String authNetworkError(String details) {
     return 'Не удалось связаться с сервером.\n$details';
   }
 
   @override
-  String authUnexpectedResponse(Object code) {
+  String authUnexpectedResponse(int code) {
     return 'Сервер вернул неожиданный ответ (код $code).';
   }
 
   @override
-  String authDeleteAccountFailed(Object code) {
+  String authDeleteAccountFailed(int code) {
     return 'Не удалось удалить аккаунт (код $code).';
   }
 
   @override
-  String authRequestFailed(Object code) {
+  String authRequestFailed(int code) {
     return 'Не удалось отправить запрос (код $code).';
   }
 
   @override
-  String authChangePasswordFailed(Object code) {
+  String authChangePasswordFailed(int code) {
     return 'Не удалось сменить пароль (код $code).';
   }
 
   @override
-  String authResendCodeFailed(Object code) {
+  String authResendCodeFailed(int code) {
     return 'Не удалось отправить код повторно (код $code).';
   }
 
@@ -1221,7 +1221,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get operatorRevokeAccessTitle => 'Снять доступ к живой помощи?';
 
   @override
-  String operatorRevokeAccessBody(Object email) {
+  String operatorRevokeAccessBody(String email) {
     return '$email больше не сможет принимать обращения. Аккаунт и история останутся.';
   }
 
@@ -1232,7 +1232,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get operatorDeleteAccountTitle => 'Удалить аккаунт целиком?';
 
   @override
-  String operatorDeleteAccountBody(Object email) {
+  String operatorDeleteAccountBody(String email) {
     return 'Необратимо: $email и вся история обращений будут удалены. Если нужно просто убрать доступ, не удаляя аккаунт — используй \"Снять доступ\".';
   }
 
@@ -1240,12 +1240,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get operatorDeleteAccountConfirm => 'Удалить';
 
   @override
-  String operatorWarningsSectionCount(Object count) {
+  String operatorWarningsSectionCount(int count) {
     return 'ВЫГОВОРЫ ($count)';
   }
 
   @override
-  String operatorSessionsSectionCount(Object count) {
+  String operatorSessionsSectionCount(int count) {
     return 'ОБРАЩЕНИЯ ($count)';
   }
 
@@ -1262,7 +1262,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get operatorDeleteAccountTooltip => 'Удалить аккаунт целиком';
 
   @override
-  String operatorIssuedByPrefix(Object email) {
+  String operatorIssuedByPrefix(String email) {
     return '· $email';
   }
 
@@ -1273,7 +1273,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get operatorNoRating => 'без оценки';
 
   @override
-  String operatorQuotedComment(Object comment) {
+  String operatorQuotedComment(String comment) {
     return '«$comment»';
   }
 
@@ -1329,7 +1329,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get asrsNoAssessmentNeeded => 'Официальная методика не считает такой результат поводом для дополнительной оценки — но если что-то из этого тебя беспокоит, это можно обсудить со специалистом в любом случае.';
 
   @override
-  String asrsDiscussPrompt(Object extra, Object shaded) {
+  String asrsDiscussPrompt(int shaded, String extra) {
     return 'Я прошёл(ла) скрининг ASRS-v1.1 (СДВГ): $shaded/6 в зоне значимости$extra. Можешь прокомментировать результат и поддержать меня?';
   }
 
@@ -1343,7 +1343,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get authBiometricConfirmFailed => 'Не удалось подтвердить — попробуй ещё раз.';
 
   @override
-  String authUnexpectedErrorGeneric(Object error) {
+  String authUnexpectedErrorGeneric(String error) {
     return 'Непредвиденная ошибка: $error';
   }
 
@@ -1381,12 +1381,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messageSourcesAdminOnly => 'ИСТОЧНИКИ (видно только админу)';
 
   @override
-  String messageSourcePageSuffix(Object page) {
+  String messageSourcePageSuffix(int page) {
     return ', стр. $page';
   }
 
   @override
-  String messageSourceLine(Object filename, Object pageSuffix, Object similarity) {
+  String messageSourceLine(String filename, String pageSuffix, int similarity) {
     return '$filename$pageSuffix · $similarity%';
   }
 
@@ -1406,7 +1406,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profilePasswordsDontMatch => 'Пароли не совпадают.';
 
   @override
-  String profileCodeSentToEmail(Object email) {
+  String profileCodeSentToEmail(String email) {
     return 'Код отправлен на $email. Введи его ниже, чтобы завершить смену.';
   }
 
@@ -1423,7 +1423,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get freewritingHowManyMinutes => 'Сколько минут?';
 
   @override
-  String freewritingMinutesOption(Object minutes) {
+  String freewritingMinutesOption(int minutes) {
     return '$minutes мин';
   }
 
@@ -1545,7 +1545,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get muscleRelaxationTitle => 'Мышечная релаксация';
 
   @override
-  String muscleRelaxationIntro(Object count) {
+  String muscleRelaxationIntro(int count) {
     return 'По очереди напряжём и расслабим $count групп мышц. На каждую — несколько секунд напряжения, потом расслабление. Устройся поудобнее, чтобы двигать руками/ногами было ничем не стеснено.';
   }
 
@@ -1553,7 +1553,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get muscleStartButton => 'Начать';
 
   @override
-  String muscleStepProgress(Object current, Object total) {
+  String muscleStepProgress(int current, int total) {
     return '$current из $total';
   }
 
@@ -1564,12 +1564,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get muscleRepeatButton => 'Пройти ещё раз';
 
   @override
-  String chatServerNotResponding(Object baseUrl) {
+  String chatServerNotResponding(String baseUrl) {
     return 'Сервер не отвечает. Проверь, что бэкенд запущен на $baseUrl';
   }
 
   @override
-  String chatConnectionFailed(Object baseUrl, Object error) {
+  String chatConnectionFailed(String baseUrl, String error) {
     return 'Не удалось подключиться к $baseUrl.\n$error';
   }
 
@@ -1577,12 +1577,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chatSessionExpired => 'Сессия истекла. Выйди и войди заново.';
 
   @override
-  String chatServerErrorCode(Object code) {
+  String chatServerErrorCode(int code) {
     return 'Сервер вернул ошибку $code';
   }
 
   @override
-  String chatConnectionDroppedMidResponse(Object error) {
+  String chatConnectionDroppedMidResponse(String error) {
     return '\n\n⚠️ Соединение оборвалось во время ответа (например, отвалился туннель). Попробуй отправить сообщение ещё раз.\n$error';
   }
 
@@ -1674,12 +1674,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get customTestLoadFailed => 'Не удалось загрузить тест.';
 
   @override
-  String customTestQuestionCount(Object count) {
+  String customTestQuestionCount(int count) {
     return '$count вопрос(ов)';
   }
 
   @override
-  String customTestQuestionProgress(Object current, Object total) {
+  String customTestQuestionProgress(int current, int total) {
     return 'Вопрос $current из $total';
   }
 
@@ -1687,12 +1687,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get customTestPointsLabel => 'баллов';
 
   @override
-  String customTestDiscussPrompt(Object resultNote, Object score, Object title) {
+  String customTestDiscussPrompt(String title, int score, String resultNote) {
     return 'Я прошёл(ла) тест «$title»: $score балл(ов)$resultNote. Можешь прокомментировать результат и поддержать меня?';
   }
 
   @override
-  String customTestResultNote(Object label) {
+  String customTestResultNote(String label) {
     return ' — результат: «$label»';
   }
 
@@ -1826,42 +1826,42 @@ class AppLocalizationsRu extends AppLocalizations {
   String get voicePreviewPhrase => 'Привет! Так звучит этот голос.';
 
   @override
-  String appSettingsChangeFailed(Object code) {
+  String appSettingsChangeFailed(int code) {
     return 'Не удалось изменить настройку (код $code).';
   }
 
   @override
-  String appSettingsRestoreFailed(Object code) {
+  String appSettingsRestoreFailed(int code) {
     return 'Не удалось восстановить настройки (код $code).';
   }
 
   @override
-  String appSettingsLoadPersonaFailed(Object code) {
+  String appSettingsLoadPersonaFailed(int code) {
     return 'Не удалось загрузить настройки личности ИИ (код $code).';
   }
 
   @override
-  String appSettingsSavePersonaFailed(Object code) {
+  String appSettingsSavePersonaFailed(int code) {
     return 'Не удалось сохранить личность ИИ (код $code).';
   }
 
   @override
-  String appSettingsResetPersonaFailed(Object code) {
+  String appSettingsResetPersonaFailed(int code) {
     return 'Не удалось сбросить личность ИИ (код $code).';
   }
 
   @override
-  String appSettingsLoadModelFailed(Object code) {
+  String appSettingsLoadModelFailed(int code) {
     return 'Не удалось загрузить настройки модели (код $code).';
   }
 
   @override
-  String appSettingsSaveModelFailed(Object code) {
+  String appSettingsSaveModelFailed(int code) {
     return 'Не удалось сохранить настройки модели (код $code).';
   }
 
   @override
-  String appSettingsResetModelFailed(Object code) {
+  String appSettingsResetModelFailed(int code) {
     return 'Не удалось сбросить настройки модели (код $code).';
   }
 
@@ -1953,12 +1953,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get operatorDashboardTitle => 'Кабинет оператора';
 
   @override
-  String operatorDashboardMyActiveSection(Object count) {
+  String operatorDashboardMyActiveSection(int count) {
     return 'МОИ АКТИВНЫЕ ($count)';
   }
 
   @override
-  String operatorDashboardPendingSection(Object count) {
+  String operatorDashboardPendingSection(int count) {
     return 'ОЖИДАЮТ ПОДКЛЮЧЕНИЯ ($count)';
   }
 
@@ -1984,7 +1984,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get gratitudeEntriesSection => 'ЗАПИСИ';
 
   @override
-  String gratitudeBulletItem(Object item) {
+  String gratitudeBulletItem(String item) {
     return '· $item';
   }
 
@@ -1992,7 +1992,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get wellbeingCalendarWho5Label => 'ВОЗ-5';
 
   @override
-  String wellbeingCalendarScoreSuffix(Object score) {
+  String wellbeingCalendarScoreSuffix(int score) {
     return '$score балл(ов)';
   }
 
@@ -2033,12 +2033,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chatTestDeclinedContinuation => 'Пользователь нажал \"Нет, не сейчас\" на предложение теста. Просто продолжи разговор дальше, естественно, не упоминая явно сам отказ и не извиняясь за предложение.';
 
   @override
-  String cloudVoiceLabelFemale(Object name) {
+  String cloudVoiceLabelFemale(String name) {
     return '$name (женский)';
   }
 
   @override
-  String cloudVoiceLabelMale(Object name) {
+  String cloudVoiceLabelMale(String name) {
     return '$name (мужской)';
   }
 
@@ -2047,4 +2047,80 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get modelDowngradedUpgradeButton => 'Повысить тариф';
+
+  @override
+  String get settingsLanguageLabel => 'Язык';
+
+  @override
+  String get settingsLanguageSystem => 'Системный';
+
+  @override
+  String get settingsLanguageRussian => 'Русский';
+
+  @override
+  String get settingsLanguageEnglish => 'English';
+
+  @override
+  String get sleepMusicTabCatalog => 'Каталог';
+
+  @override
+  String get sleepMusicTabPlaylists => 'Мои плейлисты';
+
+  @override
+  String get sleepMusicNoPlaylists => 'Плейлистов пока нет — создай первый.';
+
+  @override
+  String get sleepMusicCreatePlaylist => 'Создать плейлист';
+
+  @override
+  String get sleepMusicNewPlaylistHint => 'Название плейлиста';
+
+  @override
+  String get sleepMusicEmptyPlaylist => 'В этом плейлисте пока нет треков.';
+
+  @override
+  String get sleepMusicAddTrack => 'Добавить трек';
+
+  @override
+  String get sleepMusicAddFromCatalog => 'Из каталога';
+
+  @override
+  String get sleepMusicUploadOwnFile => 'Загрузить свой файл';
+
+  @override
+  String get sleepMusicRemoveFromPlaylist => 'Убрать из плейлиста';
+
+  @override
+  String get sleepMusicDeletePlaylist => 'Удалить плейлист';
+
+  @override
+  String sleepMusicDeletePlaylistConfirm(String name) {
+    return 'Удалить плейлист «$name»? Сами треки останутся в каталоге/личной библиотеке.';
+  }
+
+  @override
+  String get sleepMusicOwnFileWebNotice => 'На вебе свой файл проиграется только до перезагрузки страницы — сохранить насовсем здесь нельзя.';
+
+  @override
+  String get sleepMusicFileReadError => 'Не удалось прочитать файл.';
+
+  @override
+  String get sleepMusicNoTracksInCatalogYet => 'В каталоге пока нет звуков — сначала их должен добавить админ.';
+
+  @override
+  String get sleepMusicTimerCancel => 'Отключить таймер';
+
+  @override
+  String sleepMusicTimerMinutes(int minutes) {
+    return '$minutes минут';
+  }
+
+  @override
+  String get sleepMusicRenamePlaylist => 'Переименовать плейлист';
+
+  @override
+  String get sleepMusicLikedTitle => 'Избранное';
+
+  @override
+  String get sleepMusicNoLikedYet => 'Пока нет лайкнутых треков — нажми на сердечко у любого трека.';
 }

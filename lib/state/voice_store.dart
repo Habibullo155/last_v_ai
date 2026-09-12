@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
@@ -489,6 +488,7 @@ class VoiceStore extends ChangeNotifier {
     try {
       await _stt.listen(
         onResult: (result) => onResult(result.recognizedWords),
+        // ignore: deprecated_member_use
         localeId: settings.sttLocaleId,
       );
       isListening = true;

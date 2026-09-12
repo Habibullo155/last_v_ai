@@ -24,7 +24,7 @@ class CrisisResourcesPanel extends StatelessWidget {
           Text(
             title ?? l10n.crisisResourcesDefaultTitle,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.85),
+              color: Colors.white.withValues(alpha: 0.85),
               fontWeight: FontWeight.w600,
               fontSize: 13.5,
             ),
@@ -33,7 +33,7 @@ class CrisisResourcesPanel extends StatelessWidget {
           Text(
             l10n.crisisResourcesBody,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.6),
+              color: Colors.white.withValues(alpha: 0.6),
               fontSize: 12.5,
               height: 1.6,
             ),

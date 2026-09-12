@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'config.dart';
+
 import 'navigation.dart';
 import 'screens/auth_screen.dart';
 import 'screens/chat_screen.dart';
@@ -11,6 +12,7 @@ import 'screens/lock_screen.dart';
 import 'screens/main_shell_screen.dart';
 import 'state/auth_store.dart';
 import 'state/chat_store.dart';
+import 'state/locale_store.dart';
 import 'state/notification_prefs_store.dart';
 import 'state/performance_mode_store.dart';
 import 'state/theme_store.dart';
@@ -40,6 +42,7 @@ class GlassChatApp extends StatefulWidget {
 class _GlassChatAppState extends State<GlassChatApp> {
   final AuthStore _authStore = AuthStore();
   final ThemeStore _themeStore = ThemeStore.instance;
+  final LocaleStore _localeStore = LocaleStore.instance;
   ChatStore? _chatStore;
   VoiceStore? _voiceStore;
 
@@ -50,11 +53,14 @@ class _GlassChatAppState extends State<GlassChatApp> {
     _authStore.restoreSession();
     _themeStore.addListener(_onThemeChanged);
     _themeStore.load();
+    _localeStore.addListener(_onLocaleChanged);
+    _localeStore.load();
     NotificationPrefsStore.instance.load();
     PerformanceModeStore.instance.load();
   }
 
   void _onThemeChanged() => setState(() {});
+  void _onLocaleChanged() => setState(() {});
 
   void _onAuthChanged() {
     if (_authStore.status == AuthStatus.authenticated) {
@@ -93,6 +99,7 @@ class _GlassChatAppState extends State<GlassChatApp> {
     _authStore.removeListener(_onAuthChanged);
     _authStore.dispose();
     _themeStore.removeListener(_onThemeChanged);
+    _localeStore.removeListener(_onLocaleChanged);
     _chatStore?.dispose();
     _voiceStore?.dispose();
     super.dispose();
@@ -104,9 +111,11 @@ class _GlassChatAppState extends State<GlassChatApp> {
       navigatorKey: navigatorKey,
       title: 'AI Glass Chat',
       debugShowCheckedModeBanner: false,
-      // locale: намеренно не задаём - без явного значения Flutter сам
-      // подхватывает системный язык устройства из списка supportedLocales
-      // ниже (если системный язык не в списке - берёт первый, русский)
+      // null (режим "system" в LocaleStore) - Flutter сам подхватывает
+      // системный язык устройства, как было раньше всегда. Явный
+      // Locale('ru')/Locale('en') - человек сам выбрал язык в настройках
+      // (см. settings_screen.dart), игнорируя системный
+      locale: _localeStore.resolvedLocale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

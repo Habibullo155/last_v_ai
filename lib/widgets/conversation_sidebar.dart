@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -8,6 +9,7 @@ import '../state/chat_store.dart';
 import '../screens/wellbeing_calendar_screen.dart';
 import '../screens/wellbeing_screen.dart';
 import '../theme/app_text_color.dart';
+import '../utils/responsive.dart';
 import 'glass_panel.dart';
 
 class ConversationSidebar extends StatelessWidget {
@@ -27,10 +29,20 @@ class ConversationSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    // на компьютере эта панель видна долго (пока листаешь переписки), а
+    // прямо позади неё постоянно движется анимация фона (app_background.dart) -
+    // BackdropFilter пересчитывает размытие КАЖДЫЙ раз, когда меняется
+    // содержимое позади панели, то есть постоянно, пока она открыта.
+    // На вебе (kIsWeb) - отдельная причина, независимая от ширины окна:
+    // BackdropFilter через CanvasKit (WebGL/WASM) заметно дороже, чем
+    // нативный GPU-доступ, даже в узком окне браузера - поэтому это ОТДЕЛЬНОЕ
+    // условие, не только широкий экран (Responsive.isDesktopOrWider
+    // проверяет только размер, не платформу)
     return GlassPanel(
       opacity: 0.08,
       borderRadius: BorderRadius.circular(28),
       padding: const EdgeInsets.all(14),
+      blurred: !(Responsive.isDesktopOrWider(context) || kIsWeb),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

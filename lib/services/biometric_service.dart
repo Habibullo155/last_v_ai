@@ -29,11 +29,18 @@ class BiometricService {
   /// сработал, ОС сама предложит PIN/графический ключ устройства как
   /// запасной вариант (стандартное поведение большинства приложений, не
   /// наше решение поверх ОС).
+  ///
+  /// local_auth v3.0.0: AuthenticationOptions убран - теперь отдельные
+  /// именованные параметры прямо у authenticate(), не обёрнуты в общий
+  /// объект. stickyAuth переименован в persistAcrossBackgrounding
+  /// (то же самое поведение, только новое имя). useErrorDialogs больше
+  /// нет вообще, без замены - мы его и не использовали.
   Future<bool> authenticate({String reason = 'Подтверди личность, чтобы войти'}) async {
     try {
       return await _auth.authenticate(
         localizedReason: reason,
-        options: const AuthenticationOptions(biometricOnly: false, stickyAuth: true),
+        biometricOnly: false,
+        persistAcrossBackgrounding: true,
       );
     } catch (_) {
       return false;

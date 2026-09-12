@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import '../state/performance_mode_store.dart';
 import '../state/theme_store.dart';
-import '../theme/background_variant.dart';
 import '../utils/responsive.dart';
 
 // анимированный фон с плавающими цветными бликами - база глазморфизма.
@@ -285,20 +285,33 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final parentSize = constraints.biggest;
-                  // Честно: сокращение РАДИУСА ДВИЖЕНИЯ (амплитуды, как
-                  // далеко блик уезжает от центра) само по себе почти не
-                  // снижает нагрузку на GPU за кадр - RepaintBoundary всё
-                  // равно накладывает готовый слой ФИКСИРОВАННОГО размера
-                  // на новую позицию каждый кадр, и это наложение стоит
-                  // одинаково что при сдвиге на 10px, что на 200px. Стоимость
-                  // определяют ПЛОЩАДЬ слоя (сам размер блика) и ЧАСТОТА
-                  // обновлений (уже снижена ранее до ~8/сек) - не то, на
-                  // какое расстояние он перемещается. Оставляю как просили,
-                  // но ощутимого прироста производительности от этого
-                  // конкретного изменения ждать не стоит - для этого нужно
-                  // было бы уменьшать сам размер (что мы уже откатили) или
-                  // ещё сильнее снижать частоту обновлений.
-                  final movementRadiusScale = Responsive.isDesktopOrWider(context) ? 0.5 : 1.0;
+                  // Радиус движения (амплитуда) сам по себе почти не снижает
+                  // нагрузку на GPU за кадр - RepaintBoundary всё равно
+                  // накладывает готовый слой ФИКСИРОВАННОГО размера на новую
+                  // позицию каждый кадр, и это наложение стоит одинаково что
+                  // при сдвиге на 10px, что на 200px. Стоимость определяют
+                  // ПЛОЩАДЬ слоя и ЧАСТОТА обновлений (уже снижена ранее до
+                  // ~8/сек) - оставлен как отдельная, самостоятельно менее
+                  // значимая мера.
+                  //
+                  // На вебе (kIsWeb) - отдельная, более весомая причина:
+                  // BackdropFilter/компоситинг через CanvasKit (WebGL/WASM)
+                  // заметно дороже, чем через нативный GPU-доступ на
+                  // десктопе/мобильных - это НЕ вопрос ширины окна браузера
+                  // (Responsive.isDesktopOrWider ниже проверяет только
+                  // размер экрана, не платформу - узкое окно браузера тоже
+                  // веб). Поэтому здесь ДВА независимых условия: широкий
+                  // нативный экран (та же причина, что раньше) ИЛИ веб
+                  // (специфика самой платформы, независимо от размера окна).
+                  final isDesktopWidth = Responsive.isDesktopOrWider(context);
+                  final movementRadiusScale = (isDesktopWidth || kIsWeb) ? 0.5 : 1.0;
+                  // размер блика - в отличие от радиуса движения, это
+                  // РЕАЛЬНО снижает площадь наложения на GPU каждый кадр
+                  // (площадь круга растёт квадратично от радиуса). На
+                  // обычном десктопе это уже откатывали по просьбе - но на
+                  // вебе, где сама платформа дороже по рендерингу, это
+                  // оправдано отдельно
+                  final blobSizeScale = kIsWeb ? 0.7 : 1.0;
                   return ValueListenableBuilder<double>(
                     valueListenable: _progressNotifier,
                     builder: (context, progress, _) {
@@ -323,7 +336,7 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
                               math.sin(t) * 0.8 * movementRadiusScale,
                               (-0.9 + math.cos(t) * 0.3) * movementRadiusScale,
                             ),
-                            size: 420,
+                            size: 420 * blobSizeScale,
                             // раньше 0.22 + плёнка 0.45 ниже почти полностью
                             // вымывали цвет - фон казался "пропавшим". Теперь
                             // блики заметно ярче, плёнка снята почти до нуля -
@@ -340,7 +353,7 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
                               (-0.9 + math.sin(t + 2.1) * 0.4) * movementRadiusScale,
                               math.cos(t + 2.1) * 0.9 * movementRadiusScale,
                             ),
-                            size: 380,
+                            size: 380 * blobSizeScale,
                             opacity: (isLight ? 0.4 : 0.55) * (reducedContrast ? 0.55 : 1.0),
                             parentSize: parentSize,
                           ),
@@ -350,7 +363,7 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
                               0.9 * math.cos(t + 4.2) * movementRadiusScale,
                               0.9 * math.sin(t + 4.2) * movementRadiusScale,
                             ),
-                            size: 340,
+                            size: 340 * blobSizeScale,
                             opacity: (isLight ? 0.4 : 0.55) * (reducedContrast ? 0.55 : 1.0),
                             parentSize: parentSize,
                           ),
@@ -366,8 +379,8 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
             // плёнка, почти незаметная - только слегка смягчает края
             // бликов, не вымывает цвет целиком. При reducedContrast обе
             // плёнки усилены - именно это и означает "снизить контрастность"
-            if (isLight) Container(color: Colors.white.withOpacity(reducedContrast ? 0.32 : 0.12)),
-            if (!isLight) Container(color: Colors.black.withOpacity(reducedContrast ? 0.42 : 0.25)),
+            if (isLight) Container(color: Colors.white.withValues(alpha: reducedContrast ? 0.32 : 0.12)),
+            if (!isLight) Container(color: Colors.black.withValues(alpha: reducedContrast ? 0.42 : 0.25)),
             widget.child,
           ],
         );
@@ -403,7 +416,7 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(
-                colors: [color.withOpacity(opacity), color.withOpacity(0.0)],
+                colors: [color.withValues(alpha: opacity), color.withValues(alpha: 0.0)],
               ),
             ),
           ),

@@ -175,7 +175,7 @@ class _GlassBottomNav extends StatelessWidget {
                   size: 22,
                   color: selected
                       ? Colors.white
-                      : Colors.white.withOpacity(0.5),
+                      : Colors.white.withValues(alpha: 0.5),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -185,7 +185,7 @@ class _GlassBottomNav extends StatelessWidget {
                     fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
                     color: selected
                         ? Colors.white
-                        : Colors.white.withOpacity(0.5),
+                        : Colors.white.withValues(alpha: 0.5),
                   ),
                 ),
               ],

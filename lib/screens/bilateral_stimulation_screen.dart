@@ -182,7 +182,7 @@ class _BilateralStimulationScreenState extends State<BilateralStimulationScreen>
                                                   BoxShadow(
                                                     color: const Color(
                                                       0xFF6C5CE7,
-                                                    ).withOpacity(0.5),
+                                                    ).withValues(alpha: 0.5),
                                                     blurRadius: 16,
                                                     spreadRadius: 2,
                                                   ),

@@ -4,6 +4,7 @@ import 'package:ai_last_v/l10n/app_localizations.dart';
 import '../services/reminder_service.dart';
 import '../state/auth_store.dart';
 import '../state/chat_store.dart';
+import '../state/locale_store.dart';
 import '../state/notification_prefs_store.dart';
 import '../state/performance_mode_store.dart';
 import '../state/theme_store.dart';
@@ -24,12 +25,14 @@ class SettingsScreen extends StatefulWidget {
   final AuthStore authStore;
   final ChatStore chatStore;
   final ThemeStore themeStore;
+  final LocaleStore localeStore;
   final VoiceStore voiceStore;
   const SettingsScreen({
     super.key,
     required this.authStore,
     required this.chatStore,
     required this.themeStore,
+    required this.localeStore,
     required this.voiceStore,
   });
 
@@ -203,7 +206,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         children: [
                           _sectionLabel(l10n.settingsSectionAppearance),
                           AnimatedBuilder(
-                            animation: widget.themeStore,
+                            animation: Listenable.merge([
+                              widget.themeStore,
+                              widget.localeStore,
+                            ]),
                             builder: (context, _) {
                               return GlassPanel(
                                 opacity: 0.08,
@@ -249,6 +255,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       selected: {widget.themeStore.mode},
                                       onSelectionChanged: (selection) => widget
                                           .themeStore
+                                          .setMode(selection.first),
+                                      style: SegmentedButton.styleFrom(
+                                        selectedBackgroundColor: const Color(
+                                          0xFF6C5CE7,
+                                        ),
+                                        selectedForegroundColor: Colors.white,
+                                      ),
+                                    ),
+                                    Divider(
+                                      color: context.borderSubtle,
+                                      height: 24,
+                                    ),
+                                    Text(
+                                      l10n.settingsLanguageLabel,
+                                      style: TextStyle(
+                                        color: context.onSurface,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    SegmentedButton<AppLanguageMode>(
+                                      segments: [
+                                        ButtonSegment(
+                                          value: AppLanguageMode.system,
+                                          icon: const Icon(
+                                            Icons.brightness_auto_rounded,
+                                            size: 17,
+                                          ),
+                                          label: Text(
+                                            l10n.settingsLanguageSystem,
+                                          ),
+                                        ),
+                                        ButtonSegment(
+                                          value: AppLanguageMode.ru,
+                                          label: Text(
+                                            l10n.settingsLanguageRussian,
+                                          ),
+                                        ),
+                                        ButtonSegment(
+                                          value: AppLanguageMode.en,
+                                          label: Text(
+                                            l10n.settingsLanguageEnglish,
+                                          ),
+                                        ),
+                                      ],
+                                      selected: {widget.localeStore.mode},
+                                      onSelectionChanged: (selection) => widget
+                                          .localeStore
                                           .setMode(selection.first),
                                       style: SegmentedButton.styleFrom(
                                         selectedBackgroundColor: const Color(
@@ -321,7 +374,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                           value: PerformanceModeStore
                                               .instance
                                               .enabled,
-                                          activeColor: const Color(0xFF6C5CE7),
+                                          activeThumbColor: const Color(0xFF6C5CE7),
                                           onChanged: (v) => PerformanceModeStore
                                               .instance
                                               .setEnabled(v),
@@ -373,7 +426,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         ),
                                         Switch(
                                           value: prefs.soundEnabled,
-                                          activeColor: const Color(0xFF6C5CE7),
+                                          activeThumbColor: const Color(0xFF6C5CE7),
                                           onChanged: (v) =>
                                               prefs.setSoundEnabled(v),
                                         ),
@@ -401,7 +454,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         ),
                                         Switch(
                                           value: prefs.vibrationEnabled,
-                                          activeColor: const Color(0xFF6C5CE7),
+                                          activeThumbColor: const Color(0xFF6C5CE7),
                                           onChanged: (v) =>
                                               prefs.setVibrationEnabled(v),
                                         ),
@@ -447,7 +500,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         ),
                                         Switch(
                                           value: voice.settings.voiceUiEnabled,
-                                          activeColor: const Color(0xFF6C5CE7),
+                                          activeThumbColor: const Color(0xFF6C5CE7),
                                           onChanged: (v) =>
                                               voice.updateSettings(
                                                 voice.settings.copyWith(
@@ -547,7 +600,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       else
                                         Switch(
                                           value: _biometricEnabled,
-                                          activeColor: const Color(0xFF6C5CE7),
+                                          activeThumbColor: const Color(0xFF6C5CE7),
                                           onChanged: _toggleBiometric,
                                         ),
                                     ],
@@ -634,7 +687,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     else
                                       Switch(
                                         value: _reminderEnabled,
-                                        activeColor: const Color(0xFF6C5CE7),
+                                        activeThumbColor: const Color(0xFF6C5CE7),
                                         onChanged: _toggleReminder,
                                       ),
                                   ],
