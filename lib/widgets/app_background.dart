@@ -374,13 +374,9 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
                 },
               ),
             ),
-            // тёмный режим: чёрная плёнка притушивает блики, чтобы они не
-            // резали глаз на тёмном фоне. Светлый режим - лёгкая белая
-            // плёнка, почти незаметная - только слегка смягчает края
-            // бликов, не вымывает цвет целиком. При reducedContrast обе
-            // плёнки усилены - именно это и означает "снизить контрастность"
-            if (isLight) Container(color: Colors.white.withValues(alpha: reducedContrast ? 0.32 : 0.12)),
-            if (!isLight) Container(color: Colors.black.withValues(alpha: reducedContrast ? 0.42 : 0.25)),
+
+            if (isLight) Container(color: const Color.fromARGB(255, 188, 228, 233).withValues(alpha: reducedContrast ? 0.32 : 0.12)),
+            if (!isLight) Container(color: const Color.fromARGB(255, 37, 52, 46).withValues(alpha: reducedContrast ? 0.42 : 0.25)),
             widget.child,
           ],
         );
