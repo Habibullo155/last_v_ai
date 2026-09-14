@@ -1,8 +1,5 @@
 name: Deploy Flutter Web to GitHub Pages
 
-# Собирает веб-версию приложения и публикует на GitHub Pages при каждом
-# пуше в main. Адрес бэкенда берётся из репозиторного секрета BACKEND_URL
-# (Settings → Secrets and variables → Actions → New repository secret).
 
 on:
   push:
