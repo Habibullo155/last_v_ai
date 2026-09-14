@@ -395,7 +395,7 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
                   188,
                   228,
                   233,
-                ).withValues(alpha: reducedContrast ? 0.42 : 0.25),
+                ).withValues(alpha: reducedContrast ? 0.42 : 0.45),
               ),
             if (!isLight)
               Container(
