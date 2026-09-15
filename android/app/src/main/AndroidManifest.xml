@@ -1,4 +1,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- camera/photo (image_picker) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- голосовой ввод (speech_to_text) -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- уведомления (flutter_local_notifications), Android 13+ -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- выбор своего аудиофайла в плейлист музыки сна (file_picker),
+     Android 13+ - см. пояснение выше про SAF -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <!-- интернет - без этого приложение не сможет достучаться до бэкенда
+     вообще. flutter create обычно добавляет это САМ по умолчанию для
+     debug-сборок - явно проверь, что строка есть и в release -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="ai_last_v"
         android:name="${applicationName}"

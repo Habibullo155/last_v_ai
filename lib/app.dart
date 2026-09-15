@@ -9,6 +9,8 @@ import 'screens/auth_screen.dart';
 import 'screens/chat_screen.dart';
 import 'screens/lock_screen.dart';
 import 'screens/main_shell_screen.dart';
+import 'screens/onboarding_survey_screen.dart';
+import 'services/onboarding_survey_service.dart';
 import 'state/auth_store.dart';
 import 'state/chat_store.dart';
 import 'state/locale_store.dart';
@@ -44,6 +46,12 @@ class _GlassChatAppState extends State<GlassChatApp> {
   final LocaleStore _localeStore = LocaleStore.instance;
   ChatStore? _chatStore;
   VoiceStore? _voiceStore;
+  final _onboardingService = OnboardingSurveyService();
+  // null - ещё не проверено (или проверка идёт); true - нужно показать
+  // опросник вместо основного экрана; false - не нужно (уже
+  // пройден/пропущен раньше, или проверка не удалась - тогда просто не
+  // мешаем человеку войти в приложение из-за сетевого сбоя)
+  bool? _needsOnboardingSurvey;
 
   @override
   void initState() {
@@ -67,14 +75,32 @@ class _GlassChatAppState extends State<GlassChatApp> {
       if (user != null && _chatStore == null) {
         _setUpChatStoreFor(user.id.toString());
       }
+      if (_needsOnboardingSurvey == null) {
+        _checkOnboardingSurveyStatus();
+      }
     } else if (_authStore.status == AuthStatus.unauthenticated) {
       // Разлогинились — не тащим чужую сессию чата дальше.
       _chatStore?.dispose();
       _chatStore = null;
       _voiceStore?.dispose();
       _voiceStore = null;
+      // при следующем входе (возможно, другим аккаунтом) проверяем заново
+      _needsOnboardingSurvey = null;
     }
     setState(() {});
+  }
+
+  Future<void> _checkOnboardingSurveyStatus() async {
+    final token = _authStore.token;
+    if (token == null) return;
+    try {
+      final status = await _onboardingService.getStatus(baseUrl: AppConfig.backendUrl, token: token);
+      if (mounted) setState(() => _needsOnboardingSurvey = status == 'pending');
+    } catch (_) {
+      // сетевой сбой - не блокируем вход в приложение из-за этого,
+      // просто не покажем опросник в этот раз
+      if (mounted) setState(() => _needsOnboardingSurvey = false);
+    }
   }
 
   void _setUpChatStoreFor(String userId) {
@@ -101,6 +127,7 @@ class _GlassChatAppState extends State<GlassChatApp> {
     _localeStore.removeListener(_onLocaleChanged);
     _chatStore?.dispose();
     _voiceStore?.dispose();
+    _onboardingService.dispose();
     super.dispose();
   }
 
@@ -163,6 +190,17 @@ class _GlassChatAppState extends State<GlassChatApp> {
         final chatStore = _chatStore;
         final voiceStore = _voiceStore;
         if (chatStore == null || voiceStore == null) return const _LoadingScreen();
+        // опросник - ПОСЛЕ того, как chatStore/voiceStore готовы (не
+        // блокирует их инициализацию), но ДО основного экрана - null
+        // означает "ещё проверяем", тогда просто ждём (не мигаем
+        // опросником на долю секунды, если он в итоге не нужен)
+        if (_needsOnboardingSurvey == null) return const _LoadingScreen();
+        if (_needsOnboardingSurvey == true) {
+          return OnboardingSurveyScreen(
+            authStore: _authStore,
+            onDone: () => setState(() => _needsOnboardingSurvey = false),
+          );
+        }
         if (Responsive.isMobile(context)) {
           return MainShellScreen(
             store: chatStore,
