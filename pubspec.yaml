@@ -42,6 +42,7 @@ flutter:
   generate: true
   assets:
     - assets/icon/
+    - assets/video/
 
 # Иконка приложения на всех платформах — генерируется командой:
 #   dart run flutter_launcher_icons
@@ -50,13 +51,12 @@ flutter_launcher_icons:
   ios: true
   image_path: "assets/icon/app_icon.png"
   min_sdk_android: 21
-  # adaptive-иконка (Android 8+) - Android сам обрежет foreground по маске
-  # формы (круг/квадрат/капля - зависит от лаунчера производителя) и
-  # подложит сплошной фон под неё, поэтому foreground должен быть
-  # прозрачным с содержимым в безопасной зоне по центру (см. как
-  # сгенерирован app_icon_foreground.png)
-  adaptive_icon_background: "#6C5CE7"
-  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+  # без adaptive_icon_foreground/background намеренно - новая иконка
+  # (стилизованный цветок поверх мозга) уже полностью готова со своим
+  # фоном внутри самого изображения, не прозрачный элемент для наложения
+  # на отдельный adaptive-фон. Android получит её как обычную (не
+  # adaptive) иконку - надёжный, простой вариант без риска обрезать
+  # что-то важное неверной маской формы
   web:
     generate: true
     image_path: "assets/icon/app_icon.png"
