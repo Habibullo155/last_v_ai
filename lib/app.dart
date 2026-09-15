@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'config.dart';
+
 import 'navigation.dart';
 import 'screens/auth_screen.dart';
 import 'screens/chat_screen.dart';
 import 'screens/lock_screen.dart';
 import 'screens/main_shell_screen.dart';
+import 'screens/intro_video_screen.dart';
 import 'screens/onboarding_survey_screen.dart';
+import 'services/intro_video_service.dart';
 import 'services/onboarding_survey_service.dart';
 import 'state/auth_store.dart';
 import 'state/chat_store.dart';
@@ -47,6 +50,10 @@ class _GlassChatAppState extends State<GlassChatApp> {
   ChatStore? _chatStore;
   VoiceStore? _voiceStore;
   final _onboardingService = OnboardingSurveyService();
+  final _introVideoService = IntroVideoService();
+  // null - ещё проверяем; true - уже видел на этом устройстве, не
+  // показываем; false - первый запуск, нужно показать
+  bool? _hasSeenIntro;
   // null - ещё не проверено (или проверка идёт); true - нужно показать
   // опросник вместо основного экрана; false - не нужно (уже
   // пройден/пропущен раньше, или проверка не удалась - тогда просто не
@@ -64,6 +71,12 @@ class _GlassChatAppState extends State<GlassChatApp> {
     _localeStore.load();
     NotificationPrefsStore.instance.load();
     PerformanceModeStore.instance.load();
+    _checkIntroVideoSeen();
+  }
+
+  Future<void> _checkIntroVideoSeen() async {
+    final seen = await _introVideoService.hasSeenIntro();
+    if (mounted) setState(() => _hasSeenIntro = seen);
   }
 
   void _onThemeChanged() => setState(() {});
@@ -178,6 +191,17 @@ class _GlassChatAppState extends State<GlassChatApp> {
   }
 
   Widget _buildHome() {
+    // интро-видео - самое первое, что видит человек, ещё до проверки
+    // авторизации (один раз на устройстве, не зависит от аккаунта)
+    if (_hasSeenIntro == null) return const _LoadingScreen();
+    if (_hasSeenIntro == false) {
+      return IntroVideoScreen(
+        onDone: () {
+          setState(() => _hasSeenIntro = true);
+          _introVideoService.markIntroSeen();
+        },
+      );
+    }
     switch (_authStore.status) {
       case AuthStatus.unknown:
       case AuthStatus.checking:
