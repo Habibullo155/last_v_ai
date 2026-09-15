@@ -4,24 +4,17 @@
 <dict>
 	<key>com.apple.security.app-sandbox</key>
 	<true/>
-	<key>com.apple.security.network.client</key>
-	<true/>
-	<!-- Разрешение на работу с интернетом (если приложение само выступает сервером) -->
-	<!-- сеть - без этого приложение не сможет достучаться до бэкенда вообще -->
-	<key>com.apple.security.network.client</key>
-	<true/>
-	<!-- камера/фото (image_picker) -->
 	<key>com.apple.security.device.camera</key>
+	<true/>
+	<key>com.apple.security.device.microphone</key>
+	<true/>
+	<key>com.apple.security.files.user-selected.read-only</key>
+	<true/>
+	<key>com.apple.security.network.client</key>
 	<true/>
 	<key>com.apple.security.personal-information.photos-library</key>
 	<true/>
-	<!-- микрофон (speech_to_text) -->
-	<key>com.apple.security.device.microphone</key>
-	<true/>
-	<!-- выбор своего файла (file_picker) - стандартный entitlement App
-     Sandbox для чтения файла, который человек сам выбрал через
-     системный диалог, не специфика самого file_picker -->
-	<key>com.apple.security.files.user-selected.read-only</key>
-	<true/>
+	<key>keychain-access-groups</key>
+	<array/>
 </dict>
 </plist>
