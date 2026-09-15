@@ -1174,7 +1174,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   )
                 : Icon(
                     _playingNoiseId != null
-                        ? Icons.graphic_eq_rounded
+                        ? Icons.music_note_outlined
                         : Icons.spa_outlined,
                     color: _playingNoiseId != null
                         ? const Color(0xFF00E6A0)
@@ -1301,11 +1301,6 @@ class _ChatScreenState extends State<ChatScreen> {
             'profile',
             Icons.account_circle_outlined,
             l10n.chatMenuProfile,
-          ),
-          _menuItem(
-            'wellbeing',
-            Icons.self_improvement_rounded,
-            l10n.chatMenuWellbeing,
           ),
           _menuItem(
             'sleep_music',
