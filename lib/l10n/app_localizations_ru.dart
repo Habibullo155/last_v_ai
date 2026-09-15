@@ -2123,4 +2123,24 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sleepMusicNoLikedYet => 'Пока нет лайкнутых треков — нажми на сердечко у любого трека.';
+
+  @override
+  String get sleepMusicUploadFolder => 'Добавить папку целиком';
+
+  @override
+  String sleepMusicFolderAddedCount(int count) {
+    return 'Добавлено треков: $count';
+  }
+
+  @override
+  String get sleepMusicRepeatOff => 'Повтор выключен';
+
+  @override
+  String get sleepMusicRepeatAll => 'Повтор плейлиста';
+
+  @override
+  String get sleepMusicRepeatOne => 'Повтор трека';
+
+  @override
+  String get sleepMusicSleepTimerLabel => 'Таймер сна';
 }

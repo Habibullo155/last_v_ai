@@ -4030,6 +4030,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No liked tracks yet — tap the heart on any track.'**
   String get sleepMusicNoLikedYet;
+
+  /// No description provided for @sleepMusicUploadFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Add whole folder'**
+  String get sleepMusicUploadFolder;
+
+  /// No description provided for @sleepMusicFolderAddedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracks added: {count}'**
+  String sleepMusicFolderAddedCount(int count);
+
+  /// No description provided for @sleepMusicRepeatOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat off'**
+  String get sleepMusicRepeatOff;
+
+  /// No description provided for @sleepMusicRepeatAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat playlist'**
+  String get sleepMusicRepeatAll;
+
+  /// No description provided for @sleepMusicRepeatOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat track'**
+  String get sleepMusicRepeatOne;
+
+  /// No description provided for @sleepMusicSleepTimerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep timer'**
+  String get sleepMusicSleepTimerLabel;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

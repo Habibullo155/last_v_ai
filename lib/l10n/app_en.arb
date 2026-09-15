@@ -1244,5 +1244,13 @@
   },
   "sleepMusicRenamePlaylist": "Rename playlist",
   "sleepMusicLikedTitle": "Liked",
-  "sleepMusicNoLikedYet": "No liked tracks yet — tap the heart on any track."
+  "sleepMusicNoLikedYet": "No liked tracks yet — tap the heart on any track.",
+
+  "sleepMusicUploadFolder": "Add whole folder",
+  "sleepMusicFolderAddedCount": "Tracks added: {count}",
+  "@sleepMusicFolderAddedCount": {"placeholders": {"count": {"type": "int"}}},
+  "sleepMusicRepeatOff": "Repeat off",
+  "sleepMusicRepeatAll": "Repeat playlist",
+  "sleepMusicRepeatOne": "Repeat track",
+  "sleepMusicSleepTimerLabel": "Sleep timer"
 }

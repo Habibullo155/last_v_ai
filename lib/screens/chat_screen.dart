@@ -1309,7 +1309,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           _menuItem(
             'sleep_music',
-            Icons.nightlight_outlined,
+            Icons.music_note_rounded,
             l10n.chatMenuSleepMusic,
           ),
         ],

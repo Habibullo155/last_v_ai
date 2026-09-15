@@ -947,5 +947,13 @@
   "@sleepMusicTimerMinutes": {"placeholders": {"minutes": {"type": "int"}}},
   "sleepMusicRenamePlaylist": "Переименовать плейлист",
   "sleepMusicLikedTitle": "Избранное",
-  "sleepMusicNoLikedYet": "Пока нет лайкнутых треков — нажми на сердечко у любого трека."
+  "sleepMusicNoLikedYet": "Пока нет лайкнутых треков — нажми на сердечко у любого трека.",
+
+  "sleepMusicUploadFolder": "Добавить папку целиком",
+  "sleepMusicFolderAddedCount": "Добавлено треков: {count}",
+  "@sleepMusicFolderAddedCount": {"placeholders": {"count": {"type": "int"}}},
+  "sleepMusicRepeatOff": "Повтор выключен",
+  "sleepMusicRepeatAll": "Повтор плейлиста",
+  "sleepMusicRepeatOne": "Повтор трека",
+  "sleepMusicSleepTimerLabel": "Таймер сна"
 }

@@ -68,9 +68,7 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
   // ~1.8° до ~4.3°, у мягких, размытых по краям бликов такой шаг не
   // выглядит рывком (в отличие от резко очерченного объекта)
   static const _cycleDuration = Duration(seconds: 10);
-  static const _updateInterval = Duration(
-    milliseconds: 120,
-  ); // ~8 обновлений/сек
+  static const _updateInterval = Duration(milliseconds: 120); // ~8 обновлений/сек
 
   Timer? _timer;
   late final DateTime _startedAt;
@@ -95,9 +93,7 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
     if (shouldAnimate && _timer == null) {
       _timer = Timer.periodic(_updateInterval, (_) {
         final elapsedMs = DateTime.now().difference(_startedAt).inMilliseconds;
-        final newProgress =
-            (elapsedMs % _cycleDuration.inMilliseconds) /
-            _cycleDuration.inMilliseconds;
+        final newProgress = (elapsedMs % _cycleDuration.inMilliseconds) / _cycleDuration.inMilliseconds;
         // ValueNotifier уведомляет ТОЛЬКО свой собственный
         // ValueListenableBuilder (сами блики), не весь build() этого
         // виджета - настоящий контент экрана (widget.child) не
@@ -308,9 +304,7 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
                   // нативный экран (та же причина, что раньше) ИЛИ веб
                   // (специфика самой платформы, независимо от размера окна).
                   final isDesktopWidth = Responsive.isDesktopOrWider(context);
-                  final movementRadiusScale = (isDesktopWidth || kIsWeb)
-                      ? 0.5
-                      : 1.0;
+                  final movementRadiusScale = (isDesktopWidth || kIsWeb) ? 0.5 : 1.0;
                   // размер блика - в отличие от радиуса движения, это
                   // РЕАЛЬНО снижает площадь наложения на GPU каждый кадр
                   // (площадь круга растёт квадратично от радиуса). На
@@ -342,7 +336,7 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
                               math.sin(t) * 0.8 * movementRadiusScale,
                               (-0.9 + math.cos(t) * 0.3) * movementRadiusScale,
                             ),
-                            size: 420 * blobSizeScale,
+                            size: 560 * blobSizeScale,
                             // раньше 0.22 + плёнка 0.45 ниже почти полностью
                             // вымывали цвет - фон казался "пропавшим". Теперь
                             // блики заметно ярче, плёнка снята почти до нуля -
@@ -350,22 +344,17 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
                             // цвета палитры (см. _paletteFor выше), не плёнка.
                             // reducedContrast - "сегодня мигрень/усталость" в
                             // Самочувствии - снова притушивает, отдельно от темы
-                            opacity:
-                                (isLight ? 0.4 : 0.55) *
-                                (reducedContrast ? 0.55 : 1.0),
+                            opacity: (isLight ? 0.4 : 0.55) * (reducedContrast ? 0.55 : 1.0),
                             parentSize: parentSize,
                           ),
                           _blob(
                             color: palette.blob2,
                             alignment: Alignment(
-                              (-0.9 + math.sin(t + 2.1) * 0.4) *
-                                  movementRadiusScale,
+                              (-0.9 + math.sin(t + 2.1) * 0.4) * movementRadiusScale,
                               math.cos(t + 2.1) * 0.9 * movementRadiusScale,
                             ),
-                            size: 380 * blobSizeScale,
-                            opacity:
-                                (isLight ? 0.4 : 0.55) *
-                                (reducedContrast ? 0.55 : 1.0),
+                            size: 500 * blobSizeScale,
+                            opacity: (isLight ? 0.4 : 0.55) * (reducedContrast ? 0.55 : 1.0),
                             parentSize: parentSize,
                           ),
                           _blob(
@@ -374,10 +363,8 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
                               0.9 * math.cos(t + 4.2) * movementRadiusScale,
                               0.9 * math.sin(t + 4.2) * movementRadiusScale,
                             ),
-                            size: 340 * blobSizeScale,
-                            opacity:
-                                (isLight ? 0.4 : 0.55) *
-                                (reducedContrast ? 0.55 : 1.0),
+                            size: 440 * blobSizeScale,
+                            opacity: (isLight ? 0.4 : 0.55) * (reducedContrast ? 0.55 : 1.0),
                             parentSize: parentSize,
                           ),
                         ],
@@ -387,7 +374,12 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
                 },
               ),
             ),
-
+            // тёмный режим: тёмно-зелёная плёнка притушивает блики, чтобы
+            // они не резали глаз на тёмном фоне. Светлый режим - лёгкая
+            // голубоватая плёнка - смягчает края бликов, не вымывает цвет
+            // целиком. При reducedContrast обе плёнки усилены - именно это
+            // и означает "снизить контрастность". Конкретные оттенки (не
+            // просто белый/чёрный) подобраны для более приятного вида.
             if (isLight)
               Container(
                 color: const Color.fromARGB(
@@ -441,10 +433,7 @@ class _AnimatedAppBackgroundState extends State<_AnimatedAppBackground> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(
-                colors: [
-                  color.withValues(alpha: opacity),
-                  color.withValues(alpha: 0.0),
-                ],
+                colors: [color.withValues(alpha: opacity), color.withValues(alpha: 0.0)],
               ),
             ),
           ),
@@ -459,10 +448,5 @@ class _Palette {
   final Color blob1;
   final Color blob2;
   final Color blob3;
-  const _Palette({
-    required this.base,
-    required this.blob1,
-    required this.blob2,
-    required this.blob3,
-  });
+  const _Palette({required this.base, required this.blob1, required this.blob2, required this.blob3});
 }

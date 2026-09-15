@@ -287,7 +287,16 @@ class ChatStore extends ChangeNotifier {
     // разметку вместо обычного ответа
     msg.content = msg.content.replaceFirst(match.group(0)!, ' ').trim();
     if (variant != null) {
-      ThemeStore.instance.setVariant(variant);
+      // защитно: если запись предпочтения (SharedPreferences) или сам
+      // notifyListeners() кинут исключение по какой-то причине - это не
+      // должно оборвать остальную обработку сообщения (следующие
+      // маркеры, финальную запись сообщения) - тем более на телефоне,
+      // где сбой в фоне может выглядеть как "всё зависло"
+      try {
+        ThemeStore.instance.setVariant(variant);
+      } catch (_) {
+        // не роняем обработку сообщения из-за сбоя применения темы
+      }
     }
   }
 
@@ -309,7 +318,13 @@ class ChatStore extends ChangeNotifier {
 
     msg.content = msg.content.replaceFirst(match.group(0)!, ' ').trim();
     if (mode != null) {
-      ThemeStore.instance.setMode(mode);
+      // та же защита, что у setVariant выше - сбой применения режима не
+      // должен оборвать обработку остального сообщения
+      try {
+        ThemeStore.instance.setMode(mode);
+      } catch (_) {
+        // не роняем обработку сообщения из-за сбоя применения режима
+      }
     }
   }
 

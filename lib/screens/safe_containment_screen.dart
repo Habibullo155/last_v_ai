@@ -125,7 +125,7 @@ class _SafeContainmentScreenState extends State<SafeContainmentScreen>
   }
 
   Widget _buildWriting() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context)!; 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

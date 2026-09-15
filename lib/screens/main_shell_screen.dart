@@ -121,7 +121,7 @@ class _GlassBottomNav extends StatelessWidget {
       (icon: Icons.spa_rounded, label: l10n.navChat),
       (icon: Icons.self_improvement_rounded, label: l10n.navWellbeing),
       (icon: Icons.person_rounded, label: l10n.navProfile),
-      (icon: Icons.nightlight_rounded, label: l10n.navSleep),
+      (icon: Icons.music_note_rounded, label: l10n.navSleep),
     ];
     return SafeArea(
       top: false,

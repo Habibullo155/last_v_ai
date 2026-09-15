@@ -13,6 +13,9 @@ import '../services/sounds_service.dart';
 import '../state/auth_store.dart';
 import '../state/local_playlist_store.dart';
 import '../theme/app_text_color.dart';
+import '../utils/io_stub.dart'
+    if (dart.library.io) 'dart:io'
+    show Directory, File, Platform;
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
@@ -41,6 +44,15 @@ class SleepMusicScreen extends StatefulWidget {
 
 enum _Tab { catalog, playlists }
 
+// обычная кнопка повтора, три состояния по стандартной конвенции
+// музыкальных плееров: off - доиграть текущий трек и остановиться;
+// all - по окончании перейти к следующему треку активного списка
+// (см. _activeRefList), с возвратом в начало по кругу; one - зациклить
+// именно ТЕКУЩИЙ трек (было единственным жёстко заданным поведением
+// раньше, ReleaseMode.loop всегда - теперь один из трёх режимов, не
+// единственный)
+enum _RepeatMode { off, all, one }
+
 class _SleepMusicScreenState extends State<SleepMusicScreen> {
   final _service = SoundsService();
   final _player = AudioPlayer();
@@ -63,6 +75,7 @@ class _SleepMusicScreenState extends State<SleepMusicScreen> {
   // "убрать из плейлиста" отсюда - можно только снять лайк (что и уберёт
   // трек из этого списка естественным образом).
   bool _showingLiked = false;
+  _RepeatMode _repeatMode = _RepeatMode.one;
 
   // на вебе у file_picker путь к файлу всегда null (нет стабильного
   // доступа к выбранному файлу между перезагрузками страницы) - держим
@@ -82,7 +95,13 @@ class _SleepMusicScreenState extends State<SleepMusicScreen> {
   @override
   void initState() {
     super.initState();
-    _player.setReleaseMode(ReleaseMode.loop);
+    _applyReleaseModeForRepeat();
+    // срабатывает, когда трек ДОИГРАЛ до конца САМ (не когда его
+    // остановили вручную) - именно здесь решаем, что делать дальше в
+    // зависимости от режима повтора (см. _RepeatMode) - раньше такого
+    // обработчика не было вообще, трек либо зацикливался жёстко, либо
+    // (при ручной остановке) просто замолкал
+    _player.onPlayerComplete.listen((_) => _onTrackFinishedNaturally());
     _localStore.addListener(_onLocalStoreChanged);
     _localStore.load();
     _load();
@@ -159,6 +178,64 @@ class _SleepMusicScreenState extends State<SleepMusicScreen> {
     return '$minutes:${seconds.toString().padLeft(2, '0')}';
   }
 
+  /// Кнопка таймера сна - вынесена отдельным методом, чтобы не дублировать
+  /// разметку теперь, когда она живёт в верхней панели экрана (видна
+  /// всегда), а не только в мини-плеере (видна только во время
+  /// воспроизведения, как было раньше).
+  Widget _buildSleepTimerButton() {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: _showSleepTimerSheet,
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: _sleepTimerRemaining != null
+              ? Text(
+                  _formatTimerRemaining(_sleepTimerRemaining!),
+                  style: const TextStyle(
+                    color: Color(0xFFFFD166),
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                )
+              : Icon(
+                  Icons.bedtime_outlined,
+                  color: context.onSurfaceFaded(0.6),
+                  size: 20,
+                ),
+        ),
+      ),
+    );
+  }
+
+  /// Обычная кнопка повтора - три состояния по кругу (см. _RepeatMode).
+  /// Цвет показывает, активен ли режим вообще (приглушённый - off, яркий -
+  /// all/one), конкретная иконка отличает all от one.
+  Widget _buildRepeatButton(AppLocalizations l10n) {
+    final (icon, tooltip, isActive) = switch (_repeatMode) {
+      _RepeatMode.off => (
+        Icons.repeat_rounded,
+        l10n.sleepMusicRepeatOff,
+        false,
+      ),
+      _RepeatMode.all => (Icons.repeat_rounded, l10n.sleepMusicRepeatAll, true),
+      _RepeatMode.one => (
+        Icons.repeat_one_rounded,
+        l10n.sleepMusicRepeatOne,
+        true,
+      ),
+    };
+    return IconButton(
+      icon: Icon(
+        icon,
+        color: isActive ? const Color(0xFF6C5CE7) : context.onSurfaceFaded(0.4),
+      ),
+      tooltip: tooltip,
+      onPressed: _cycleRepeatMode,
+    );
+  }
+
   Future<void> _showSleepTimerSheet() async {
     final l10n = AppLocalizations.of(context)!;
     final choice = await showModalBottomSheet<Duration?>(
@@ -223,6 +300,9 @@ class _SleepMusicScreenState extends State<SleepMusicScreen> {
 
     setState(() => _isBuffering = true);
     try {
+      // ДО play() - чтобы новый режим точно применился к новому треку,
+      // не к предыдущему
+      await _applyReleaseModeForRepeat();
       if (ref.isSound) {
         final token = widget.authStore.token;
         if (token == null) return;
@@ -253,6 +333,45 @@ class _SleepMusicScreenState extends State<SleepMusicScreen> {
     } finally {
       if (mounted) setState(() => _isBuffering = false);
     }
+  }
+
+  Future<void> _applyReleaseModeForRepeat() async {
+    // .one - зациклить сам трек нативно (тот же ReleaseMode.loop, что
+    // раньше был единственным вариантом) - onPlayerComplete в этом
+    // режиме вообще не срабатывает, плеер зацикливает сам, без событий.
+    // .off/.all - доиграть один раз и остановиться - именно это даёт
+    // сработать onPlayerComplete, где уже решаем, перейти к следующему
+    // (.all) или просто остановиться (.off)
+    await _player.setReleaseMode(
+      _repeatMode == _RepeatMode.one ? ReleaseMode.loop : ReleaseMode.release,
+    );
+  }
+
+  void _onTrackFinishedNaturally() {
+    if (!mounted) return;
+    if (_repeatMode == _RepeatMode.all) {
+      _playAdjacent(1);
+    } else {
+      // .off - доиграл, дальше не идём. .one сюда попасть не должен
+      // вообще (см. комментарий в _applyReleaseModeForRepeat), но на
+      // случай отличий в поведении конкретной платформы - безопасный
+      // no-op, не переход в необъяснимое состояние
+      setState(() => _playingRef = null);
+    }
+  }
+
+  void _cycleRepeatMode() {
+    setState(() {
+      _repeatMode = switch (_repeatMode) {
+        _RepeatMode.off => _RepeatMode.all,
+        _RepeatMode.all => _RepeatMode.one,
+        _RepeatMode.one => _RepeatMode.off,
+      };
+    });
+    // применяем сразу, не дожидаясь следующего _playRef - если что-то
+    // уже играет, новый режим должен подействовать на него без
+    // необходимости перезапускать трек вручную
+    if (_playingRef != null) _applyReleaseModeForRepeat();
   }
 
   /// Список ссылок, по которому сейчас можно листать next/prev - каталог
@@ -417,6 +536,19 @@ class _SleepMusicScreenState extends State<SleepMusicScreen> {
               ),
               onTap: () => Navigator.of(context).pop('upload'),
             ),
+            // getDirectoryPath() у file_picker не поддерживается на вебе
+            // вообще (нет доступа к файловой системе как таковой) -
+            // не показываем вариант, которым нельзя воспользоваться,
+            // вместо того чтобы показать и дать ему тихо не сработать
+            if (!kIsWeb)
+              ListTile(
+                leading: const Icon(Icons.folder_outlined, color: Colors.white),
+                title: Text(
+                  l10n.sleepMusicUploadFolder,
+                  style: const TextStyle(color: Colors.white),
+                ),
+                onTap: () => Navigator.of(context).pop('folder'),
+              ),
           ],
         ),
       ),
@@ -426,6 +558,8 @@ class _SleepMusicScreenState extends State<SleepMusicScreen> {
       await _pickFromCatalog(playlistId);
     } else if (choice == 'upload') {
       await _uploadOwnFile(playlistId);
+    } else if (choice == 'folder') {
+      await _uploadFolder(playlistId);
     }
   }
 
@@ -505,6 +639,46 @@ class _SleepMusicScreenState extends State<SleepMusicScreen> {
     }
 
     await _localStore.addToPlaylist(playlistId, TrackRef.local(track.id));
+  }
+
+  static const _audioExtensions = ['.mp3', '.wav', '.ogg', '.m4a'];
+
+  /// Добавляет ВСЕ аудиофайлы из выбранной папки разом - не копирует их
+  /// никуда (та же логика, что и для одного файла - filePath указывает
+  /// прямо туда, где сам человек хранит файл, см. local_playlist.dart).
+  /// Не рекурсивно - только файлы НЕПОСРЕДСТВЕННО в выбранной папке, не
+  /// во вложенных - неожиданная рекурсия в чужую структуру папок скорее
+  /// удивила бы, чем помогла.
+  Future<void> _uploadFolder(String playlistId) async {
+    final l10n = AppLocalizations.of(context)!;
+    final dirPath = await FilePicker.getDirectoryPath();
+    if (dirPath == null) return;
+
+    setState(() => _isBuffering = true);
+    var addedCount = 0;
+    try {
+      final entries = Directory(dirPath).listSync();
+      for (final entry in entries) {
+        if (entry is! File) continue;
+        final lowerPath = entry.path.toLowerCase();
+        if (!_audioExtensions.any(lowerPath.endsWith)) continue;
+        final filename = entry.path.split(Platform.pathSeparator).last;
+        final track = await _localStore.addLocalTrack(
+          title: filename,
+          filePath: entry.path,
+        );
+        await _localStore.addToPlaylist(playlistId, TrackRef.local(track.id));
+        addedCount++;
+      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.sleepMusicFolderAddedCount(addedCount))),
+      );
+    } catch (_) {
+      if (mounted) setState(() => _error = l10n.sleepMusicFileReadError);
+    } finally {
+      if (mounted) setState(() => _isBuffering = false);
+    }
   }
 
   Future<void> _removeFromOpenPlaylist(TrackRef ref) async {
@@ -860,6 +1034,12 @@ class _SleepMusicScreenState extends State<SleepMusicScreen> {
                       )
                     else
                       const SizedBox(width: 8),
+                    // таймер сна - в левом краю верхней панели, видим
+                    // ВСЕГДА (не только когда что-то играет, как было
+                    // раньше в мини-плеере) - можно поставить таймер ДО
+                    // того, как начал слушать, не только во время
+                    _buildSleepTimerButton(),
+                    const SizedBox(width: 4),
                     Text(
                       l10n.sleepMusicTitle,
                       style: TextStyle(
@@ -955,32 +1135,7 @@ class _SleepMusicScreenState extends State<SleepMusicScreen> {
                             ),
                           ),
                         ),
-                        Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(20),
-                            onTap: _showSleepTimerSheet,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: _sleepTimerRemaining != null
-                                  ? Text(
-                                      _formatTimerRemaining(
-                                        _sleepTimerRemaining!,
-                                      ),
-                                      style: const TextStyle(
-                                        color: Color(0xFFFFD166),
-                                        fontSize: 12.5,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    )
-                                  : Icon(
-                                      Icons.bedtime_outlined,
-                                      color: context.onSurfaceFaded(0.6),
-                                      size: 20,
-                                    ),
-                            ),
-                          ),
-                        ),
+                        _buildRepeatButton(l10n),
                         IconButton(
                           icon: Icon(
                             Icons.skip_previous_rounded,

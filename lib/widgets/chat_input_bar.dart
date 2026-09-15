@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,6 +24,30 @@ class ChatInputBar extends StatefulWidget {
 class _ChatInputBarState extends State<ChatInputBar> {
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
+
+  /// Обход известного бага Flutter Web на iOS Safari (давняя, ещё не до
+  /// конца закрытая проблема самого движка Flutter, не наш код сам по
+  /// себе - flutter/flutter#91755, #149393 и похожие): после того как
+  /// фокус на поле теряется НЕ через обычный клик по другому месту
+  /// экрана (а, например, через программный `requestFocus()` в _submit()
+  /// ниже - вызванный НЕ прямым тапом по самому полю, а логикой отправки
+  /// сообщения - Safari по политике безопасности часто отказывается
+  /// показывать клавиатуру для focus(), вызванного не внутри
+  /// пользовательского жеста НА ЭТОМ элементе), внутреннее состояние
+  /// FocusNode во Flutter может остаться "в фокусе", даже когда реальный
+  /// DOM-фокус браузера потерян. При следующем тапе Flutter видит "уже
+  /// сфокусирован" и не делает ничего - клавиатура не показывается.
+  /// Явный unfocus() перед повторным requestFocus() форсирует полный
+  /// цикл потери+получения фокуса при КАЖДОМ тапе, а не полагается на
+  /// (потенциально устаревшее) внутреннее состояние - только на вебе,
+  /// нативные платформы этим багом не страдают.
+  void _handleFieldTap() {
+    if (!kIsWeb) return;
+    _focusNode.unfocus();
+    Future.delayed(const Duration(milliseconds: 50), () {
+      if (mounted) _focusNode.requestFocus();
+    });
+  }
   // Отдельный узел для перехвата Enter — создаём один раз, а не в build(),
   // иначе на каждой перерисовке плодились бы висячие FocusNode (утечка).
   final _keyboardFocusNode = FocusNode(debugLabel: 'chat-input-keyboard');
@@ -183,6 +208,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
                 controller: _controller,
                 focusNode: _focusNode,
                 enabled: widget.enabled,
+                onTap: _handleFieldTap,
                 minLines: 1,
                 maxLines: 6,
                 textInputAction: TextInputAction.send,

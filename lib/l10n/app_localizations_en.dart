@@ -2121,4 +2121,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sleepMusicNoLikedYet => 'No liked tracks yet — tap the heart on any track.';
+
+  @override
+  String get sleepMusicUploadFolder => 'Add whole folder';
+
+  @override
+  String sleepMusicFolderAddedCount(int count) {
+    return 'Tracks added: $count';
+  }
+
+  @override
+  String get sleepMusicRepeatOff => 'Repeat off';
+
+  @override
+  String get sleepMusicRepeatAll => 'Repeat playlist';
+
+  @override
+  String get sleepMusicRepeatOne => 'Repeat track';
+
+  @override
+  String get sleepMusicSleepTimerLabel => 'Sleep timer';
 }

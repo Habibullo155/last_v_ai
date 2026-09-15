@@ -1,5 +1,3 @@
-// ignore_for_file: unintended_html_in_doc_comment
-
 import 'dart:async';
 import 'dart:convert';
 
