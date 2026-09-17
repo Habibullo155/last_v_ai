@@ -1436,13 +1436,13 @@ abstract class AppLocalizations {
   /// No description provided for @wellbeingSafeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Safe'**
+  /// **'My moments'**
   String get wellbeingSafeTitle;
 
   /// No description provided for @wellbeingSafeSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Set a thought aside'**
+  /// **'Photo with a thought to revisit later'**
   String get wellbeingSafeSubtitle;
 
   /// No description provided for @wellbeingLeavesTitle.
@@ -3005,6 +3005,18 @@ abstract class AppLocalizations {
   /// **'Do it again'**
   String get muscleRepeatButton;
 
+  /// No description provided for @muscleNextButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get muscleNextButton;
+
+  /// No description provided for @musclePreviewDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Takes {seconds} sec'**
+  String musclePreviewDuration(int seconds);
+
   /// No description provided for @chatServerNotResponding.
   ///
   /// In en, this message translates to:
@@ -3574,6 +3586,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Just a reminder that you can stop by and share how your day went.'**
   String get reminderPrompt5;
+
+  /// No description provided for @reminderPrompt6.
+  ///
+  /// In en, this message translates to:
+  /// **'If today was packed, a couple of minutes to breathe wouldn\'t hurt.'**
+  String get reminderPrompt6;
+
+  /// No description provided for @reminderPrompt7.
+  ///
+  /// In en, this message translates to:
+  /// **'Sometimes it helps just to say your thoughts out loud. I\'m listening.'**
+  String get reminderPrompt7;
+
+  /// No description provided for @reminderPrompt8.
+  ///
+  /// In en, this message translates to:
+  /// **'How\'s your body feeling today — shoulders relaxed, fists unclenched?'**
+  String get reminderPrompt8;
+
+  /// No description provided for @reminderPrompt9.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeling anxious? Try a quick breathing exercise — it\'s in the Care section.'**
+  String get reminderPrompt9;
+
+  /// No description provided for @reminderPrompt10.
+  ///
+  /// In en, this message translates to:
+  /// **'If it\'s hard to unwind before bed, sleep music might help — worth a look.'**
+  String get reminderPrompt10;
+
+  /// No description provided for @reminderPrompt11.
+  ///
+  /// In en, this message translates to:
+  /// **'Muscles tense up quietly over the day. There\'s an exercise that helps let it go.'**
+  String get reminderPrompt11;
+
+  /// No description provided for @reminderPrompt12.
+  ///
+  /// In en, this message translates to:
+  /// **'Anything today worth keeping? You can save a photo with a thought in My moments.'**
+  String get reminderPrompt12;
+
+  /// No description provided for @reminderPrompt13.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have to wait until it gets hard — you can just stop by and share how things are.'**
+  String get reminderPrompt13;
+
+  /// No description provided for @reminderPrompt14.
+  ///
+  /// In en, this message translates to:
+  /// **'Did you manage to breathe out even for a minute today?'**
+  String get reminderPrompt14;
+
+  /// No description provided for @reminderPrompt15.
+  ///
+  /// In en, this message translates to:
+  /// **'If today was rough, you don\'t need to explain everything at once. Start anywhere.'**
+  String get reminderPrompt15;
+
+  /// No description provided for @reminderPrompt16.
+  ///
+  /// In en, this message translates to:
+  /// **'Sometimes it\'s worth just noting: this day happened. How was it for you?'**
+  String get reminderPrompt16;
+
+  /// No description provided for @reminderPrompt17.
+  ///
+  /// In en, this message translates to:
+  /// **'No need to prepare for this conversation — just write whatever comes to mind first.'**
+  String get reminderPrompt17;
+
+  /// No description provided for @reminderPrompt18.
+  ///
+  /// In en, this message translates to:
+  /// **'If something good happened today, share it — nice things are better shared.'**
+  String get reminderPrompt18;
+
+  /// No description provided for @reminderPrompt19.
+  ///
+  /// In en, this message translates to:
+  /// **'Self-care isn\'t always big steps. Sometimes a couple of minutes\' pause is enough.'**
+  String get reminderPrompt19;
+
+  /// No description provided for @reminderPrompt20.
+  ///
+  /// In en, this message translates to:
+  /// **'How are you doing right now — physically and inside? No need for a long answer.'**
+  String get reminderPrompt20;
 
   /// No description provided for @reminderChannelName.
   ///

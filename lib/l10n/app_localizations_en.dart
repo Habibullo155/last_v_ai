@@ -696,10 +696,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wellbeingMuscleRelaxationSubtitle => 'Tense/release';
 
   @override
-  String get wellbeingSafeTitle => 'Safe';
+  String get wellbeingSafeTitle => 'My moments';
 
   @override
-  String get wellbeingSafeSubtitle => 'Set a thought aside';
+  String get wellbeingSafeSubtitle => 'Photo with a thought to revisit later';
 
   @override
   String get wellbeingLeavesTitle => 'Leaves on a stream';
@@ -1562,6 +1562,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get muscleRepeatButton => 'Do it again';
 
   @override
+  String get muscleNextButton => 'Next';
+
+  @override
+  String musclePreviewDuration(int seconds) {
+    return 'Takes $seconds sec';
+  }
+
+  @override
   String chatServerNotResponding(String baseUrl) {
     return 'The server isn\'t responding. Check that the backend is running at $baseUrl';
   }
@@ -1877,6 +1885,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reminderPrompt5 => 'Just a reminder that you can stop by and share how your day went.';
+
+  @override
+  String get reminderPrompt6 => 'If today was packed, a couple of minutes to breathe wouldn\'t hurt.';
+
+  @override
+  String get reminderPrompt7 => 'Sometimes it helps just to say your thoughts out loud. I\'m listening.';
+
+  @override
+  String get reminderPrompt8 => 'How\'s your body feeling today — shoulders relaxed, fists unclenched?';
+
+  @override
+  String get reminderPrompt9 => 'Feeling anxious? Try a quick breathing exercise — it\'s in the Care section.';
+
+  @override
+  String get reminderPrompt10 => 'If it\'s hard to unwind before bed, sleep music might help — worth a look.';
+
+  @override
+  String get reminderPrompt11 => 'Muscles tense up quietly over the day. There\'s an exercise that helps let it go.';
+
+  @override
+  String get reminderPrompt12 => 'Anything today worth keeping? You can save a photo with a thought in My moments.';
+
+  @override
+  String get reminderPrompt13 => 'You don\'t have to wait until it gets hard — you can just stop by and share how things are.';
+
+  @override
+  String get reminderPrompt14 => 'Did you manage to breathe out even for a minute today?';
+
+  @override
+  String get reminderPrompt15 => 'If today was rough, you don\'t need to explain everything at once. Start anywhere.';
+
+  @override
+  String get reminderPrompt16 => 'Sometimes it\'s worth just noting: this day happened. How was it for you?';
+
+  @override
+  String get reminderPrompt17 => 'No need to prepare for this conversation — just write whatever comes to mind first.';
+
+  @override
+  String get reminderPrompt18 => 'If something good happened today, share it — nice things are better shared.';
+
+  @override
+  String get reminderPrompt19 => 'Self-care isn\'t always big steps. Sometimes a couple of minutes\' pause is enough.';
+
+  @override
+  String get reminderPrompt20 => 'How are you doing right now — physically and inside? No need for a long answer.';
 
   @override
   String get reminderChannelName => 'Daily reminders';

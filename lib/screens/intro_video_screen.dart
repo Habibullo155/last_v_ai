@@ -30,7 +30,10 @@ class _IntroVideoScreenState extends State<IntroVideoScreen> {
   Future<void> _init() async {
     final controller = VideoPlayerController.asset('assets/video/intro.mp4');
     try {
-      await controller.initialize();
+      // таймаут явно - без него, если initialize() зависнет (не кинет
+      // исключение и не завершится), человек застрял бы на спиннере
+      // навсегда, ни видео, ни перехода дальше
+      await controller.initialize().timeout(const Duration(seconds: 6));
       await controller.setVolume(0);
       controller.addListener(_onTick);
       if (!mounted) {
@@ -39,8 +42,12 @@ class _IntroVideoScreenState extends State<IntroVideoScreen> {
       }
       setState(() => _controller = controller);
       await controller.play();
-    } catch (_) {
-      // не смогли проиграть - не задерживаем человека на пустом экране
+    } catch (e) {
+      // не смогли проиграть (ошибка ИЛИ таймаут) - не задерживаем
+      // человека на пустом экране. Печатаем причину в консоль (видно в
+      // DevTools браузера на вебе / логе устройства нативно) - без этого
+      // диагностировать проблему на реальном устройстве было бы нечем
+      debugPrint('IntroVideoScreen: не удалось проиграть intro.mp4 — $e');
       controller.dispose();
       _finish();
     }

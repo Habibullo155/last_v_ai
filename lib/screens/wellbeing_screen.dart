@@ -22,7 +22,7 @@ import 'leaves_on_stream_screen.dart';
 import 'memory_release_screen.dart';
 import 'muscle_relaxation_screen.dart';
 import 'phq9_screen.dart';
-import 'safe_containment_screen.dart';
+import 'personal_memories_screen.dart';
 import 'sleep_music_screen.dart';
 
 const _uuid = Uuid();
@@ -250,14 +250,19 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
               ),
             ),
             _buildGridTile(
-              icon: Icons.lock_outline_rounded,
+              icon: Icons.photo_album_outlined,
               title: l10n.wellbeingSafeTitle,
               subtitle: l10n.wellbeingSafeSubtitle,
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const SafeContainmentScreen(),
-                ),
-              ),
+              onTap: () {
+                final authStore = widget.authStore;
+                if (authStore == null) return;
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        PersonalMemoriesScreen(authStore: authStore),
+                  ),
+                );
+              },
             ),
             _buildGridTile(
               icon: Icons.eco_outlined,

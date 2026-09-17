@@ -51,12 +51,20 @@ List<_MuscleStep> _steps(AppLocalizations l10n) => [
   ),
 ];
 
-enum _Phase { intro, tense, release, done }
+enum _Phase { preview, tense, release, done }
 
 /// Прогрессивная мышечная релаксация по Джейкобсону — пошаговое
 /// напряжение и расслабление групп мышц с таймером на каждую фазу.
 /// Снимает физический спазм при стрессе, который человек часто сам не
 /// замечает, пока не обратит на него внимание намеренно.
+///
+/// Поток на каждую группу мышц: сначала превью (название + сколько
+/// займёт) - кнопка "Далее" ИЛИ автостарт через 5с (доступны оба сразу,
+/// кнопка просто пропускает ожидание) - затем напряжение, затем отдых.
+/// Отдых устроен внахлёст: ровно на половине заданного времени отдыха
+/// уже показывается превью СЛЕДУЮЩЕЙ группы мышц, не дожидаясь полного
+/// окончания текущего отдыха - так упражнения идут плотнее, без
+/// длинных пауз между ними.
 class MuscleRelaxationScreen extends StatefulWidget {
   const MuscleRelaxationScreen({super.key});
 
@@ -66,9 +74,17 @@ class MuscleRelaxationScreen extends StatefulWidget {
 
 class _MuscleRelaxationScreenState extends State<MuscleRelaxationScreen> {
   int _stepIndex = 0;
-  _Phase _phase = _Phase.intro;
-  int _secondsLeft = 0;
+  _Phase _phase = _Phase.preview;
+  int _secondsLeft =
+      5; // превью первого шага стартует сразу при открытии экрана
   Timer? _timer;
+  bool _started =
+      false; // до первого показа превью кнопка "Начать" в интро-обёртке
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -76,22 +92,66 @@ class _MuscleRelaxationScreenState extends State<MuscleRelaxationScreen> {
     super.dispose();
   }
 
-  void _startStep() {
+  void _beginJourney() {
+    setState(() => _started = true);
+    _startPreview();
+  }
+
+  void _startPreview() {
+    setState(() {
+      _phase = _Phase.preview;
+      _secondsLeft = 5;
+    });
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      setState(() => _secondsLeft--);
+      if (_secondsLeft <= 0) {
+        timer.cancel();
+        _beginTense();
+      }
+    });
+  }
+
+  /// Кнопка "Далее" в превью - пропускает ожидание автостарта.
+  void _skipPreview() {
+    _timer?.cancel();
+    _beginTense();
+  }
+
+  void _beginTense() {
     final l10n = AppLocalizations.of(context)!;
     final step = _steps(l10n)[_stepIndex];
     setState(() {
       _phase = _Phase.tense;
       _secondsLeft = step.tenseSeconds;
     });
-    _runCountdown(
-      onDone: () {
-        setState(() {
-          _phase = _Phase.release;
-          _secondsLeft = step.releaseSeconds;
-        });
-        _runCountdown(onDone: _advanceStep);
-      },
+    _runCountdown(onDone: _beginRelease);
+  }
+
+  void _beginRelease() {
+    final l10n = AppLocalizations.of(context)!;
+    final step = _steps(l10n)[_stepIndex];
+    setState(() {
+      _phase = _Phase.release;
+      _secondsLeft = step.releaseSeconds;
+    });
+    // ровно на половине заданного времени отдыха - переход дальше (не
+    // дожидаясь полного окончания отдыха), см. комментарий у класса
+    final halfReleaseSeconds = (step.releaseSeconds / 2).ceil().clamp(
+      1,
+      step.releaseSeconds,
     );
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      setState(() => _secondsLeft--);
+      final elapsedInRelease = step.releaseSeconds - _secondsLeft;
+      if (elapsedInRelease >= halfReleaseSeconds) {
+        timer.cancel();
+        _advanceStep();
+      }
+    });
   }
 
   void _runCountdown({required VoidCallback onDone}) {
@@ -110,7 +170,7 @@ class _MuscleRelaxationScreenState extends State<MuscleRelaxationScreen> {
     final l10n = AppLocalizations.of(context)!;
     if (_stepIndex < _steps(l10n).length - 1) {
       setState(() => _stepIndex++);
-      _startStep();
+      _startPreview();
     } else {
       setState(() => _phase = _Phase.done);
     }
@@ -120,7 +180,8 @@ class _MuscleRelaxationScreenState extends State<MuscleRelaxationScreen> {
     _timer?.cancel();
     setState(() {
       _stepIndex = 0;
-      _phase = _Phase.intro;
+      _phase = _Phase.preview;
+      _started = false;
     });
   }
 
@@ -161,11 +222,13 @@ class _MuscleRelaxationScreenState extends State<MuscleRelaxationScreen> {
                     padding: const EdgeInsets.all(16),
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 480),
-                      child: switch (_phase) {
-                        _Phase.intro => _buildIntro(),
-                        _Phase.done => _buildDone(),
-                        _ => _buildStep(),
-                      },
+                      child: !_started
+                          ? _buildIntro()
+                          : switch (_phase) {
+                              _Phase.done => _buildDone(),
+                              _Phase.preview => _buildPreview(),
+                              _ => _buildStep(),
+                            },
                     ),
                   ),
                 ),
@@ -199,7 +262,7 @@ class _MuscleRelaxationScreenState extends State<MuscleRelaxationScreen> {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(14),
-              onTap: _startStep,
+              onTap: _beginJourney,
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 13),
                 alignment: Alignment.center,
@@ -221,6 +284,96 @@ class _MuscleRelaxationScreenState extends State<MuscleRelaxationScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPreview() {
+    final l10n = AppLocalizations.of(context)!;
+    final steps = _steps(l10n);
+    final step = steps[_stepIndex];
+    return Column(
+      children: [
+        Row(
+          children: List.generate(
+            steps.length,
+            (i) => Expanded(
+              child: Container(
+                margin: EdgeInsets.only(right: i < steps.length - 1 ? 4 : 0),
+                height: 4,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2),
+                  color: i <= _stepIndex
+                      ? const Color(0xFF6C5CE7)
+                      : context.onSurfaceFaded(0.12),
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          l10n.muscleStepProgress(_stepIndex + 1, steps.length),
+          style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11.5),
+        ),
+        const SizedBox(height: 24),
+        GlassPanel(
+          opacity: 0.08,
+          borderRadius: BorderRadius.circular(20),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              Text(
+                step.muscleGroup,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: context.onSurface,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.musclePreviewDuration(step.tenseSeconds),
+                style: TextStyle(
+                  color: context.onSurfaceFaded(0.5),
+                  fontSize: 13.5,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: _skipPreview,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 13,
+                      horizontal: 28,
+                    ),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)],
+                      ),
+                    ),
+                    // видимый отсчёт автостарта прямо на кнопке - и
+                    // нажать можно сразу, и понятно, сколько ждать, если
+                    // просто оставить как есть
+                    child: Text(
+                      '${l10n.muscleNextButton} · $_secondsLeft',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/onboarding_survey.dart';
+import 'onboarding_stats_screen.dart';
 import '../services/onboarding_survey_service.dart';
 import '../state/auth_store.dart';
 import '../theme/app_text_color.dart';
@@ -72,7 +73,15 @@ class _OnboardingSurveyScreenState extends State<OnboardingSurveyScreen> {
     };
     try {
       await _service.complete(baseUrl: widget.authStore.baseUrl, token: token, answers: answersOut);
-      if (mounted) widget.onDone();
+      if (!mounted) return;
+      // статистика - отдельный, следующий экран (не сам onDone напрямую) -
+      // она сама вызовет widget.onDone после "Продолжить" или сразу,
+      // если ей нечего показать/не удалось загрузить
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => OnboardingStatsScreen(authStore: widget.authStore, onDone: widget.onDone),
+        ),
+      );
     } on OnboardingSurveyException catch (e) {
       if (mounted) setState(() { _isSubmitting = false; _error = e.message; });
     } catch (_) {

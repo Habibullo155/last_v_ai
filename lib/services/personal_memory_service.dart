@@ -1,0 +1,79 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:http/http.dart' as http;
+
+import '../models/personal_memory.dart';
+
+class PersonalMemoryException implements Exception {
+  final String message;
+  PersonalMemoryException(this.message);
+  @override
+  String toString() => message;
+}
+
+class PersonalMemoryService {
+  final http.Client _client = http.Client();
+
+  String? _extractError(String body) {
+    try {
+      final json = jsonDecode(body) as Map<String, dynamic>;
+      return json['detail'] as String?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<PersonalMemory> create({
+    required String baseUrl,
+    required String token,
+    required String comment,
+    required Uint8List photoBytes,
+    required String filename,
+  }) async {
+    final uri = Uri.parse('$baseUrl/api/personal-memories');
+    final request = http.MultipartRequest('POST', uri)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..fields['comment'] = comment
+      ..files.add(http.MultipartFile.fromBytes('file', photoBytes, filename: filename));
+
+    final streamed = await _client.send(request).timeout(const Duration(minutes: 2));
+    final res = await http.Response.fromStream(streamed);
+    if (res.statusCode >= 400) {
+      throw PersonalMemoryException(_extractError(res.body) ?? 'Не удалось сохранить запись.');
+    }
+    return PersonalMemory.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
+  }
+
+  Future<List<PersonalMemory>> list({required String baseUrl, required String token}) async {
+    final res = await _client
+        .get(Uri.parse('$baseUrl/api/personal-memories'), headers: {'Authorization': 'Bearer $token'})
+        .timeout(const Duration(seconds: 15));
+    if (res.statusCode >= 400) {
+      throw PersonalMemoryException('Не удалось загрузить записи (код ${res.statusCode}).');
+    }
+    final list = jsonDecode(res.body) as List<dynamic>;
+    return list.map((e) => PersonalMemory.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<Uint8List> fetchPhotoBytes({required String baseUrl, required String token, required int memoryId}) async {
+    final res = await _client
+        .get(Uri.parse('$baseUrl/api/personal-memories/$memoryId/photo'), headers: {'Authorization': 'Bearer $token'})
+        .timeout(const Duration(seconds: 30));
+    if (res.statusCode >= 400) {
+      throw PersonalMemoryException('Не удалось загрузить фото (код ${res.statusCode}).');
+    }
+    return res.bodyBytes;
+  }
+
+  Future<void> delete({required String baseUrl, required String token, required int memoryId}) async {
+    final res = await _client
+        .delete(Uri.parse('$baseUrl/api/personal-memories/$memoryId'), headers: {'Authorization': 'Bearer $token'})
+        .timeout(const Duration(seconds: 15));
+    if (res.statusCode >= 400) {
+      throw PersonalMemoryException('Не удалось удалить запись (код ${res.statusCode}).');
+    }
+  }
+
+  void dispose() => _client.close();
+}

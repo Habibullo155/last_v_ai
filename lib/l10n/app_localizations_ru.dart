@@ -698,10 +698,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get wellbeingMuscleRelaxationSubtitle => 'Напряжение/отдых';
 
   @override
-  String get wellbeingSafeTitle => 'Сейф';
+  String get wellbeingSafeTitle => 'Мои моменты';
 
   @override
-  String get wellbeingSafeSubtitle => 'Убрать мысль на потом';
+  String get wellbeingSafeSubtitle => 'Фото с мыслью, чтобы вернуться позже';
 
   @override
   String get wellbeingLeavesTitle => 'Листья на ручье';
@@ -1564,6 +1564,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get muscleRepeatButton => 'Пройти ещё раз';
 
   @override
+  String get muscleNextButton => 'Далее';
+
+  @override
+  String musclePreviewDuration(int seconds) {
+    return 'Займёт $seconds сек';
+  }
+
+  @override
   String chatServerNotResponding(String baseUrl) {
     return 'Сервер не отвечает. Проверь, что бэкенд запущен на $baseUrl';
   }
@@ -1879,6 +1887,51 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get reminderPrompt5 => 'Просто напоминаю, что можно зайти и поделиться, как прошёл день.';
+
+  @override
+  String get reminderPrompt6 => 'Если весь день был плотным — пара минут на выдох тебе не помешает.';
+
+  @override
+  String get reminderPrompt7 => 'Иногда полезно просто проговорить мысли вслух. Я слушаю.';
+
+  @override
+  String get reminderPrompt8 => 'Как твоё тело сегодня — не зажаты плечи, не сжаты кулаки?';
+
+  @override
+  String get reminderPrompt9 => 'Если тревожно — попробуй короткое дыхательное упражнение, оно есть в разделе Забота.';
+
+  @override
+  String get reminderPrompt10 => 'Перед сном иногда помогает музыка для сна — загляни, если сложно расслабиться.';
+
+  @override
+  String get reminderPrompt11 => 'Мышцы часто напрягаются незаметно за день. Есть упражнение, которое помогает их отпустить.';
+
+  @override
+  String get reminderPrompt12 => 'Было сегодня что-то, что хочется сохранить? Можно оставить фото с мыслью в разделе Мои моменты.';
+
+  @override
+  String get reminderPrompt13 => 'Не обязательно ждать, пока станет тяжело — можно просто заглянуть и рассказать, как дела.';
+
+  @override
+  String get reminderPrompt14 => 'Ты сегодня успел(а) выдохнуть хоть на минуту?';
+
+  @override
+  String get reminderPrompt15 => 'Если день был непростым — не нужно объяснять сразу всё. Начни с чего угодно.';
+
+  @override
+  String get reminderPrompt16 => 'Иногда важно просто отметить: этот день был. Как он прошёл для тебя?';
+
+  @override
+  String get reminderPrompt17 => 'Здесь не нужно готовиться к разговору — можно просто написать первое, что приходит в голову.';
+
+  @override
+  String get reminderPrompt18 => 'Если сегодня было что-то хорошее — поделись, приятно порадоваться вместе.';
+
+  @override
+  String get reminderPrompt19 => 'Забота о себе — это не всегда большие шаги. Иногда достаточно пары минут на паузу.';
+
+  @override
+  String get reminderPrompt20 => 'Как ты сейчас — физически и внутри? Необязательно отвечать развёрнуто.';
 
   @override
   String get reminderChannelName => 'Ежедневные напоминания';
