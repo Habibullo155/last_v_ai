@@ -11,19 +11,26 @@ import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
-/// Личные записи - фото (обложка/заголовок) + текстовый комментарий,
-/// реально сохраняются на сервере (строго приватно, только свои видны -
-/// см. backend/routers_personal_memories.py) и доступны для просмотра
-/// снова в любой момент. ИИ иногда (не каждый раз) вскользь напоминает
-/// о них в чате - см. personal_memory_reminder_for_prompt на бэкенде.
-///
-/// Раньше на этом месте была техника "Сейф" (контейнирование) -
-/// символическое, НАРОЧНО не сохраняемое "убирание" мысли на потом.
-/// Заменено полностью, не доработано поверх старого: разное назначение,
-/// разная механика.
+/// Сейф - личные записи, реально сохраняются на сервере (строго
+/// приватно - см. backend/routers_personal_memories.py). Мысль текстом,
+/// фото опционально - раньше фото было обязательной "обложкой", позже
+/// переосмыслено: не всегда есть что сфотографировать, а мысль записать
+/// хочется. Название "Сейф" вернули - изначально здесь была
+/// символическая, НЕ сохраняемая техника "убирания" мысли на потом,
+/// затем переименовано в "Мои моменты" под фото-механику, теперь имя
+/// вернули обратно при переходе на текст+фото(опционально). При
+/// открытии записи - кнопка перейти в чат и обсудить её с ИИ, и кнопка
+/// удалить, если запись больше не нужна.
 class PersonalMemoriesScreen extends StatefulWidget {
   final AuthStore authStore;
-  const PersonalMemoriesScreen({super.key, required this.authStore});
+  // передаётся из wellbeing_screen.dart - тот же колбэк, что открывает
+  // AI-разговор с готовым текстом сообщения (см. _openDetail ниже)
+  final Future<void> Function(String text)? onStartAiConversation;
+  const PersonalMemoriesScreen({
+    super.key,
+    required this.authStore,
+    this.onStartAiConversation,
+  });
 
   @override
   State<PersonalMemoriesScreen> createState() => _PersonalMemoriesScreenState();
@@ -62,9 +69,10 @@ class _PersonalMemoriesScreenState extends State<PersonalMemoriesScreen> {
         _memories = memories;
         _error = null;
       });
-      // фото подгружаем в фоне, не блокируя показ списка карточек
+      // фото подгружаем в фоне только там, где оно реально есть - не
+      // дёргаем /photo для текстовых записей, там гарантированно 404
       for (final memory in memories) {
-        if (_photoCache.containsKey(memory.id)) continue;
+        if (!memory.hasPhoto || _photoCache.containsKey(memory.id)) continue;
         _service
             .fetchPhotoBytes(
               baseUrl: widget.authStore.baseUrl,
@@ -91,22 +99,11 @@ class _PersonalMemoriesScreenState extends State<PersonalMemoriesScreen> {
   }
 
   Future<void> _addMemory() async {
-    final picker = ImagePicker();
-    final file = await picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1600,
-      maxHeight: 1600,
-      imageQuality: 80,
-    );
-    if (file == null || !mounted) return;
-    final bytes = await file.readAsBytes();
-    if (!mounted) return;
-
-    final comment = await showDialog<String>(
+    final result = await showDialog<_NewMemoryDraft>(
       context: context,
-      builder: (context) => _CommentDialog(previewBytes: bytes),
+      builder: (context) => const _AddMemoryDialog(),
     );
-    if (comment == null || comment.trim().isEmpty || !mounted) return;
+    if (result == null || !mounted) return;
 
     final token = widget.authStore.token;
     if (token == null) return;
@@ -114,9 +111,9 @@ class _PersonalMemoriesScreenState extends State<PersonalMemoriesScreen> {
       await _service.create(
         baseUrl: widget.authStore.baseUrl,
         token: token,
-        comment: comment.trim(),
-        photoBytes: bytes,
-        filename: file.name,
+        comment: result.comment,
+        photoBytes: result.photoBytes,
+        filename: result.filename,
       );
       await _load();
     } on PersonalMemoryException catch (e) {
@@ -160,6 +157,14 @@ class _PersonalMemoriesScreenState extends State<PersonalMemoriesScreen> {
         builder: (_) => _MemoryDetailScreen(
           memory: memory,
           photoBytes: _photoCache[memory.id],
+          onDiscuss: widget.onStartAiConversation == null
+              ? null
+              : () async {
+                  Navigator.of(context).pop();
+                  await widget.onStartAiConversation!(
+                    'Хочу обсудить одну свою запись из Сейфа: «${memory.comment}»',
+                  );
+                },
           onDelete: () async {
             Navigator.of(context).pop();
             await _delete(memory);
@@ -263,13 +268,13 @@ class _PersonalMemoriesScreenState extends State<PersonalMemoriesScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.photo_library_outlined,
+              Icons.lock_outline_rounded,
               color: context.onSurfaceFaded(0.3),
               size: 48,
             ),
             const SizedBox(height: 16),
             Text(
-              'Пока пусто — сохрани фото с комментарием, и сможешь вернуться к нему в любой момент.',
+              'Пока пусто — запиши мысль (фото не обязательно), и сможешь вернуться к ней в любой момент.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: context.onSurfaceFaded(0.6),
@@ -313,13 +318,23 @@ class _MemoryCard extends StatelessWidget {
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(16),
                   ),
-                  child: photoBytes != null
-                      ? Image.memory(
-                          photoBytes!,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        )
-                      : Container(color: context.onSurfaceFaded(0.06)),
+                  child: memory.hasPhoto
+                      ? (photoBytes != null
+                            ? Image.memory(
+                                photoBytes!,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              )
+                            : Container(color: context.onSurfaceFaded(0.06)))
+                      : Container(
+                          color: context.onSurfaceFaded(0.06),
+                          alignment: Alignment.center,
+                          child: Icon(
+                            Icons.notes_rounded,
+                            color: context.onSurfaceFaded(0.25),
+                            size: 28,
+                          ),
+                        ),
                 ),
               ),
               Padding(
@@ -342,10 +357,12 @@ class _MemoryCard extends StatelessWidget {
 class _MemoryDetailScreen extends StatelessWidget {
   final PersonalMemory memory;
   final Uint8List? photoBytes;
+  final Future<void> Function()? onDiscuss;
   final VoidCallback onDelete;
   const _MemoryDetailScreen({
     required this.memory,
     required this.photoBytes,
+    required this.onDiscuss,
     required this.onDelete,
   });
 
@@ -387,16 +404,17 @@ class _MemoryDetailScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(18),
-                          child: photoBytes != null
-                              ? Image.memory(photoBytes!, fit: BoxFit.cover)
-                              : Container(
-                                  height: 240,
-                                  color: context.onSurfaceFaded(0.06),
-                                ),
-                        ),
-                        const SizedBox(height: 20),
+                        if (memory.hasPhoto)
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(18),
+                            child: photoBytes != null
+                                ? Image.memory(photoBytes!, fit: BoxFit.cover)
+                                : Container(
+                                    height: 240,
+                                    color: context.onSurfaceFaded(0.06),
+                                  ),
+                          ),
+                        if (memory.hasPhoto) const SizedBox(height: 20),
                         Text(
                           memory.comment,
                           style: TextStyle(
@@ -405,6 +423,26 @@ class _MemoryDetailScreen extends StatelessWidget {
                             height: 1.5,
                           ),
                         ),
+                        const SizedBox(height: 28),
+                        if (onDiscuss != null)
+                          SizedBox(
+                            height: 50,
+                            child: ElevatedButton.icon(
+                              onPressed: onDiscuss,
+                              icon: const Icon(
+                                Icons.chat_bubble_outline_rounded,
+                                size: 18,
+                              ),
+                              label: const Text('Обсудить с ИИ'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF6C5CE7),
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                              ),
+                            ),
+                          ),
                         const SizedBox(height: 24),
                       ],
                     ),
@@ -419,21 +457,55 @@ class _MemoryDetailScreen extends StatelessWidget {
   }
 }
 
-class _CommentDialog extends StatefulWidget {
-  final Uint8List previewBytes;
-  const _CommentDialog({required this.previewBytes});
-
-  @override
-  State<_CommentDialog> createState() => _CommentDialogState();
+class _NewMemoryDraft {
+  final String comment;
+  final Uint8List? photoBytes;
+  final String? filename;
+  _NewMemoryDraft({required this.comment, this.photoBytes, this.filename});
 }
 
-class _CommentDialogState extends State<_CommentDialog> {
+class _AddMemoryDialog extends StatefulWidget {
+  const _AddMemoryDialog();
+
+  @override
+  State<_AddMemoryDialog> createState() => _AddMemoryDialogState();
+}
+
+class _AddMemoryDialogState extends State<_AddMemoryDialog> {
   final _controller = TextEditingController();
+  Uint8List? _photoBytes;
+  String? _filename;
+
+  @override
+  void initState() {
+    super.initState();
+    // без этого кнопка "Сохранить" не реагировала бы на ввод текста
+    // сама по себе - только при СЛУЧАЙНОЙ перестройке виджета по другой
+    // причине (например, после выбора фото)
+    _controller.addListener(() => setState(() {}));
+  }
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickPhoto() async {
+    final picker = ImagePicker();
+    final file = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1600,
+      maxHeight: 1600,
+      imageQuality: 80,
+    );
+    if (file == null) return;
+    final bytes = await file.readAsBytes();
+    if (!mounted) return;
+    setState(() {
+      _photoBytes = bytes;
+      _filename = file.name;
+    });
   }
 
   @override
@@ -450,15 +522,6 @@ class _CommentDialogState extends State<_CommentDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(14),
-              child: Image.memory(
-                widget.previewBytes,
-                height: 160,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(height: 16),
             TextField(
               controller: _controller,
               autofocus: true,
@@ -472,10 +535,50 @@ class _CommentDialogState extends State<_CommentDialog> {
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
-                hintText: 'О чём этот момент?',
+                hintText: 'О чём хочешь написать?',
                 hintStyle: const TextStyle(color: Colors.white38),
               ),
             ),
+            const SizedBox(height: 12),
+            // фото опционально - не обязательный элемент записи
+            if (_photoBytes != null)
+              Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: Image.memory(
+                      _photoBytes!,
+                      height: 140,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded, color: Colors.white),
+                    onPressed: () => setState(() {
+                      _photoBytes = null;
+                      _filename = null;
+                    }),
+                  ),
+                ],
+              )
+            else
+              OutlinedButton.icon(
+                onPressed: _pickPhoto,
+                icon: const Icon(
+                  Icons.add_photo_alternate_outlined,
+                  color: Colors.white70,
+                  size: 18,
+                ),
+                label: const Text(
+                  'Добавить фото (необязательно)',
+                  style: TextStyle(color: Colors.white70),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Colors.white24),
+                ),
+              ),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -491,8 +594,15 @@ class _CommentDialogState extends State<_CommentDialog> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () =>
-                        Navigator.of(context).pop(_controller.text),
+                    onPressed: _controller.text.trim().isEmpty
+                        ? null
+                        : () => Navigator.of(context).pop(
+                            _NewMemoryDraft(
+                              comment: _controller.text.trim(),
+                              photoBytes: _photoBytes,
+                              filename: _filename,
+                            ),
+                          ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF6C5CE7),
                       foregroundColor: Colors.white,

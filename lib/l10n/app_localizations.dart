@@ -1436,26 +1436,14 @@ abstract class AppLocalizations {
   /// No description provided for @wellbeingSafeTitle.
   ///
   /// In en, this message translates to:
-  /// **'My moments'**
+  /// **'Safe'**
   String get wellbeingSafeTitle;
 
   /// No description provided for @wellbeingSafeSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Photo with a thought to revisit later'**
+  /// **'Write down a thought to come back to later'**
   String get wellbeingSafeSubtitle;
-
-  /// No description provided for @wellbeingLeavesTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Leaves on a stream'**
-  String get wellbeingLeavesTitle;
-
-  /// No description provided for @wellbeingLeavesSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Let a thought go'**
-  String get wellbeingLeavesSubtitle;
 
   /// No description provided for @wellbeingFreewritingTitle.
   ///
@@ -1510,6 +1498,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Calm sounds before bed'**
   String get wellbeingSleepMusicSubtitle;
+
+  /// No description provided for @wellbeingLiveHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live help'**
+  String get wellbeingLiveHelpTitle;
+
+  /// No description provided for @wellbeingLiveHelpSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Message an operator if you need a real person'**
+  String get wellbeingLiveHelpSubtitle;
+
+  /// No description provided for @wellbeingCustomTestsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Extra questionnaires, if the admin added any'**
+  String get wellbeingCustomTestsSubtitle;
 
   /// No description provided for @who5HistorySection.
   ///
@@ -3071,11 +3077,11 @@ abstract class AppLocalizations {
   /// **'Write here…'**
   String get memoryReleaseHint;
 
-  /// No description provided for @memoryReleaseBurnMode.
+  /// No description provided for @memoryReleaseEnvelopeMode.
   ///
   /// In en, this message translates to:
-  /// **'Burn'**
-  String get memoryReleaseBurnMode;
+  /// **'Seal it'**
+  String get memoryReleaseEnvelopeMode;
 
   /// No description provided for @memoryReleaseShatterMode.
   ///
@@ -3083,11 +3089,11 @@ abstract class AppLocalizations {
   /// **'Shatter'**
   String get memoryReleaseShatterMode;
 
-  /// No description provided for @memoryReleaseBurnedResult.
+  /// No description provided for @memoryReleaseEnvelopeResult.
   ///
   /// In en, this message translates to:
-  /// **'Burned away — nothing\'s left of the text.'**
-  String get memoryReleaseBurnedResult;
+  /// **'Sealed and sliced apart — nothing\'s left of the text.'**
+  String get memoryReleaseEnvelopeResult;
 
   /// No description provided for @memoryReleaseShatteredResult.
   ///

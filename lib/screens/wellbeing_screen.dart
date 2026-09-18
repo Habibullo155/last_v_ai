@@ -18,12 +18,12 @@ import 'freewriting_screen.dart';
 import 'gad7_screen.dart';
 import 'gratitude_journal_screen.dart';
 import 'grounding_exercise_screen.dart';
-import 'leaves_on_stream_screen.dart';
+import 'custom_test_list_screen.dart';
+import 'my_help_screen.dart';
 import 'memory_release_screen.dart';
 import 'muscle_relaxation_screen.dart';
 import 'phq9_screen.dart';
 import 'personal_memories_screen.dart';
-import 'sleep_music_screen.dart';
 
 const _uuid = Uuid();
 
@@ -250,7 +250,7 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
               ),
             ),
             _buildGridTile(
-              icon: Icons.photo_album_outlined,
+              icon: Icons.lock_outline_rounded,
               title: l10n.wellbeingSafeTitle,
               subtitle: l10n.wellbeingSafeSubtitle,
               onTap: () {
@@ -258,20 +258,22 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
                 if (authStore == null) return;
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (_) =>
-                        PersonalMemoriesScreen(authStore: authStore),
+                    builder: (_) => PersonalMemoriesScreen(
+                      authStore: authStore,
+                      onStartAiConversation: widget.onStartAiConversation,
+                    ),
                   ),
                 );
               },
             ),
             _buildGridTile(
-              icon: Icons.eco_outlined,
-              title: l10n.wellbeingLeavesTitle,
-              subtitle: l10n.wellbeingLeavesSubtitle,
+              icon: Icons.local_fire_department_outlined,
+              title: l10n.wellbeingReleaseTitle,
+              subtitle: l10n.wellbeingReleaseSubtitle,
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) =>
-                      LeavesOnStreamScreen(authStore: widget.authStore),
+                      MemoryReleaseScreen(authStore: widget.authStore),
                 ),
               ),
             ),
@@ -342,24 +344,24 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
         ),
         const SizedBox(height: 10),
         _buildToolTile(
-          icon: Icons.local_fire_department_outlined,
-          title: l10n.wellbeingReleaseTitle,
-          subtitle: l10n.wellbeingReleaseSubtitle,
+          icon: Icons.quiz_outlined,
+          title: l10n.customTestListTitle,
+          subtitle: l10n.wellbeingCustomTestsSubtitle,
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) => MemoryReleaseScreen(authStore: widget.authStore),
+              builder: (_) => CustomTestListScreen(authStore: widget.authStore!),
             ),
           ),
         ),
         if (widget.authStore != null) ...[
           const SizedBox(height: 10),
           _buildToolTile(
-            icon: Icons.nightlight_outlined,
-            title: l10n.wellbeingSleepMusicTitle,
-            subtitle: l10n.wellbeingSleepMusicSubtitle,
+            icon: Icons.support_agent_rounded,
+            title: l10n.wellbeingLiveHelpTitle,
+            subtitle: l10n.wellbeingLiveHelpSubtitle,
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => SleepMusicScreen(authStore: widget.authStore!),
+                builder: (_) => MyHelpScreen(authStore: widget.authStore!),
               ),
             ),
           ),

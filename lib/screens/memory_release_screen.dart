@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 
+import 'package:ai_last_v/l10n/app_localizations.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
-import 'package:ai_last_v/l10n/app_localizations.dart';
 import '../models/sound_asset.dart';
 import '../services/sounds_service.dart';
 import '../state/auth_store.dart';
@@ -11,7 +11,7 @@ import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
-enum _ReleaseMode { burn, shatter }
+enum _ReleaseMode { envelope, shatter }
 
 enum _Stage { writing, animating, done }
 
@@ -32,7 +32,7 @@ class _MemoryReleaseScreenState extends State<MemoryReleaseScreen>
   final _controller = TextEditingController();
   final _soundsService = SoundsService();
   final _effectPlayer = AudioPlayer();
-  _ReleaseMode _mode = _ReleaseMode.burn;
+  _ReleaseMode _mode = _ReleaseMode.envelope;
   _Stage _stage = _Stage.writing;
   late final AnimationController _animController;
 
@@ -197,9 +197,9 @@ class _MemoryReleaseScreenState extends State<MemoryReleaseScreen>
           children: [
             Expanded(
               child: _modeChip(
-                _ReleaseMode.burn,
-                Icons.local_fire_department_rounded,
-                l10n.memoryReleaseBurnMode,
+                _ReleaseMode.envelope,
+                Icons.mail_outline_rounded,
+                l10n.memoryReleaseEnvelopeMode,
               ),
             ),
             const SizedBox(width: 10),
@@ -224,14 +224,14 @@ class _MemoryReleaseScreenState extends State<MemoryReleaseScreen>
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
                 gradient: LinearGradient(
-                  colors: _mode == _ReleaseMode.burn
-                      ? [const Color(0xFFFF7E5F), const Color(0xFFFEB47B)]
+                  colors: _mode == _ReleaseMode.envelope
+                      ? [const Color(0xFF8E7CF0), const Color(0xFF6C5CE7)]
                       : [const Color(0xFF6C5CE7), const Color(0xFF00B4D8)],
                 ),
               ),
               child: Text(
-                _mode == _ReleaseMode.burn
-                    ? l10n.memoryReleaseBurnMode
+                _mode == _ReleaseMode.envelope
+                    ? l10n.memoryReleaseEnvelopeMode
                     : l10n.memoryReleaseShatterMode,
                 style: const TextStyle(
                   color: Colors.white,
@@ -296,8 +296,8 @@ class _MemoryReleaseScreenState extends State<MemoryReleaseScreen>
       child: AnimatedBuilder(
         animation: _animController,
         builder: (context, _) {
-          return _mode == _ReleaseMode.burn
-              ? _BurnEffect(
+          return _mode == _ReleaseMode.envelope
+              ? _EnvelopeSliceEffect(
                   progress: _animController.value,
                   text: _controller.text,
                 )
@@ -316,16 +316,16 @@ class _MemoryReleaseScreenState extends State<MemoryReleaseScreen>
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(
-          _mode == _ReleaseMode.burn
-              ? Icons.local_fire_department_outlined
+          _mode == _ReleaseMode.envelope
+              ? Icons.mail_outline_rounded
               : Icons.check_circle_outline_rounded,
           color: context.onSurfaceFaded(0.5),
           size: 40,
         ),
         const SizedBox(height: 16),
         Text(
-          _mode == _ReleaseMode.burn
-              ? l10n.memoryReleaseBurnedResult
+          _mode == _ReleaseMode.envelope
+              ? l10n.memoryReleaseEnvelopeResult
               : l10n.memoryReleaseShatteredResult,
           textAlign: TextAlign.center,
           style: TextStyle(color: context.onSurfaceFaded(0.7), fontSize: 14.5),
@@ -357,264 +357,212 @@ class _MemoryReleaseScreenState extends State<MemoryReleaseScreen>
   }
 }
 
-/// Огонь — не фотореалистичная симуляция (для этого нужен настоящий
-/// шейдер/частицы на GPU), а стилизованный, но живой эффект на базе
-/// CustomPainter: текст плавно темнеет и тает снизу вверх, поверх летят
-/// частицы-угольки. Честная планка для того, что реально можно сделать
-/// средствами Flutter без сторонних библиотек частиц.
-class _BurnEffect extends StatelessWidget {
+/// Раньше здесь было "сжигание" - убрано по просьбе, заменено на
+/// другую метафору: написанный текст сворачивается в конверт (письмо
+/// "запечатывается"), а затем конверт разрезается по диагонали одним
+/// движением - как во Fruit Ninja (быстрый свайп, объект распадается
+/// на куски вдоль линии разреза, а не просто исчезает).
+class _EnvelopeSliceEffect extends StatelessWidget {
   final double progress;
   final String text;
-  const _BurnEffect({required this.progress, required this.text});
+  const _EnvelopeSliceEffect({required this.progress, required this.text});
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
       size: const Size(double.infinity, 420),
-      painter: _BurnPainter(progress: progress, text: text),
+      painter: _EnvelopeSlicePainter(progress: progress, text: text),
     );
   }
 }
 
-/// Раньше текст просто таял поверх пустого фона — не очень читалось как
-/// "сжигание письма". Теперь есть настоящий лист бумаги: рваная
-/// обугленная граница реально ползёт снизу вверх, вдоль неё — тлеющая
-/// оранжевая кромка, искры вылетают именно из этой границы, а не с
-/// произвольной высоты. Всё ещё не физическая симуляция огня (для этого
-/// нужен настоящий шейдер), но заметно более буквальная метафора.
-class _BurnPainter extends CustomPainter {
+/// Три фазы по прогрессу 0..1:
+/// 0.00-0.40 - письмо (лист с текстом) уменьшается и уезжает вниз, в
+///             конверт; треугольный клапан конверта опускается следом
+/// 0.40-0.55 - лезвие пролетает по диагонали через закрытый конверт
+///             (быстро, как настоящий свайп, а не медленное движение)
+/// 0.55-1.00 - конверт распадается на две половины по той же диагонали,
+///             каждая улетает в свою сторону с вращением и ускорением
+///             вниз (имитация гравитации)
+class _EnvelopeSlicePainter extends CustomPainter {
   final double progress;
   final String text;
-  final math.Random _rnd;
-  _BurnPainter({required this.progress, required this.text})
-    : _rnd = math.Random(text.hashCode);
-
-  static const _teeth = 20;
+  _EnvelopeSlicePainter({required this.progress, required this.text});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paperRect = Rect.fromLTRB(20, 20, size.width - 20, size.height - 50);
-    // ползёт снизу вверх: при progress=0 вся бумага цела, при progress=1 - вся сгорела
-    final burnLineY = paperRect.bottom - paperRect.height * progress;
+    final envelopeCenter = Offset(size.width / 2, size.height * 0.62);
+    const envelopeWidth = 200.0;
+    const envelopeHeight = 130.0;
+    final envelopeRect = Rect.fromCenter(
+      center: envelopeCenter,
+      width: envelopeWidth,
+      height: envelopeHeight,
+    );
 
-    // рваная (обугленная) верхняя граница ещё уцелевшей части бумаги -
-    // не прямая линия, а зубчатая, как настоящий обгоревший край
-    final edgePoints = <Offset>[];
-    for (var i = 0; i <= _teeth; i++) {
-      final x = paperRect.left + paperRect.width * i / _teeth;
-      // две синусоиды разной частоты, не одна - идеально периодичный край
-      // выглядел слишком математически правильным для настоящей рваной
-      // обугленной бумаги
-      final jag =
-          math.sin(i * 2.3 + text.hashCode * 0.0001) * 5 +
-          math.sin(i * 5.1 + text.hashCode * 0.0003) * 2;
-      edgePoints.add(
-        Offset(x, (burnLineY + jag).clamp(paperRect.top, paperRect.bottom)),
-      );
-    }
+    // фаза 1 - письмо едет в конверт
+    final letterPhase = (progress / 0.4).clamp(0.0, 1.0);
+    if (letterPhase < 1.0) {
+      final letterScale = 1.0 - letterPhase * 0.82;
+      final letterY =
+          size.height * 0.22 +
+          (envelopeCenter.dy - size.height * 0.22) * letterPhase;
+      final letterOpacity =
+          1.0 - (letterPhase > 0.7 ? (letterPhase - 0.7) / 0.3 : 0.0);
 
-    final paperPath = Path()
-      ..moveTo(paperRect.left, paperRect.top)
-      ..lineTo(paperRect.right, paperRect.top)
-      ..lineTo(paperRect.right, edgePoints.last.dy);
-    for (final p in edgePoints.reversed) {
-      paperPath.lineTo(p.dx, p.dy);
-    }
-    paperPath.close();
-
-    // сама уцелевшая бумага - тёплый кремовый цвет
-    canvas.drawPath(paperPath, Paint()..color = const Color(0xFFF3E5C8));
-
-    // обугленная полоса прямо перед кромкой горения - без неё переход от
-    // целой кремовой бумаги к пустоте был слишком резким. Тень ложится
-    // ВНУТРИ уцелевшей области (clip тем же paperPath), поэтому не
-    // выходит за реальный контур бумаги
-    if (progress > 0.01 && progress < 0.99) {
       canvas.save();
-      canvas.clipPath(paperPath);
-      final charPath = Path()..moveTo(edgePoints.first.dx, edgePoints.first.dy);
-      for (final p in edgePoints.skip(1)) {
-        charPath.lineTo(p.dx, p.dy);
-      }
-      canvas.drawPath(
-        charPath,
-        Paint()
-          ..color = const Color(0xFF3A2313).withValues(alpha: 0.5)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 10,
+      canvas.translate(size.width / 2, letterY);
+      canvas.scale(letterScale);
+      final letterRect = Rect.fromCenter(
+        center: Offset.zero,
+        width: 220,
+        height: 280,
+      );
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(letterRect, const Radius.circular(6)),
+        Paint()..color = const Color(0xFFF3E5C8).withValues(alpha: letterOpacity),
+      );
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: text,
+          style: TextStyle(
+            color: const Color(0xFF3B2A1A).withValues(alpha: letterOpacity),
+            fontSize: 13,
+            height: 1.4,
+          ),
+        ),
+        textAlign: TextAlign.center,
+        maxLines: 12,
+        ellipsis: '…',
+      )..layout(maxWidth: letterRect.width - 24);
+      textPainter.paint(
+        canvas,
+        Offset(-letterRect.width / 2 + 12, -letterRect.height / 2 + 12),
       );
       canvas.restore();
     }
 
-    // тлеющая кромка вдоль границы горения - светящаяся оранжевая полоса
-    if (progress > 0.01 && progress < 0.99) {
-      final glowPath = Path()..moveTo(edgePoints.first.dx, edgePoints.first.dy);
-      for (final p in edgePoints.skip(1)) {
-        glowPath.lineTo(p.dx, p.dy);
-      }
-      canvas.drawPath(
-        glowPath,
-        Paint()
-          ..color = const Color(0xFFFF7A3D)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 3,
+    // конверт - тело + треугольный клапан, клапан опускается в течение
+    // всей фазы 1 (не мгновенно), выглядит как настоящее запечатывание
+    final flapPhase = letterPhase; // 0 = открыт, 1 = закрыт
+    void drawEnvelopeBody(Canvas c, Rect rect) {
+      c.drawRRect(
+        RRect.fromRectAndRadius(rect, const Radius.circular(8)),
+        Paint()..color = const Color(0xFFE8E2F5),
       );
-
-      // дым - серые волнистые полупрозрачные полосы, поднимающиеся выше и
-      // медленнее огня. Раньше горение показывало только огонь и угольки -
-      // без дыма выглядело неполно, настоящий огонь почти всегда дымит.
-      //
-      // RadialGradient вместо MaskFilter.blur - та же причина, что и у
-      // бликов на воде в "Листьях на ручье" (экран удалён целиком из-за
-      // тормозов, но вывод остаётся верным): размытие здесь
-      // рисовалось 6 раз за кадр (по одному на облачко дыма), и это
-      // вносило вклад в тормоза после недавних изменений анимаций.
-      // Радиальный градиент даёт похожий мягкий вид без свёртки.
-      final smokeRnd = math.Random(text.hashCode + 700);
-      for (var i = 0; i < 6; i++) {
-        final base =
-            edgePoints[(smokeRnd.nextDouble() * (edgePoints.length - 1))
-                .floor()];
-        final smokePhase = (progress * 0.6 + i * 0.17) % 1.0;
-        final riseHeight = 90 * smokePhase;
-        final wobble = math.sin(smokePhase * 8 + i * 2) * 14 * smokePhase;
-        final fade = (1 - smokePhase).clamp(0.0, 1.0) * 0.18;
-        final radius = 6 + smokePhase * 10;
-        final center = Offset(base.dx + wobble, base.dy - riseHeight - 10);
-        canvas.drawCircle(
-          center,
-          radius,
-          Paint()
-            ..shader = RadialGradient(
-              colors: [
-                const Color(0xFF9B9B9B).withValues(alpha: fade),
-                const Color(0xFF9B9B9B).withValues(alpha: 0.0),
-              ],
-            ).createShader(Rect.fromCircle(center: center, radius: radius)),
-        );
-      }
-
-      // настоящие языки пламени вдоль кромки - раньше горение показывали
-      // только тлеющая полоса и угольки, без самого огня. Частота
-      // мерцания (~85 в аргументе sin) подобрана под 3-секундную
-      // анимацию так, чтобы получалось 4-5 мерцаний в секунду - темп
-      // настоящего огня; у каждого языка свой сдвиг фазы (+ i*1.7), иначе
-      // все мерцают синхронно и выглядит неестественно, как один объект
-      for (var i = 0; i < edgePoints.length - 1; i += 2) {
-        final base = edgePoints[i];
-        final flicker = math.sin(progress * 85 + i * 1.7);
-        final flicker2 = math.sin(progress * 130 + i * 2.3);
-        final height = 22 + flicker * 8 + math.sin(progress * 40 + i) * 4;
-        final lean = flicker2 * 6;
-
-        // внешний язык - шире, тусклее, красно-оранжевый
-        final outer = Path()
-          ..moveTo(base.dx - 9, base.dy + 2)
-          ..quadraticBezierTo(
-            base.dx - 10 + lean * 0.5,
-            base.dy - height * 0.5,
-            base.dx + lean,
-            base.dy - height,
-          )
-          ..quadraticBezierTo(
-            base.dx + 10 + lean * 0.5,
-            base.dy - height * 0.5,
-            base.dx + 9,
-            base.dy + 2,
-          )
-          ..close();
-        canvas.drawPath(
-          outer,
-          Paint()..color = const Color(0xFFFF5A36).withValues(alpha: 0.65),
-        );
-
-        // внутренний язык - уже, ярче, жёлто-белый - классический приём
-        // двухслойного пламени для более убедительного вида
-        final innerHeight = height * 0.6;
-        final inner = Path()
-          ..moveTo(base.dx - 4, base.dy + 2)
-          ..quadraticBezierTo(
-            base.dx - 4 + lean * 0.5,
-            base.dy - innerHeight * 0.5,
-            base.dx + lean * 0.7,
-            base.dy - innerHeight,
-          )
-          ..quadraticBezierTo(
-            base.dx + 4 + lean * 0.5,
-            base.dy - innerHeight * 0.5,
-            base.dx + 4,
-            base.dy + 2,
-          )
-          ..close();
-        canvas.drawPath(
-          inner,
-          Paint()..color = const Color(0xFFFFD166).withValues(alpha: 0.8),
-        );
-      }
+      c.drawRRect(
+        RRect.fromRectAndRadius(rect, const Radius.circular(8)),
+        Paint()
+          ..color = const Color(0xFF6C5CE7).withValues(alpha: 0.4)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.5,
+      );
+      // клапан - треугольник от верхних углов к точке, опускающейся к центру
+      final flapTip = Offset(
+        rect.center.dx,
+        rect.top + rect.height * 0.5 * flapPhase,
+      );
+      final flapPath = Path()
+        ..moveTo(rect.left, rect.top)
+        ..lineTo(rect.right, rect.top)
+        ..lineTo(flapTip.dx, flapTip.dy)
+        ..close();
+      c.drawPath(flapPath, Paint()..color = const Color(0xFFD8CFF0));
+      c.drawPath(
+        flapPath,
+        Paint()
+          ..color = const Color(0xFF6C5CE7).withValues(alpha: 0.35)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.2,
+      );
     }
 
-    // текст - виден только там, где бумага ещё цела; тёмно-сепийные
-    // чернила, не адаптивный цвет темы - подложка теперь сама бумага,
-    // не фон приложения, ей не нужно подстраиваться под тему
-    canvas.save();
-    canvas.clipPath(paperPath);
-    final textPainter = TextPainter(
-      text: TextSpan(
-        text: text,
-        style: const TextStyle(
-          color: Color(0xFF3B2A1A),
-          fontSize: 14.5,
-          height: 1.5,
-        ),
-      ),
-      textAlign: TextAlign.center,
-      maxLines: 14,
-      ellipsis: '…',
-    )..layout(maxWidth: paperRect.width - 24);
-    textPainter.paint(canvas, Offset(paperRect.left + 12, paperRect.top + 12));
-    canvas.restore();
+    if (progress < 0.55) {
+      drawEnvelopeBody(canvas, envelopeRect);
+    }
 
-    // угольки/искры - вылетают именно из линии горения, не с
-    // произвольной фиксированной высоты, как было раньше
-    final particlePaint = Paint()..style = PaintingStyle.fill;
-    for (var i = 0; i < 45; i++) {
-      final seed = _rnd.nextDouble();
-      final startDelay = seed * 0.5;
-      final localProgress = ((progress - startDelay) / (1 - startDelay)).clamp(
-        0.0,
-        1.0,
+    // фаза 2 - лезвие. Быстрый диагональный свайв слева-сверху направо-вниз,
+    // проходит через весь экран (не только через конверт) - так заметнее
+    // сам жест разреза, не только его результат
+    final slicePhase = ((progress - 0.4) / 0.15).clamp(0.0, 1.0);
+    if (slicePhase > 0 && slicePhase < 1) {
+      final t = slicePhase;
+      final bladeStart = Offset(
+        -40 + size.width * 0.5 * t,
+        -40 + size.height * 0.4 * t,
       );
-      if (localProgress <= 0 || localProgress >= 1) continue;
-
-      final originX = paperRect.left + paperRect.width * ((i * 37) % 100) / 100;
-      final riseHeight = 60 + 100 * seed;
-      final y = burnLineY - riseHeight * localProgress;
-      final wobble = math.sin(localProgress * 8 + i) * 10;
-
-      final fade = (1 - localProgress).clamp(0.0, 1.0);
-      final color = Color.lerp(
-        const Color(0xFFFFB37A),
-        const Color(0xFFFF5A36),
-        seed,
-      )!;
-      particlePaint.color = color.withValues(alpha: fade * 0.85);
-      canvas.drawCircle(
-        Offset(originX + wobble, y),
-        1.3 + seed * 2.2,
-        particlePaint,
+      final bladeEnd =
+          bladeStart + Offset(size.width * 0.5, size.height * 0.35);
+      canvas.drawLine(
+        bladeStart,
+        bladeEnd,
+        Paint()
+          ..color = Colors.white.withValues(alpha: 0.9)
+          ..strokeWidth = 3
+          ..strokeCap = StrokeCap.round,
       );
+      // лёгкое свечение вдоль лезвия
+      canvas.drawLine(
+        bladeStart,
+        bladeEnd,
+        Paint()
+          ..color = const Color(0xFF00D9C0).withValues(alpha: 0.5)
+          ..strokeWidth = 10
+          ..strokeCap = StrokeCap.round,
+      );
+    }
+
+    // фаза 3 - конверт разрезан по диагонали (левый верх -> правый низ
+    // самого конверта) на два треугольника, каждый улетает в свою
+    // сторону с вращением и ускорением вниз
+    final shatterPhase = ((progress - 0.55) / 0.45).clamp(0.0, 1.0);
+    if (shatterPhase > 0) {
+      final diag1 = envelopeRect.topLeft;
+      final diag2 = envelopeRect.bottomRight;
+
+      void drawHalf(Path clipPath, Offset direction, double rotationSign) {
+        canvas.save();
+        // ускорение вниз (гравитация) - квадратичный рост смещения по Y
+        final dx = direction.dx * 220 * shatterPhase;
+        final dy =
+            direction.dy * 140 * shatterPhase +
+            260 * shatterPhase * shatterPhase;
+        canvas.translate(dx, dy);
+        canvas.translate(envelopeCenter.dx, envelopeCenter.dy);
+        canvas.rotate(rotationSign * shatterPhase * 2.4);
+        canvas.translate(-envelopeCenter.dx, -envelopeCenter.dy);
+        canvas.clipPath(clipPath);
+        drawEnvelopeBody(canvas, envelopeRect);
+        canvas.restore();
+      }
+
+      final upperRightPath = Path()
+        ..moveTo(diag1.dx, diag1.dy)
+        ..lineTo(envelopeRect.right, envelopeRect.top)
+        ..lineTo(diag2.dx, diag2.dy)
+        ..close();
+      final lowerLeftPath = Path()
+        ..moveTo(diag1.dx, diag1.dy)
+        ..lineTo(envelopeRect.left, envelopeRect.bottom)
+        ..lineTo(diag2.dx, diag2.dy)
+        ..close();
+
+      final fade = (1 - shatterPhase).clamp(0.0, 1.0);
+      canvas.saveLayer(
+        Rect.largest,
+        Paint()..color = Colors.black.withValues(alpha: fade),
+      );
+      drawHalf(upperRightPath, const Offset(1, -0.6), 1);
+      drawHalf(lowerLeftPath, const Offset(-1, 0.4), -1);
+      canvas.restore();
     }
   }
 
   @override
-  bool shouldRepaint(covariant _BurnPainter oldDelegate) =>
+  bool shouldRepaint(covariant _EnvelopeSlicePainter oldDelegate) =>
       oldDelegate.progress != progress;
 }
 
-/// "Тарелка" с текстом внутри, разлетающаяся на осколки. Тоже не
-/// физический движок — заранее заданные направления/повороты для
-/// каждого осколка, честный компромисс между "красиво" и "реализуемо
-/// без сторонних пакетов физики".
 class _ShatterEffect extends StatelessWidget {
   final double progress;
   final String text;

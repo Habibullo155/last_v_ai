@@ -696,16 +696,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wellbeingMuscleRelaxationSubtitle => 'Tense/release';
 
   @override
-  String get wellbeingSafeTitle => 'My moments';
+  String get wellbeingSafeTitle => 'Safe';
 
   @override
-  String get wellbeingSafeSubtitle => 'Photo with a thought to revisit later';
-
-  @override
-  String get wellbeingLeavesTitle => 'Leaves on a stream';
-
-  @override
-  String get wellbeingLeavesSubtitle => 'Let a thought go';
+  String get wellbeingSafeSubtitle => 'Write down a thought to come back to later';
 
   @override
   String get wellbeingFreewritingTitle => 'Freewriting';
@@ -733,6 +727,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wellbeingSleepMusicSubtitle => 'Calm sounds before bed';
+
+  @override
+  String get wellbeingLiveHelpTitle => 'Live help';
+
+  @override
+  String get wellbeingLiveHelpSubtitle => 'Message an operator if you need a real person';
+
+  @override
+  String get wellbeingCustomTestsSubtitle => 'Extra questionnaires, if the admin added any';
 
   @override
   String get who5HistorySection => 'WHO-5 HISTORY';
@@ -1605,13 +1608,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get memoryReleaseHint => 'Write here…';
 
   @override
-  String get memoryReleaseBurnMode => 'Burn';
+  String get memoryReleaseEnvelopeMode => 'Seal it';
 
   @override
   String get memoryReleaseShatterMode => 'Shatter';
 
   @override
-  String get memoryReleaseBurnedResult => 'Burned away — nothing\'s left of the text.';
+  String get memoryReleaseEnvelopeResult => 'Sealed and sliced apart — nothing\'s left of the text.';
 
   @override
   String get memoryReleaseShatteredResult => 'Shattered to pieces — the text is gone.';

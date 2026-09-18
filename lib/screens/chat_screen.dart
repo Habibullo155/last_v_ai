@@ -1303,6 +1303,11 @@ class _ChatScreenState extends State<ChatScreen> {
             l10n.chatMenuProfile,
           ),
           _menuItem(
+            'wellbeing',
+            Icons.self_improvement_rounded,
+            l10n.chatMenuWellbeing,
+          ),
+          _menuItem(
             'sleep_music',
             Icons.music_note_rounded,
             l10n.chatMenuSleepMusic,
@@ -1314,7 +1319,14 @@ class _ChatScreenState extends State<ChatScreen> {
           l10n.chatMenuSubscription,
         ),
         _menuItem('settings', Icons.settings_outlined, l10n.settingsTitle),
+        _menuItem('my_reports', Icons.flag_outlined, l10n.chatMenuMyReports),
         _menuItem('my_help', Icons.support_rounded, l10n.chatMenuLiveHelp),
+        if (isOperator)
+          _menuItem(
+            'operator',
+            Icons.headset_mic_rounded,
+            l10n.chatMenuOperatorCabinet,
+          ),
         _menuItem('support', Icons.support_agent_rounded, l10n.chatMenuSupport),
         _menuItem('blog', Icons.article_outlined, l10n.chatMenuBlog),
       ],

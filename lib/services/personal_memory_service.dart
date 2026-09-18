@@ -28,14 +28,16 @@ class PersonalMemoryService {
     required String baseUrl,
     required String token,
     required String comment,
-    required Uint8List photoBytes,
-    required String filename,
+    Uint8List? photoBytes,
+    String? filename,
   }) async {
     final uri = Uri.parse('$baseUrl/api/personal-memories');
     final request = http.MultipartRequest('POST', uri)
       ..headers['Authorization'] = 'Bearer $token'
-      ..fields['comment'] = comment
-      ..files.add(http.MultipartFile.fromBytes('file', photoBytes, filename: filename));
+      ..fields['comment'] = comment;
+    if (photoBytes != null && filename != null) {
+      request.files.add(http.MultipartFile.fromBytes('file', photoBytes, filename: filename));
+    }
 
     final streamed = await _client.send(request).timeout(const Duration(minutes: 2));
     final res = await http.Response.fromStream(streamed);

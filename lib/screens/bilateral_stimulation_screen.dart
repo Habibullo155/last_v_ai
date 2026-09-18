@@ -37,7 +37,8 @@ class _BilateralStimulationScreenState extends State<BilateralStimulationScreen>
   // задействуя периферийное зрение и лёгкое движение головой тоже.
   static const double _horizontalPhaseSeconds =
       16; // 4 однонаправленных прохода по 4с
-  static const double _cornersPhaseSeconds = 8; // 4 отрезка между углами по 2с
+  static const double _cornersPhaseSeconds =
+      10; // 5 отрезков между точками по 2с (включая 2 переходных)
   static const double _totalCycleSeconds =
       _horizontalPhaseSeconds + _cornersPhaseSeconds;
   static const double _horizontalPhaseFraction =
@@ -75,21 +76,24 @@ class _BilateralStimulationScreenState extends State<BilateralStimulationScreen>
       final hp = t / _horizontalPhaseFraction;
       return (_triangleWave(hp * 2), 0.5);
     }
-    // угловая фаза - облёт по периметру: верх-лево -> верх-право ->
-    // низ-право -> низ-лево -> обратно к верх-лево (следующий цикл
-    // начнётся снова с горизонтальной фазы оттуда же)
+    // угловая фаза - облёт по периметру, начиная и заканчивая ровно там,
+    // где кончается/начинается горизонтальная фаза (левый край, центр
+    // по вертикали) - без этих двух переходных точек по краям был бы
+    // резкий скачок по вертикали ровно на стыке фаз, а не плавное
+    // движение по кругу
     const corners = [
-      (0.0, 0.0),
-      (1.0, 0.0),
-      (1.0, 1.0),
-      (0.0, 1.0),
-      (0.0, 0.0),
+      (0.0, 0.5), // = конец горизонтальной фазы (левый край, центр)
+      (0.0, 0.0), // левый верх
+      (1.0, 0.0), // правый верх
+      (1.0, 1.0), // правый низ
+      (0.0, 1.0), // левый низ
+      (0.0, 0.5), // обратно к началу - следующий цикл продолжит отсюда
     ];
     final ap =
         (t - _horizontalPhaseFraction) /
         (1 - _horizontalPhaseFraction); // 0..1 внутри угловой фазы
-    final segmentFloat = ap * 4;
-    final segmentIndex = segmentFloat.floor().clamp(0, 3);
+    final segmentFloat = ap * 5;
+    final segmentIndex = segmentFloat.floor().clamp(0, 4);
     final segmentT = segmentFloat - segmentIndex;
     final from = corners[segmentIndex];
     final to = corners[segmentIndex + 1];
@@ -239,24 +243,6 @@ class _BilateralStimulationScreenState extends State<BilateralStimulationScreen>
                                             child: Stack(
                                               alignment: Alignment.center,
                                               children: [
-                                                // мягкое внешнее свечение позади самого шара -
-                                                // крупнее и прозрачнее, даёт красивый ореол,
-                                                // не отвлекая от самого шара как фокуса взгляда
-                                                Container(
-                                                  width: ballSize * 1.7,
-                                                  height: ballSize * 1.7,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    gradient: RadialGradient(
-                                                      colors: [
-                                                        const Color(
-                                                          0xFF6C5CE7,
-                                                        ).withValues(alpha: 0.35),
-                                                        Colors.transparent,
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
                                                 Container(
                                                   width: ballSize,
                                                   height: ballSize,
@@ -275,12 +261,17 @@ class _BilateralStimulationScreenState extends State<BilateralStimulationScreen>
                                                           ],
                                                         ),
                                                     boxShadow: [
+                                                      // мягкое свечение вплотную к самому шару,
+                                                      // не отдельный размытый круг позади - раньше
+                                                      // здесь ещё был отдельный Container с
+                                                      // RadialGradient в 1.7 раза больше шара,
+                                                      // выглядевший как второй шар/тень - убран
                                                       BoxShadow(
                                                         color: const Color(
                                                           0xFF6C5CE7,
-                                                        ).withValues(alpha: 0.6),
-                                                        blurRadius: 24,
-                                                        spreadRadius: 4,
+                                                        ).withValues(alpha: 0.5),
+                                                        blurRadius: 14,
+                                                        spreadRadius: 1,
                                                       ),
                                                     ],
                                                   ),

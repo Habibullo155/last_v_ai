@@ -698,16 +698,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get wellbeingMuscleRelaxationSubtitle => 'Напряжение/отдых';
 
   @override
-  String get wellbeingSafeTitle => 'Мои моменты';
+  String get wellbeingSafeTitle => 'Сейф';
 
   @override
-  String get wellbeingSafeSubtitle => 'Фото с мыслью, чтобы вернуться позже';
-
-  @override
-  String get wellbeingLeavesTitle => 'Листья на ручье';
-
-  @override
-  String get wellbeingLeavesSubtitle => 'Отпустить мысль';
+  String get wellbeingSafeSubtitle => 'Запиши мысль, чтобы вернуться к ней позже';
 
   @override
   String get wellbeingFreewritingTitle => 'Фрирайтинг';
@@ -735,6 +729,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get wellbeingSleepMusicSubtitle => 'Спокойные звуки перед сном';
+
+  @override
+  String get wellbeingLiveHelpTitle => 'Живая помощь';
+
+  @override
+  String get wellbeingLiveHelpSubtitle => 'Написать оператору, если нужен реальный человек';
+
+  @override
+  String get wellbeingCustomTestsSubtitle => 'Дополнительные опросники, если админ их добавил';
 
   @override
   String get who5HistorySection => 'ИСТОРИЯ ВОЗ-5';
@@ -1607,13 +1610,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get memoryReleaseHint => 'Пиши здесь…';
 
   @override
-  String get memoryReleaseBurnMode => 'Сжечь';
+  String get memoryReleaseEnvelopeMode => 'Запечатать';
 
   @override
   String get memoryReleaseShatterMode => 'Разбить';
 
   @override
-  String get memoryReleaseBurnedResult => 'Сгорело — от текста ничего не осталось.';
+  String get memoryReleaseEnvelopeResult => 'Запечатано и разрезано — от текста ничего не осталось.';
 
   @override
   String get memoryReleaseShatteredResult => 'Разбилось вдребезги — текста больше нет.';
