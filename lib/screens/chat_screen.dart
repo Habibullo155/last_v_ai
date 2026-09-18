@@ -1380,7 +1380,7 @@ class _EmptyState extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Image.asset('assets/images/app_icon.png'),
+              child: Image.asset('assets/images/app_icon.icon.png'),
             ),
             const SizedBox(height: 20),
             Text(
