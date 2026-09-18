@@ -9,7 +9,7 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
-  String get appTitle => 'AI Glass Chat';
+  String get appTitle => 'LOMALU';
 
   @override
   String get commonCancel => 'Отмена';
@@ -89,13 +89,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get forgotPasswordTitle => 'Восстановление пароля';
 
   @override
-  String get forgotPasswordEmailPrompt => 'Укажи email, на который зарегистрирован аккаунт — пришлём код для сброса пароля.';
+  String get forgotPasswordEmailPrompt =>
+      'Укажи email, на который зарегистрирован аккаунт — пришлём код для сброса пароля.';
 
   @override
   String get forgotPasswordSendCode => 'Отправить код';
 
   @override
-  String get forgotPasswordCheckEmail => 'Если такой email зарегистрирован — на него отправлен код для восстановления пароля. Проверь почту (и папку \"Спам\") и введи код ниже вместе с новым паролем.';
+  String get forgotPasswordCheckEmail =>
+      'Если такой email зарегистрирован — на него отправлен код для восстановления пароля. Проверь почту (и папку \"Спам\") и введи код ниже вместе с новым паролем.';
 
   @override
   String get forgotPasswordHaveCode => 'У меня есть код';
@@ -116,13 +118,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get forgotPasswordSubmit => 'Сменить пароль';
 
   @override
-  String get forgotPasswordDone => 'Пароль изменён. Теперь можно войти с новым паролем.';
+  String get forgotPasswordDone =>
+      'Пароль изменён. Теперь можно войти с новым паролем.';
 
   @override
   String get lockScreenTitle => 'Приложение заблокировано';
 
   @override
-  String get lockScreenFailedHint => 'Не удалось подтвердить — попробуй ещё раз.';
+  String get lockScreenFailedHint =>
+      'Не удалось подтвердить — попробуй ещё раз.';
 
   @override
   String get lockScreenPrompt => 'Подтверди личность, чтобы продолжить.';
@@ -137,7 +141,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get verifyEmailTitle => 'Подтверждение почты';
 
   @override
-  String get verifyEmailPromptGeneric => 'Введи код, который пришёл на почту при регистрации.';
+  String get verifyEmailPromptGeneric =>
+      'Введи код, который пришёл на почту при регистрации.';
 
   @override
   String verifyEmailPromptWithEmail(String email) {
@@ -154,7 +159,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get verifyEmailSubmitButton => 'Подтвердить';
 
   @override
-  String get verifyEmailResentMessage => 'Код отправлен повторно — проверь почту.';
+  String get verifyEmailResentMessage =>
+      'Код отправлен повторно — проверь почту.';
 
   @override
   String get settingsTitle => 'Настройки';
@@ -184,7 +190,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsPerformanceModeLabel => 'Экономный режим';
 
   @override
-  String get settingsPerformanceModeDescription => 'Отключает анимированный фон и размытие \"стекла\" по всему приложению. Стоит включить, если телефон слабый, тормозит или перегревается — на большинстве устройств в этом нет необходимости.';
+  String get settingsPerformanceModeDescription =>
+      'Отключает анимированный фон и размытие \"стекла\" по всему приложению. Стоит включить, если телефон слабый, тормозит или перегревается — на большинстве устройств в этом нет необходимости.';
 
   @override
   String get settingsSectionNotifications => 'УВЕДОМЛЕНИЯ';
@@ -202,7 +209,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsVoiceButtonsInChat => 'Голосовые кнопки в чате';
 
   @override
-  String get settingsVoiceAndSpeechRecognition => 'Выбор голоса и распознавание речи';
+  String get settingsVoiceAndSpeechRecognition =>
+      'Выбор голоса и распознавание речи';
 
   @override
   String get settingsSectionSecurity => 'БЕЗОПАСНОСТЬ';
@@ -211,13 +219,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsBiometricLogin => 'Вход по биометрии';
 
   @override
-  String get settingsBiometricNotSupported => 'На этом устройстве не настроена биометрия (Face ID/отпечаток) — включи её в настройках самого устройства, если хочешь использовать здесь.';
+  String get settingsBiometricNotSupported =>
+      'На этом устройстве не настроена биометрия (Face ID/отпечаток) — включи её в настройках самого устройства, если хочешь использовать здесь.';
 
   @override
   String get settingsSectionReminders => 'НАПОМИНАНИЯ';
 
   @override
-  String get settingsReminderDescription => 'Раз в день, в выбранное время (например, когда ты обычно уже дома) — просто предложит заглянуть, если захочется поговорить.';
+  String get settingsReminderDescription =>
+      'Раз в день, в выбранное время (например, когда ты обычно уже дома) — просто предложит заглянуть, если захочется поговорить.';
 
   @override
   String get settingsDailyReminder => 'Ежедневное напоминание';
@@ -226,7 +236,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsReminderTimeLabel => 'Время';
 
   @override
-  String get settingsReminderPermissionDenied => 'Нет разрешения на уведомления — включи их в настройках устройства для этого приложения.';
+  String get settingsReminderPermissionDenied =>
+      'Нет разрешения на уведомления — включи их в настройках устройства для этого приложения.';
 
   @override
   String get settingsSectionAccount => 'АККАУНТ';
@@ -241,7 +252,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsAppVersion => 'Версия 1.0.0';
 
   @override
-  String get settingsModelInfo => 'Модель по умолчанию: gemma4:e2b через локальный Ollama.';
+  String get settingsModelInfo =>
+      'Модель по умолчанию: gemma4:e2b через локальный Ollama.';
 
   @override
   String get settingsSectionDangerZone => 'ОПАСНАЯ ЗОНА';
@@ -253,7 +265,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsDeleteAccountDialogTitle => 'Удалить аккаунт?';
 
   @override
-  String get settingsDeleteAccountWarning => 'Это необратимо: аккаунт, история обращений в поддержку и статистика использования будут удалены полностью. История переписки на этом устройстве останется — она никогда не хранилась на сервере, и её можно удалить отдельно.';
+  String get settingsDeleteAccountWarning =>
+      'Это необратимо: аккаунт, история обращений в поддержку и статистика использования будут удалены полностью. История переписки на этом устройстве останется — она никогда не хранилась на сервере, и её можно удалить отдельно.';
 
   @override
   String get settingsConfirmWithPassword => 'Подтверди паролем';
@@ -262,7 +275,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsDeleteForeverButton => 'Удалить навсегда';
 
   @override
-  String get chatNoSoundsUploaded => 'Пока нет загруженных звуков — админ ещё не добавил их.';
+  String get chatNoSoundsUploaded =>
+      'Пока нет загруженных звуков — админ ещё не добавил их.';
 
   @override
   String get chatStopButton => 'Остановить';
@@ -307,10 +321,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chatCallHelpTitle => 'Позвать человека на помощь?';
 
   @override
-  String get chatCallHelpDescription => 'Подключится врач или специалист из команды. Это не замена экстренной службе — если ситуация требует срочной медицинской помощи, звони в местную службу экстренной помощи.';
+  String get chatCallHelpDescription =>
+      'Подключится врач или специалист из команды. Это не замена экстренной службе — если ситуация требует срочной медицинской помощи, звони в местную службу экстренной помощи.';
 
   @override
-  String get chatPrepareSummaryQuestion => 'Подготовить врачу краткую сводку о разговоре с ИИ (не переписку целиком), чтобы не объяснять всё заново?';
+  String get chatPrepareSummaryQuestion =>
+      'Подготовить врачу краткую сводку о разговоре с ИИ (не переписку целиком), чтобы не объяснять всё заново?';
 
   @override
   String get chatYesPrepareSummary => 'Да, подготовить сводку';
@@ -328,7 +344,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chatNewChatTitle => 'Новый чат';
 
   @override
-  String get chatDisclaimer => 'ИИ может ошибаться. Проверяй важную информацию самостоятельно.';
+  String get chatDisclaimer =>
+      'ИИ может ошибаться. Проверяй важную информацию самостоятельно.';
 
   @override
   String get chatVerifyEmailBanner => 'Подтверди почту';
@@ -391,7 +408,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get aiModeSupportSubtitle => 'Просто побыть рядом в разговоре';
 
   @override
-  String get aiModeSupportOpener => 'Мне сейчас нужна поддержка — просто побудь рядом в разговоре, подбодри меня.';
+  String get aiModeSupportOpener =>
+      'Мне сейчас нужна поддержка — просто побудь рядом в разговоре, подбодри меня.';
 
   @override
   String get aiModeListenTitle => 'Просто выслушать';
@@ -400,7 +418,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get aiModeListenSubtitle => 'Не обязательно сразу советовать';
 
   @override
-  String get aiModeListenOpener => 'Мне просто нужно выговориться — послушай, не обязательно сразу давать советы.';
+  String get aiModeListenOpener =>
+      'Мне просто нужно выговориться — послушай, не обязательно сразу давать советы.';
 
   @override
   String get aiModeBreakupTitle => 'Развод или разрыв отношений';
@@ -409,7 +428,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get aiModeBreakupSubtitle => 'Начать разговор об этом';
 
   @override
-  String get aiModeBreakupOpener => 'У меня сейчас развод или расставание, и мне тяжело с этим справляться. Можешь поддержать меня в разговоре об этом?';
+  String get aiModeBreakupOpener =>
+      'У меня сейчас развод или расставание, и мне тяжело с этим справляться. Можешь поддержать меня в разговоре об этом?';
 
   @override
   String get aiModeGriefTitle => 'Тяжёлая утрата';
@@ -418,7 +438,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get aiModeGriefSubtitle => 'Начать разговор об этом';
 
   @override
-  String get aiModeGriefOpener => 'У меня недавно случилась тяжёлая утрата близкого человека, и мне хочется с кем-то об этом поговорить.';
+  String get aiModeGriefOpener =>
+      'У меня недавно случилась тяжёлая утрата близкого человека, и мне хочется с кем-то об этом поговорить.';
 
   @override
   String get aiModeJobLossTitle => 'Потеря работы или крупные перемены';
@@ -427,16 +448,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get aiModeJobLossSubtitle => 'Начать разговор об этом';
 
   @override
-  String get aiModeJobLossOpener => 'У меня сейчас сложный период — потеряна работа или произошла резкая перемена в жизни, и это тяжело переживать. Можешь поддержать меня в разговоре об этом?';
+  String get aiModeJobLossOpener =>
+      'У меня сейчас сложный период — потеряна работа или произошла резкая перемена в жизни, и это тяжело переживать. Можешь поддержать меня в разговоре об этом?';
 
   @override
   String get aiModeRationalizerTitle => 'Рационализатор';
 
   @override
-  String get aiModeRationalizerSubtitle => 'Разобрать тревожную мысль по методике КПТ';
+  String get aiModeRationalizerSubtitle =>
+      'Разобрать тревожную мысль по методике КПТ';
 
   @override
-  String get aiModeRationalizerOpener => 'У меня есть тревожная мысль, которая не даёт покоя. Помоги мне разобрать её по методике КПТ — задавай мне наводящие вопросы по одному за раз (например, какие есть доказательства этой мысли, что самое худшее может случиться и насколько это вероятно), чтобы посмотреть на ситуацию яснее.';
+  String get aiModeRationalizerOpener =>
+      'У меня есть тревожная мысль, которая не даёт покоя. Помоги мне разобрать её по методике КПТ — задавай мне наводящие вопросы по одному за раз (например, какие есть доказательства этой мысли, что самое худшее может случиться и насколько это вероятно), чтобы посмотреть на ситуацию яснее.';
 
   @override
   String get profileBirthDateHelpText => 'Дата рождения';
@@ -512,7 +536,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileEditTitle => 'Личные данные';
 
   @override
-  String get profileEditHint => 'Все поля необязательны — оставь пустым, чтобы очистить.';
+  String get profileEditHint =>
+      'Все поля необязательны — оставь пустым, чтобы очистить.';
 
   @override
   String get profileEmergencySectionLabel => 'НА ВСЯКИЙ СЛУЧАЙ';
@@ -524,7 +549,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileLogoutButton => 'Выйти';
 
   @override
-  String get profilePasswordTooShort => 'Новый пароль должен быть не короче 8 символов.';
+  String get profilePasswordTooShort =>
+      'Новый пароль должен быть не короче 8 символов.';
 
   @override
   String get profilePasswordsMismatch => 'Пароли не совпадают.';
@@ -602,7 +628,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get crisisResourcesDefaultTitle => 'Если хочется поговорить с кем-то';
 
   @override
-  String get crisisResourcesBody => '• Экстренная психологическая помощь для взрослых и детей в России, круглосуточно и бесплатно: 8-800-100-49-94\n• Детский и подростковый телефон доверия: 8-800-2000-122 (короткий номер — 124)\n\nЕсли ты не в России — поищи местную кризисную линию по запросу «suicide crisis line» и название своей страны; в США и Канаде можно позвонить или написать на 988.';
+  String get crisisResourcesBody =>
+      '• Экстренная психологическая помощь для взрослых и детей в России, круглосуточно и бесплатно: 8-800-100-49-94\n• Детский и подростковый телефон доверия: 8-800-2000-122 (короткий номер — 124)\n\nЕсли ты не в России — поищи местную кризисную линию по запросу «suicide crisis line» и название своей страны; в США и Канаде можно позвонить или написать на 988.';
 
   @override
   String get navChat => 'Чат';
@@ -620,7 +647,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sleepMusicTitle => 'Музыка для сна';
 
   @override
-  String get sleepMusicNoneUploaded => 'Пока нет загруженной музыки — админ ещё не добавил её.';
+  String get sleepMusicNoneUploaded =>
+      'Пока нет загруженной музыки — админ ещё не добавил её.';
 
   @override
   String get customTestListTitle => 'Тесты';
@@ -644,10 +672,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get who5Q3 => 'Я чувствую себя активной(-ым) и энергичной(-ым)';
 
   @override
-  String get who5Q4 => 'Я просыпаюсь и чувствую себя свежей(-им) и отдохнувшей(-им)';
+  String get who5Q4 =>
+      'Я просыпаюсь и чувствую себя свежей(-им) и отдохнувшей(-им)';
 
   @override
-  String get who5Q5 => 'Каждый день со мной происходят вещи, представляющие для меня интерес';
+  String get who5Q5 =>
+      'Каждый день со мной происходят вещи, представляющие для меня интерес';
 
   @override
   String get who5ScaleAllTime => 'Всё время';
@@ -668,7 +698,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get who5ScaleNever => 'Никогда';
 
   @override
-  String get wellbeingSaveFailed => 'Не удалось сохранить результат локально. Можно пройти ещё раз.';
+  String get wellbeingSaveFailed =>
+      'Не удалось сохранить результат локально. Можно пройти ещё раз.';
 
   @override
   String get wellbeingToolsSection => 'ИНСТРУМЕНТЫ';
@@ -701,7 +732,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get wellbeingSafeTitle => 'Сейф';
 
   @override
-  String get wellbeingSafeSubtitle => 'Запиши мысль, чтобы вернуться к ней позже';
+  String get wellbeingSafeSubtitle =>
+      'Запиши мысль, чтобы вернуться к ней позже';
 
   @override
   String get wellbeingFreewritingTitle => 'Фрирайтинг';
@@ -713,7 +745,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get wellbeingQuestionnairesSection => 'ОПРОСНИКИ';
 
   @override
-  String get wellbeingQuestionnairesDisclaimer => 'Официальные, свободно распространяемые инструменты. Не диагностика — только скрининг для себя.';
+  String get wellbeingQuestionnairesDisclaimer =>
+      'Официальные, свободно распространяемые инструменты. Не диагностика — только скрининг для себя.';
 
   @override
   String get who5CardTitle => 'ВОЗ-5 — общее самочувствие';
@@ -722,7 +755,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get wellbeingReleaseTitle => 'Отпустить';
 
   @override
-  String get wellbeingReleaseSubtitle => 'Написать тяжёлую мысль и сжечь/разбить её';
+  String get wellbeingReleaseSubtitle =>
+      'Написать тяжёлую мысль и сжечь/разбить её';
 
   @override
   String get wellbeingSleepMusicTitle => 'Музыка для сна';
@@ -734,16 +768,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get wellbeingLiveHelpTitle => 'Живая помощь';
 
   @override
-  String get wellbeingLiveHelpSubtitle => 'Написать оператору, если нужен реальный человек';
+  String get wellbeingLiveHelpSubtitle =>
+      'Написать оператору, если нужен реальный человек';
 
   @override
-  String get wellbeingCustomTestsSubtitle => 'Дополнительные опросники, если админ их добавил';
+  String get wellbeingCustomTestsSubtitle =>
+      'Дополнительные опросники, если админ их добавил';
 
   @override
   String get who5HistorySection => 'ИСТОРИЯ ВОЗ-5';
 
   @override
-  String get who5Instructions => 'Отметь, что ближе всего к тому, как ты себя чувствовал(а) последние две недели.';
+  String get who5Instructions =>
+      'Отметь, что ближе всего к тому, как ты себя чувствовал(а) последние две недели.';
 
   @override
   String get commonBack => 'Назад';
@@ -761,10 +798,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get who5ResultNormal => 'Показатель в пределах нормы';
 
   @override
-  String get who5DescriptionLow => 'Это не диагноз. По методике ВОЗ балл ниже 50% — повод обратиться к специалисту для более точной оценки состояния, особенно если так продолжается больше двух недель.';
+  String get who5DescriptionLow =>
+      'Это не диагноз. По методике ВОЗ балл ниже 50% — повод обратиться к специалисту для более точной оценки состояния, особенно если так продолжается больше двух недель.';
 
   @override
-  String get who5DescriptionNormal => 'Официальная методика ВОЗ считает такой результат признаком нормального психологического благополучия за последние две недели.';
+  String get who5DescriptionNormal =>
+      'Официальная методика ВОЗ считает такой результат признаком нормального психологического благополучия за последние две недели.';
 
   @override
   String who5DiscussPrompt(String score, String extra) {
@@ -772,7 +811,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get who5RecommendSpecialist => ' — методика рекомендует обсудить со специалистом';
+  String get who5RecommendSpecialist =>
+      ' — методика рекомендует обсудить со специалистом';
 
   @override
   String get who5DiscussButton => 'Обсудить с ИИ';
@@ -781,7 +821,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get who5BackToHistory => 'К истории';
 
   @override
-  String get wellbeingAiDisclaimer => 'ИИ и автоматические подсчёты могут ошибаться. Этот опросник — инструмент для самонаблюдения, а не диагностика. Для точной оценки психологического состояния обратись к врачу или психотерапевту.';
+  String get wellbeingAiDisclaimer =>
+      'ИИ и автоматические подсчёты могут ошибаться. Этот опросник — инструмент для самонаблюдения, а не диагностика. Для точной оценки психологического состояния обратись к врачу или психотерапевту.';
 
   @override
   String get wellbeingBreathingSubtitle => '4 фазы по 4 сек';
@@ -808,10 +849,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get asrsTileSubtitle => '6 вопросов, 1-2 минуты';
 
   @override
-  String get who5LicenseAttribution => 'Опросник: World Health Organization-Five Well-Being Index (WHO-5), © World Health Organization 2024, лицензия CC BY-NC-SA 3.0 IGO. Использование ВОЗ этого приложения не подразумевается.';
+  String get who5LicenseAttribution =>
+      'Опросник: World Health Organization-Five Well-Being Index (WHO-5), © World Health Organization 2024, лицензия CC BY-NC-SA 3.0 IGO. Использование ВОЗ этого приложения не подразумевается.';
 
   @override
-  String get helpNoCheckinsSnack => 'Пока нет пройденных опросников — их можно пройти в разделе «Самочувствие».';
+  String get helpNoCheckinsSnack =>
+      'Пока нет пройденных опросников — их можно пройти в разделе «Самочувствие».';
 
   @override
   String get helpPickResultTitle => 'Какой результат отправить?';
@@ -825,7 +868,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get helpWeekSummaryHeader => 'Результаты опросников за последние 7 дней:';
+  String get helpWeekSummaryHeader =>
+      'Результаты опросников за последние 7 дней:';
 
   @override
   String helpWeekLineWho5(String date, int percent) {
@@ -833,7 +877,12 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String helpWeekLinePhq9(String date, int score, String severity, String risk) {
+  String helpWeekLinePhq9(
+    String date,
+    int score,
+    String severity,
+    String risk,
+  ) {
     return '• PHQ-9 ($date): $score/27, «$severity»$risk';
   }
 
@@ -856,12 +905,18 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String helpSinglePhq9Result(String date, int score, String severity, String risk) {
+  String helpSinglePhq9Result(
+    String date,
+    int score,
+    String severity,
+    String risk,
+  ) {
     return 'Результат опросника PHQ-9 ($date): $score/27, методика описывает это как «$severity»$risk.';
   }
 
   @override
-  String get helpPhq9RiskNote => '. Отмечены мысли о самоповреждении в пункте 9';
+  String get helpPhq9RiskNote =>
+      '. Отмечены мысли о самоповреждении в пункте 9';
 
   @override
   String helpSingleGad7Result(String date, int score, String severity) {
@@ -891,7 +946,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get helpFinishButton => 'Завершить';
 
   @override
-  String get helpRequestSentHint => 'Заявка отправлена — сообщение появится, как только кто-то подключится.';
+  String get helpRequestSentHint =>
+      'Заявка отправлена — сообщение появится, как только кто-то подключится.';
 
   @override
   String get helpWriteWhatHappenedHint => 'Напиши, что случилось.';
@@ -900,7 +956,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get helpMessageHint => 'Написать сообщение…';
 
   @override
-  String get helpChatContextHeader => 'Что происходило в чате с ИИ до этого обращения';
+  String get helpChatContextHeader =>
+      'Что происходило в чате с ИИ до этого обращения';
 
   @override
   String get helpYourRatingTitle => 'Твоя оценка';
@@ -915,13 +972,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get commonSend => 'Отправить';
 
   @override
-  String get phq9Q1 => 'Вас мало интересовали дела или ничто не доставляло удовольствия';
+  String get phq9Q1 =>
+      'Вас мало интересовали дела или ничто не доставляло удовольствия';
 
   @override
-  String get phq9Q2 => 'Вы испытывали чувство подавленности, депрессии или безнадёжности';
+  String get phq9Q2 =>
+      'Вы испытывали чувство подавленности, депрессии или безнадёжности';
 
   @override
-  String get phq9Q3 => 'У вас были проблемы с засыпанием или сном, или вы слишком много спали';
+  String get phq9Q3 =>
+      'У вас были проблемы с засыпанием или сном, или вы слишком много спали';
 
   @override
   String get phq9Q4 => 'Вы чувствовали усталость или недостаток энергии';
@@ -930,22 +990,27 @@ class AppLocalizationsRu extends AppLocalizations {
   String get phq9Q5 => 'Плохой аппетит или переедание';
 
   @override
-  String get phq9Q6 => 'Вы испытывали чувство неудовлетворённости собой — или думали о том, что вы неудачник, или что подводите себя или свою семью';
+  String get phq9Q6 =>
+      'Вы испытывали чувство неудовлетворённости собой — или думали о том, что вы неудачник, или что подводите себя или свою семью';
 
   @override
-  String get phq9Q7 => 'Трудности с концентрацией внимания, например, когда читаете газету или смотрите телевизор';
+  String get phq9Q7 =>
+      'Трудности с концентрацией внимания, например, когда читаете газету или смотрите телевизор';
 
   @override
-  String get phq9Q8 => 'Вы двигаетесь или говорите настолько медленно, что другие люди могли это заметить. Или наоборот — вы настолько беспокойны или суетливы, что двигаетесь гораздо больше обычного';
+  String get phq9Q8 =>
+      'Вы двигаетесь или говорите настолько медленно, что другие люди могли это заметить. Или наоборот — вы настолько беспокойны или суетливы, что двигаетесь гораздо больше обычного';
 
   @override
-  String get phq9Q9 => 'Мысли о том, что вам было бы лучше умереть, или о том, чтобы навредить себе каким-либо образом';
+  String get phq9Q9 =>
+      'Мысли о том, что вам было бы лучше умереть, или о том, чтобы навредить себе каким-либо образом';
 
   @override
   String get gad7Q1 => 'Чувство нервозности, тревоги или напряжённости';
 
   @override
-  String get gad7Q2 => 'Неспособность остановить или контролировать беспокойство';
+  String get gad7Q2 =>
+      'Неспособность остановить или контролировать беспокойство';
 
   @override
   String get gad7Q3 => 'Слишком сильное беспокойство о разных вещах';
@@ -960,7 +1025,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get gad7Q6 => 'Лёгкая раздражительность или вспыльчивость';
 
   @override
-  String get gad7Q7 => 'Чувство страха, как будто может случиться что-то ужасное';
+  String get gad7Q7 =>
+      'Чувство страха, как будто может случиться что-то ужасное';
 
   @override
   String get pfizerScaleNotAtAll => 'Совсем не беспокоило';
@@ -993,13 +1059,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get phq9IntroTitle => 'Опросник выраженности депрессивных симптомов';
 
   @override
-  String get phq9IntroBody => 'Официальный, широко используемый в первичной медицинской помощи скрининговый инструмент (Patient Health Questionnaire-9). 9 вопросов, 2-3 минуты. Это не диагностика — результат показывает выраженность симптомов за последние 2 недели, а не медицинское заключение. Проходишь и видишь результат только ты — на сервер ничего не отправляется.';
+  String get phq9IntroBody =>
+      'Официальный, широко используемый в первичной медицинской помощи скрининговый инструмент (Patient Health Questionnaire-9). 9 вопросов, 2-3 минуты. Это не диагностика — результат показывает выраженность симптомов за последние 2 недели, а не медицинское заключение. Проходишь и видишь результат только ты — на сервер ничего не отправляется.';
 
   @override
   String get gad7IntroTitle => 'Опросник выраженности тревожных симптомов';
 
   @override
-  String get gad7IntroBody => 'Официальный, широко используемый в первичной медицинской помощи скрининговый инструмент (Generalized Anxiety Disorder-7). 7 вопросов, 1-2 минуты. Это не диагностика — результат показывает выраженность симптомов за последние 2 недели, а не медицинское заключение. Проходишь и видишь результат только ты — на сервер ничего не отправляется.';
+  String get gad7IntroBody =>
+      'Официальный, широко используемый в первичной медицинской помощи скрининговый инструмент (Generalized Anxiety Disorder-7). 7 вопросов, 1-2 минуты. Это не диагностика — результат показывает выраженность симптомов за последние 2 недели, а не медицинское заключение. Проходишь и видишь результат только ты — на сервер ничего не отправляется.';
 
   @override
   String get checkinTakeTestButton => 'Пройти опросник';
@@ -1011,7 +1079,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get checkinHistorySection => 'ИСТОРИЯ';
 
   @override
-  String get pfizerInstructions => 'За последние 2 недели, как часто вас беспокоили следующие проблемы?';
+  String get pfizerInstructions =>
+      'За последние 2 недели, как часто вас беспокоили следующие проблемы?';
 
   @override
   String get checkinIfHardRightNow => 'Если тебе сейчас тяжело';
@@ -1022,13 +1091,16 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get pfizerSuggestAssessment => 'При таком результате методика рекомендует обсудить его со специалистом — это скрининг, не диагноз.';
+  String get pfizerSuggestAssessment =>
+      'При таком результате методика рекомендует обсудить его со специалистом — это скрининг, не диагноз.';
 
   @override
-  String get pfizerNoAssessmentNeeded => 'Официальная методика не считает такой результат поводом для дополнительной оценки — но если тебе тяжело, это не отменяется этой цифрой.';
+  String get pfizerNoAssessmentNeeded =>
+      'Официальная методика не считает такой результат поводом для дополнительной оценки — но если тебе тяжело, это не отменяется этой цифрой.';
 
   @override
-  String get phq9RiskNoteDiscuss => ' В пункте про мысли о самоповреждении был отмечен положительный ответ.';
+  String get phq9RiskNoteDiscuss =>
+      ' В пункте про мысли о самоповреждении был отмечен положительный ответ.';
 
   @override
   String phq9DiscussPrompt(int score, String severity, String riskNote) {
@@ -1049,10 +1121,12 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get purchaseAdNotReadyYet => 'Реклама пока недоступна, попробуй чуть позже.';
+  String get purchaseAdNotReadyYet =>
+      'Реклама пока недоступна, попробуй чуть позже.';
 
   @override
-  String get purchaseCheckoutOpenFailed => 'Не удалось открыть страницу оплаты.';
+  String get purchaseCheckoutOpenFailed =>
+      'Не удалось открыть страницу оплаты.';
 
   @override
   String get purchaseTitle => 'Подписка';
@@ -1064,10 +1138,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get purchaseNoPlansConfigured => 'Тарифы пока не настроены.';
 
   @override
-  String get purchaseFreeRequestsGone => 'Закончились бесплатные запросы на сегодня?';
+  String get purchaseFreeRequestsGone =>
+      'Закончились бесплатные запросы на сегодня?';
 
   @override
-  String get purchaseTelegramPitch => 'Подпишись на наш Telegram-канал — получишь ещё запросов на сегодня, каждый день, пока подписан.';
+  String get purchaseTelegramPitch =>
+      'Подпишись на наш Telegram-канал — получишь ещё запросов на сегодня, каждый день, пока подписан.';
 
   @override
   String get purchaseTelegramLinked => 'Telegram привязан';
@@ -1122,7 +1198,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get purchaseTelegramDialogTitle => 'Привязка Telegram';
 
   @override
-  String get purchaseTelegramDialogBody => 'Открой бота и отправь ему этот код в личные сообщения:';
+  String get purchaseTelegramDialogBody =>
+      'Открой бота и отправь ему этот код в личные сообщения:';
 
   @override
   String get purchaseOpenBotButton => 'Открыть бота';
@@ -1131,22 +1208,26 @@ class AppLocalizationsRu extends AppLocalizations {
   String get voiceSettingsTitle => 'Голос';
 
   @override
-  String get voiceSettingsDisabledByAdmin => 'Голосовые функции временно выключены администратором.';
+  String get voiceSettingsDisabledByAdmin =>
+      'Голосовые функции временно выключены администратором.';
 
   @override
   String get voiceSettingsUseVoice => 'Использовать голос';
 
   @override
-  String get voiceSettingsHiddenHint => 'Микрофон и озвучка ответов скрыты. Включи переключатель выше, чтобы вернуть их.';
+  String get voiceSettingsHiddenHint =>
+      'Микрофон и озвучка ответов скрыты. Включи переключатель выше, чтобы вернуть их.';
 
   @override
   String get voiceSettingsSpeechRecognitionSection => 'РАСПОЗНАВАНИЕ РЕЧИ';
 
   @override
-  String get voiceSettingsMicAvailable => 'Микрофон доступен — кнопка появится рядом с полем ввода';
+  String get voiceSettingsMicAvailable =>
+      'Микрофон доступен — кнопка появится рядом с полем ввода';
 
   @override
-  String get voiceSettingsMicUnavailable => 'Микрофон недоступен на этом устройстве (нет разрешения или движка распознавания)';
+  String get voiceSettingsMicUnavailable =>
+      'Микрофон недоступен на этом устройстве (нет разрешения или движка распознавания)';
 
   @override
   String get voiceSettingsAutoReadSection => 'ОЗВУЧКА ОТВЕТОВ';
@@ -1158,10 +1239,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get voiceSettingsVoiceSection => 'ГОЛОС';
 
   @override
-  String get voiceSettingsVoiceInstructions => 'Прослушай каждый и выбери тот, что звучит для тебя спокойнее — на слух это надёжнее, чем описание.';
+  String get voiceSettingsVoiceInstructions =>
+      'Прослушай каждый и выбери тот, что звучит для тебя спокойнее — на слух это надёжнее, чем описание.';
 
   @override
-  String get voiceSettingsNoVoicesLoaded => 'Голоса ещё не загрузились или недоступны на этом устройстве.';
+  String get voiceSettingsNoVoicesLoaded =>
+      'Голоса ещё не загрузились или недоступны на этом устройстве.';
 
   @override
   String get voiceSettingsFemaleSection => 'ЖЕНСКИЙ ГОЛОС';
@@ -1173,7 +1256,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get voiceSettingsOtherSection => 'ДРУГИЕ ВАРИАНТЫ';
 
   @override
-  String get voiceSettingsCouldNotClassify => 'Не удалось определить голос по имени — просто послушай и выбери.';
+  String get voiceSettingsCouldNotClassify =>
+      'Не удалось определить голос по имени — просто послушай и выбери.';
 
   @override
   String get voiceSettingsPreviewTooltip => 'Прослушать';
@@ -1215,7 +1299,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get operatorIssueWarningTitle => 'Выдать выговор';
 
   @override
-  String get operatorWarningReasonHint => 'За что — эта причина сохранится в истории';
+  String get operatorWarningReasonHint =>
+      'За что — эта причина сохранится в истории';
 
   @override
   String get operatorIssueButton => 'Выдать';
@@ -1281,22 +1366,28 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get asrsQ1 => 'Как часто вам трудно завершить последние детали проекта, когда основная сложная часть уже сделана?';
+  String get asrsQ1 =>
+      'Как часто вам трудно завершить последние детали проекта, когда основная сложная часть уже сделана?';
 
   @override
-  String get asrsQ2 => 'Как часто у вас возникают сложности с тем, чтобы навести порядок, когда задача требует организованности?';
+  String get asrsQ2 =>
+      'Как часто у вас возникают сложности с тем, чтобы навести порядок, когда задача требует организованности?';
 
   @override
-  String get asrsQ3 => 'Как часто у вас возникают проблемы с тем, чтобы не забыть о встречах или обязательствах?';
+  String get asrsQ3 =>
+      'Как часто у вас возникают проблемы с тем, чтобы не забыть о встречах или обязательствах?';
 
   @override
-  String get asrsQ4 => 'Когда задача требует много размышлений, как часто вы избегаете её или откладываете начало?';
+  String get asrsQ4 =>
+      'Когда задача требует много размышлений, как часто вы избегаете её или откладываете начало?';
 
   @override
-  String get asrsQ5 => 'Как часто вы ёрзаете или суетитесь руками или ногами, когда приходится долго сидеть?';
+  String get asrsQ5 =>
+      'Как часто вы ёрзаете или суетитесь руками или ногами, когда приходится долго сидеть?';
 
   @override
-  String get asrsQ6 => 'Как часто вы чувствуете себя чрезмерно активным(ой) и вынужденным(ой) что-то делать, будто вас подгоняет мотор?';
+  String get asrsQ6 =>
+      'Как часто вы чувствуете себя чрезмерно активным(ой) и вынужденным(ой) что-то делать, будто вас подгоняет мотор?';
 
   @override
   String get asrsScaleNever => 'Никогда';
@@ -1317,19 +1408,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String get asrsIntroTitle => 'Скрининг симптомов СДВГ у взрослых';
 
   @override
-  String get asrsIntroBody => 'Официальный опросник ВОЗ (Adult ADHD Self-Report Scale, короткая версия из 6 вопросов). 1-2 минуты. Это скрининг, не диагностика — положительный результат означает, что стоит обсудить это со специалистом, не то, что диагноз уже есть. Проходишь и видишь результат только ты — на сервер ничего не отправляется.';
+  String get asrsIntroBody =>
+      'Официальный опросник ВОЗ (Adult ADHD Self-Report Scale, короткая версия из 6 вопросов). 1-2 минуты. Это скрининг, не диагностика — положительный результат означает, что стоит обсудить это со специалистом, не то, что диагноз уже есть. Проходишь и видишь результат только ты — на сервер ничего не отправляется.';
 
   @override
-  String get asrsInstructions => 'За последние 6 месяцев, как часто это происходило?';
+  String get asrsInstructions =>
+      'За последние 6 месяцев, как часто это происходило?';
 
   @override
   String get asrsShadedCountSuffix => 'из 6 в зоне значимости';
 
   @override
-  String get asrsSuggestAssessment => 'Официальный порог методики (4 из 6) достигнут — она рекомендует обсудить это со специалистом. Это скрининг, не диагноз.';
+  String get asrsSuggestAssessment =>
+      'Официальный порог методики (4 из 6) достигнут — она рекомендует обсудить это со специалистом. Это скрининг, не диагноз.';
 
   @override
-  String get asrsNoAssessmentNeeded => 'Официальная методика не считает такой результат поводом для дополнительной оценки — но если что-то из этого тебя беспокоит, это можно обсудить со специалистом в любом случае.';
+  String get asrsNoAssessmentNeeded =>
+      'Официальная методика не считает такой результат поводом для дополнительной оценки — но если что-то из этого тебя беспокоит, это можно обсудить со специалистом в любом случае.';
 
   @override
   String asrsDiscussPrompt(int shaded, String extra) {
@@ -1337,13 +1432,16 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get authBiometricNotConfigured => 'На этом устройстве не настроена биометрия (Face ID/отпечаток) — сначала включи её в настройках самого устройства.';
+  String get authBiometricNotConfigured =>
+      'На этом устройстве не настроена биометрия (Face ID/отпечаток) — сначала включи её в настройках самого устройства.';
 
   @override
-  String get authBiometricConfirmReason => 'Подтверди, чтобы включить вход по биометрии';
+  String get authBiometricConfirmReason =>
+      'Подтверди, чтобы включить вход по биометрии';
 
   @override
-  String get authBiometricConfirmFailed => 'Не удалось подтвердить — попробуй ещё раз.';
+  String get authBiometricConfirmFailed =>
+      'Не удалось подтвердить — попробуй ещё раз.';
 
   @override
   String authUnexpectedErrorGeneric(String error) {
@@ -1375,7 +1473,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messageEditDialogTitle => 'Редактировать сообщение';
 
   @override
-  String get messageEditDialogWarning => 'Ответ модели на это сообщение и всё, что было после, будет удалено — модель ответит заново на исправленный текст.';
+  String get messageEditDialogWarning =>
+      'Ответ модели на это сообщение и всё, что было после, будет удалено — модель ответит заново на исправленный текст.';
 
   @override
   String get messageRetryButton => 'Переспросить';
@@ -1420,7 +1519,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get freewritingTitle => 'Фрирайтинг';
 
   @override
-  String get freewritingIntro => 'Пиши непрерывно всё, что приходит в голову — без цензуры, без исправления ошибок, не останавливаясь. Это не для красивого текста, а чтобы разгрузить голову.';
+  String get freewritingIntro =>
+      'Пиши непрерывно всё, что приходит в голову — без цензуры, без исправления ошибок, не останавливаясь. Это не для красивого текста, а чтобы разгрузить голову.';
 
   @override
   String get freewritingHowManyMinutes => 'Сколько минут?';
@@ -1440,7 +1540,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get freewritingHint => 'Пиши, не останавливаясь…';
 
   @override
-  String get freewritingTimeUpBody => 'Время вышло. Можешь оставить текст на экране и перечитать, или сразу стереть — как удобнее.';
+  String get freewritingTimeUpBody =>
+      'Время вышло. Можешь оставить текст на экране и перечитать, или сразу стереть — как удобнее.';
 
   @override
   String get freewritingEmptyPlaceholder => '(пусто)';
@@ -1455,7 +1556,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get groundingSightSense => 'Зрение';
 
   @override
-  String get groundingSightPrompt => 'Назови 5 вещей, которые видишь вокруг себя';
+  String get groundingSightPrompt =>
+      'Назови 5 вещей, которые видишь вокруг себя';
 
   @override
   String get groundingTouchSense => 'Осязание';
@@ -1467,7 +1569,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get groundingHearingSense => 'Слух';
 
   @override
-  String get groundingHearingPrompt => 'Назови 3 звука, которые слышишь прямо сейчас';
+  String get groundingHearingPrompt =>
+      'Назови 3 звука, которые слышишь прямо сейчас';
 
   @override
   String get groundingSmellSense => 'Обоняние';
@@ -1479,13 +1582,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get groundingTasteSense => 'Вкус';
 
   @override
-  String get groundingTastePrompt => 'Назови 1 вкус, который чувствуешь или помнишь';
+  String get groundingTastePrompt =>
+      'Назови 1 вкус, который чувствуешь или помнишь';
 
   @override
   String get groundingTitle => 'Техника заземления';
 
   @override
-  String get groundingListeningHint => 'Слушаю — переключусь сам, когда договоришь';
+  String get groundingListeningHint =>
+      'Слушаю — переключусь сам, когда договоришь';
 
   @override
   String get groundingNextButton => 'Дальше';
@@ -1494,7 +1599,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get groundingDoneSubtitle => 'Можно повторить в любой момент.';
 
   @override
-  String get groundingIfAnxietyPersists => 'Если тревога не отступает — это нормально, что одной техники может быть недостаточно. Можно поговорить с близким человеком или специалистом.';
+  String get groundingIfAnxietyPersists =>
+      'Если тревога не отступает — это нормально, что одной техники может быть недостаточно. Можно поговорить с близким человеком или специалистом.';
 
   @override
   String get groundingStartOverButton => 'Начать заново';
@@ -1598,13 +1704,16 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get chatResponseTruncated => '\n\n⚠️ Ответ обрезался — соединение закрылось раньше, чем модель закончила. Попробуй ещё раз.';
+  String get chatResponseTruncated =>
+      '\n\n⚠️ Ответ обрезался — соединение закрылось раньше, чем модель закончила. Попробуй ещё раз.';
 
   @override
-  String get chatDoctorSummaryPrompt => 'Кратко, в 2-3 предложениях, от третьего лица опиши врачу состояние человека на основе этого разговора — что беспокоит, как давно, что уже обсуждалось. Пиши для врача как для коллеги, не для самого человека, и не используй обращение \"ты\"/\"вы\".';
+  String get chatDoctorSummaryPrompt =>
+      'Кратко, в 2-3 предложениях, от третьего лица опиши врачу состояние человека на основе этого разговора — что беспокоит, как давно, что уже обсуждалось. Пиши для врача как для коллеги, не для самого человека, и не используй обращение \"ты\"/\"вы\".';
 
   @override
-  String get memoryReleaseIntro => 'Напиши то, что тяжело держать в себе — тяжёлую мысль, обиду, воспоминание. Никто это не увидит и не сохранит — после того, как отпустишь, текст исчезнет насовсем, без возможности вернуть.';
+  String get memoryReleaseIntro =>
+      'Напиши то, что тяжело держать в себе — тяжёлую мысль, обиду, воспоминание. Никто это не увидит и не сохранит — после того, как отпустишь, текст исчезнет насовсем, без возможности вернуть.';
 
   @override
   String get memoryReleaseHint => 'Пиши здесь…';
@@ -1616,10 +1725,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get memoryReleaseShatterMode => 'Разбить';
 
   @override
-  String get memoryReleaseEnvelopeResult => 'Запечатано и разрезано — от текста ничего не осталось.';
+  String get memoryReleaseEnvelopeResult =>
+      'Запечатано и разрезано — от текста ничего не осталось.';
 
   @override
-  String get memoryReleaseShatteredResult => 'Разбилось вдребезги — текста больше нет.';
+  String get memoryReleaseShatteredResult =>
+      'Разбилось вдребезги — текста больше нет.';
 
   @override
   String get memoryReleaseWriteMoreButton => 'Написать ещё';
@@ -1658,7 +1769,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get myHelpCallPersonTitle => 'Позвать человека на помощь';
 
   @override
-  String get myHelpCallPersonDescription => 'Подключится врач или специалист из команды. Это не замена экстренной службе — если ситуация требует срочной медицинской помощи, звони в местную службу экстренной помощи или обратись в скорую напрямую.';
+  String get myHelpCallPersonDescription =>
+      'Подключится врач или специалист из команды. Это не замена экстренной службе — если ситуация требует срочной медицинской помощи, звони в местную службу экстренной помощи или обратись в скорую напрямую.';
 
   @override
   String get myHelpDescribeHint => 'Коротко, что случилось (необязательно)';
@@ -1711,13 +1823,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reportSentTitle => 'Жалоба отправлена';
 
   @override
-  String get reportSentBody => 'Спасибо — мы посмотрим этот ответ. Текст вопроса и ответа передан вместе с жалобой, чтобы можно было сразу разобраться, не переспрашивая.';
+  String get reportSentBody =>
+      'Спасибо — мы посмотрим этот ответ. Текст вопроса и ответа передан вместе с жалобой, чтобы можно было сразу разобраться, не переспрашивая.';
 
   @override
   String get reportDialogTitle => 'Пожаловаться на ответ';
 
   @override
-  String get reportDialogBody => 'Вопрос и ответ, на который жалуешься, будут переданы вместе с жалобой — иначе не получится разобраться, что именно пошло не так.';
+  String get reportDialogBody =>
+      'Вопрос и ответ, на который жалуешься, будут переданы вместе с жалобой — иначе не получится разобраться, что именно пошло не так.';
 
   @override
   String get reportReasonHint => 'Что не так с этим ответом? (необязательно)';
@@ -1744,10 +1858,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get helpLoadRequestsFailed => 'Не удалось загрузить заявки.';
 
   @override
-  String get helpLoadActiveSessionsFailed => 'Не удалось загрузить активные обращения.';
+  String get helpLoadActiveSessionsFailed =>
+      'Не удалось загрузить активные обращения.';
 
   @override
-  String get helpRequestAlreadyTaken => 'Эту заявку уже забрал другой оператор.';
+  String get helpRequestAlreadyTaken =>
+      'Эту заявку уже забрал другой оператор.';
 
   @override
   String get helpAcceptRequestFailed => 'Не удалось принять заявку.';
@@ -1771,7 +1887,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get breathingStopButton => 'Остановить';
 
   @override
-  String get breathingDisclaimer => 'Простая техника саморегуляции дыхания — не заменяет профессиональную помощь. Если чувствуешь головокружение — останови упражнение и дыши в привычном темпе.';
+  String get breathingDisclaimer =>
+      'Простая техника саморегуляции дыхания — не заменяет профессиональную помощь. Если чувствуешь головокружение — останови упражнение и дыши в привычном темпе.';
 
   @override
   String get themeVariantViolet => 'Фиолетовый';
@@ -1810,7 +1927,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get customTestsSubmitAnswersFailed => 'Не удалось отправить ответы.';
 
   @override
-  String get customTestsLoadHistoryFailed => 'Не удалось загрузить историю тестов.';
+  String get customTestsLoadHistoryFailed =>
+      'Не удалось загрузить историю тестов.';
 
   @override
   String get customTestsCreateFailed => 'Не удалось создать тест.';
@@ -1822,7 +1940,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get customTestsDeleteFailed => 'Не удалось удалить тест.';
 
   @override
-  String get safeContainmentIntro => 'Если мысль или чувство слишком сильные, но сейчас не время с ними разбираться — напиши и убери в сейф. Не пропадёт навсегда, просто подождёт, пока будет время вернуться.';
+  String get safeContainmentIntro =>
+      'Если мысль или чувство слишком сильные, но сейчас не время с ними разбираться — напиши и убери в сейф. Не пропадёт навсегда, просто подождёт, пока будет время вернуться.';
 
   @override
   String get safeContainmentHint => 'Что нужно убрать на потом?';
@@ -1831,7 +1950,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get safeContainmentPutAwayButton => 'Убрать в сейф';
 
   @override
-  String get safeContainmentDoneBody => 'Надёжно спрятано. Оно больше не будет отвлекать прямо сейчас — вернёмся к этому, когда будешь готов(а).';
+  String get safeContainmentDoneBody =>
+      'Надёжно спрятано. Оно больше не будет отвлекать прямо сейчас — вернёмся к этому, когда будешь готов(а).';
 
   @override
   String get voicePreviewPhrase => 'Привет! Так звучит этот голос.';
@@ -1877,70 +1997,90 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get reminderPrompt1 => 'Как прошёл день? Если хочется поговорить — я здесь.';
+  String get reminderPrompt1 =>
+      'Как прошёл день? Если хочется поговорить — я здесь.';
 
   @override
   String get reminderPrompt2 => 'Небольшая пауза — как ты сейчас, в целом?';
 
   @override
-  String get reminderPrompt3 => 'Если накопилось что-то, о чём хочется рассказать — самое время.';
+  String get reminderPrompt3 =>
+      'Если накопилось что-то, о чём хочется рассказать — самое время.';
 
   @override
-  String get reminderPrompt4 => 'Как настроение сегодня? Загляни, если нужно выговориться.';
+  String get reminderPrompt4 =>
+      'Как настроение сегодня? Загляни, если нужно выговориться.';
 
   @override
-  String get reminderPrompt5 => 'Просто напоминаю, что можно зайти и поделиться, как прошёл день.';
+  String get reminderPrompt5 =>
+      'Просто напоминаю, что можно зайти и поделиться, как прошёл день.';
 
   @override
-  String get reminderPrompt6 => 'Если весь день был плотным — пара минут на выдох тебе не помешает.';
+  String get reminderPrompt6 =>
+      'Если весь день был плотным — пара минут на выдох тебе не помешает.';
 
   @override
-  String get reminderPrompt7 => 'Иногда полезно просто проговорить мысли вслух. Я слушаю.';
+  String get reminderPrompt7 =>
+      'Иногда полезно просто проговорить мысли вслух. Я слушаю.';
 
   @override
-  String get reminderPrompt8 => 'Как твоё тело сегодня — не зажаты плечи, не сжаты кулаки?';
+  String get reminderPrompt8 =>
+      'Как твоё тело сегодня — не зажаты плечи, не сжаты кулаки?';
 
   @override
-  String get reminderPrompt9 => 'Если тревожно — попробуй короткое дыхательное упражнение, оно есть в разделе Забота.';
+  String get reminderPrompt9 =>
+      'Если тревожно — попробуй короткое дыхательное упражнение, оно есть в разделе Забота.';
 
   @override
-  String get reminderPrompt10 => 'Перед сном иногда помогает музыка для сна — загляни, если сложно расслабиться.';
+  String get reminderPrompt10 =>
+      'Перед сном иногда помогает музыка для сна — загляни, если сложно расслабиться.';
 
   @override
-  String get reminderPrompt11 => 'Мышцы часто напрягаются незаметно за день. Есть упражнение, которое помогает их отпустить.';
+  String get reminderPrompt11 =>
+      'Мышцы часто напрягаются незаметно за день. Есть упражнение, которое помогает их отпустить.';
 
   @override
-  String get reminderPrompt12 => 'Было сегодня что-то, что хочется сохранить? Можно оставить фото с мыслью в разделе Мои моменты.';
+  String get reminderPrompt12 =>
+      'Было сегодня что-то, что хочется сохранить? Можно оставить фото с мыслью в разделе Мои моменты.';
 
   @override
-  String get reminderPrompt13 => 'Не обязательно ждать, пока станет тяжело — можно просто заглянуть и рассказать, как дела.';
+  String get reminderPrompt13 =>
+      'Не обязательно ждать, пока станет тяжело — можно просто заглянуть и рассказать, как дела.';
 
   @override
-  String get reminderPrompt14 => 'Ты сегодня успел(а) выдохнуть хоть на минуту?';
+  String get reminderPrompt14 =>
+      'Ты сегодня успел(а) выдохнуть хоть на минуту?';
 
   @override
-  String get reminderPrompt15 => 'Если день был непростым — не нужно объяснять сразу всё. Начни с чего угодно.';
+  String get reminderPrompt15 =>
+      'Если день был непростым — не нужно объяснять сразу всё. Начни с чего угодно.';
 
   @override
-  String get reminderPrompt16 => 'Иногда важно просто отметить: этот день был. Как он прошёл для тебя?';
+  String get reminderPrompt16 =>
+      'Иногда важно просто отметить: этот день был. Как он прошёл для тебя?';
 
   @override
-  String get reminderPrompt17 => 'Здесь не нужно готовиться к разговору — можно просто написать первое, что приходит в голову.';
+  String get reminderPrompt17 =>
+      'Здесь не нужно готовиться к разговору — можно просто написать первое, что приходит в голову.';
 
   @override
-  String get reminderPrompt18 => 'Если сегодня было что-то хорошее — поделись, приятно порадоваться вместе.';
+  String get reminderPrompt18 =>
+      'Если сегодня было что-то хорошее — поделись, приятно порадоваться вместе.';
 
   @override
-  String get reminderPrompt19 => 'Забота о себе — это не всегда большие шаги. Иногда достаточно пары минут на паузу.';
+  String get reminderPrompt19 =>
+      'Забота о себе — это не всегда большие шаги. Иногда достаточно пары минут на паузу.';
 
   @override
-  String get reminderPrompt20 => 'Как ты сейчас — физически и внутри? Необязательно отвечать развёрнуто.';
+  String get reminderPrompt20 =>
+      'Как ты сейчас — физически и внутри? Необязательно отвечать развёрнуто.';
 
   @override
   String get reminderChannelName => 'Ежедневные напоминания';
 
   @override
-  String get reminderChannelDescription => 'Напоминание проверить, как дела, в выбранное время';
+  String get reminderChannelDescription =>
+      'Напоминание проверить, как дела, в выбранное время';
 
   @override
   String get supportTitle => 'Поддержка';
@@ -1952,10 +2092,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get supportNoTicketsYet => 'Обращений пока нет';
 
   @override
-  String get supportDescribeProblem => 'Опиши проблему — мы посмотрим и ответим';
+  String get supportDescribeProblem =>
+      'Опиши проблему — мы посмотрим и ответим';
 
   @override
-  String get supportHint => 'Например: не приходит ответ от модели на длинные вопросы…';
+  String get supportHint =>
+      'Например: не приходит ответ от модели на длинные вопросы…';
 
   @override
   String get supportSending => 'Отправляю…';
@@ -1979,7 +2121,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get myReportsYourQuestion => 'Твой вопрос';
 
   @override
-  String get myReportsAiResponseLabel => 'Ответ ИИ, на который пожаловался(-ась)';
+  String get myReportsAiResponseLabel =>
+      'Ответ ИИ, на который пожаловался(-ась)';
 
   @override
   String get myReportsReasonLabel => 'Причина жалобы';
@@ -1991,7 +2134,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get leavesOnStreamTitle => 'Листья на ручье';
 
   @override
-  String get leavesOnStreamIntro => 'Напиши мысль, от которой хочешь отпустить себя. Она уплывёт по ручью и растворится — никуда не сохраняется.';
+  String get leavesOnStreamIntro =>
+      'Напиши мысль, от которой хочешь отпустить себя. Она уплывёт по ручью и растворится — никуда не сохраняется.';
 
   @override
   String get leavesOnStreamHint => 'Например: я боюсь, что не справлюсь...';
@@ -2003,7 +2147,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get bilateralTitle => 'Билатеральная стимуляция';
 
   @override
-  String get bilateralIntro => 'Следи за шаром только глазами, не поворачивая голову. Это помогает снизить остроту тревоги. Не заменяет работу со специалистом, если тревога сильная или частая.';
+  String get bilateralIntro =>
+      'Следи за шаром только глазами, не поворачивая голову. Это помогает снизить остроту тревоги. Не заменяет работу со специалистом, если тревога сильная или частая.';
 
   @override
   String get operatorDashboardTitle => 'Кабинет оператора';
@@ -2031,10 +2176,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get gratitudeTitle => 'Дневник благодарности';
 
   @override
-  String get gratitudePrompt => 'Три вещи, за которые ты сегодня благодарен(на)';
+  String get gratitudePrompt =>
+      'Три вещи, за которые ты сегодня благодарен(на)';
 
   @override
-  String get gratitudeHint => 'Не обязательно что-то большое — подойдёт и мелочь.';
+  String get gratitudeHint =>
+      'Не обязательно что-то большое — подойдёт и мелочь.';
 
   @override
   String get gratitudeEntriesSection => 'ЗАПИСИ';
@@ -2059,7 +2206,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get wellbeingCalendarTakeTestButton => 'Пройти тест';
 
   @override
-  String get wellbeingCalendarEmptyState => 'Пока нет пройденных опросников — они появятся здесь\nпосле прохождения в разделе «Самочувствие».';
+  String get wellbeingCalendarEmptyState =>
+      'Пока нет пройденных опросников — они появятся здесь\nпосле прохождения в разделе «Самочувствие».';
 
   @override
   String get weekdayMon => 'Пн';
@@ -2086,7 +2234,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chatQuestionNotFound => '(вопрос не найден)';
 
   @override
-  String get chatTestDeclinedContinuation => 'Пользователь нажал \"Нет, не сейчас\" на предложение теста. Просто продолжи разговор дальше, естественно, не упоминая явно сам отказ и не извиняясь за предложение.';
+  String get chatTestDeclinedContinuation =>
+      'Пользователь нажал \"Нет, не сейчас\" на предложение теста. Просто продолжи разговор дальше, естественно, не упоминая явно сам отказ и не извиняясь за предложение.';
 
   @override
   String cloudVoiceLabelFemale(String name) {
@@ -2099,7 +2248,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get modelDowngradedNotice => 'Закончились токены на продвинутую версию ИИ в этом месяце — этот ответ от обычной модели. Оформи подписку выше, чтобы получить больше.';
+  String get modelDowngradedNotice =>
+      'Закончились токены на продвинутую версию ИИ в этом месяце — этот ответ от обычной модели. Оформи подписку выше, чтобы получить больше.';
 
   @override
   String get modelDowngradedUpgradeButton => 'Повысить тариф';
@@ -2155,13 +2305,15 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get sleepMusicOwnFileWebNotice => 'На вебе свой файл проиграется только до перезагрузки страницы — сохранить насовсем здесь нельзя.';
+  String get sleepMusicOwnFileWebNotice =>
+      'На вебе свой файл проиграется только до перезагрузки страницы — сохранить насовсем здесь нельзя.';
 
   @override
   String get sleepMusicFileReadError => 'Не удалось прочитать файл.';
 
   @override
-  String get sleepMusicNoTracksInCatalogYet => 'В каталоге пока нет звуков — сначала их должен добавить админ.';
+  String get sleepMusicNoTracksInCatalogYet =>
+      'В каталоге пока нет звуков — сначала их должен добавить админ.';
 
   @override
   String get sleepMusicTimerCancel => 'Отключить таймер';
@@ -2178,7 +2330,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sleepMusicLikedTitle => 'Избранное';
 
   @override
-  String get sleepMusicNoLikedYet => 'Пока нет лайкнутых треков — нажми на сердечко у любого трека.';
+  String get sleepMusicNoLikedYet =>
+      'Пока нет лайкнутых треков — нажми на сердечко у любого трека.';
 
   @override
   String get sleepMusicUploadFolder => 'Добавить папку целиком';
