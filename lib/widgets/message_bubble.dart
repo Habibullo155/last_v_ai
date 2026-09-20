@@ -427,10 +427,7 @@ class MessageBubble extends StatelessWidget {
         border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
       ),
       child: Icon(
-        (isUser
-                ? Icons.person_rounded
-                : Image.asset('assets/images/ai_icon.png'))
-            as IconData?,
+        isUser ? Icons.person_rounded : Icons.spa_rounded,
         size: 18,
         color: Colors.white,
       ),
