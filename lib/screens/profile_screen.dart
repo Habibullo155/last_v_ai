@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,6 +10,7 @@ import '../models/app_user.dart';
 import '../state/auth_store.dart';
 import '../theme/app_text_color.dart';
 import '../utils/auth_navigation.dart';
+import '../utils/decoded_image_cache.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
@@ -261,41 +263,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      Container(
-                        width: 88,
-                        height: 88,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF6C5CE7), Color(0xFF00D9C0)],
-                          ),
-                          image: user.avatarBase64 != null
-                              ? DecorationImage(
-                                  image: MemoryImage(
-                                    base64Decode(user.avatarBase64!),
-                                  ),
-                                  fit: BoxFit.cover,
-                                )
-                              : null,
-                        ),
-                        child: _isUploadingAvatar
-                            ? const CircularProgressIndicator(
-                                color: Colors.white,
-                              )
-                            : user.avatarBase64 == null
-                            ? Text(
-                                (user.fullName?.isNotEmpty == true
-                                        ? user.fullName![0]
-                                        : user.email[0])
-                                    .toUpperCase(),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              )
-                            : null,
+                      _Avatar(
+                        avatarBase64: user.avatarBase64,
+                        initials:
+                            (user.fullName?.isNotEmpty == true
+                                    ? user.fullName![0]
+                                    : user.email[0])
+                                .toUpperCase(),
+                        isUploading: _isUploadingAvatar,
                       ),
                       Positioned(
                         bottom: -2,
@@ -635,6 +610,82 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.symmetric(vertical: 2),
         child: row,
       ),
+    );
+  }
+}
+
+/// Раньше base64Decode(avatarBase64) вызывался синхронно прямо внутри
+/// build() ProfileScreen - на каждую перестройку (в том числе на
+/// AnimatedBuilder, слушающий authStore целиком - см. выше), не только
+/// при реальной смене аватара. Здесь декодирование уходит в изолят
+/// через decodeImageCached (тот же общий, ограниченный по размеру кэш,
+/// что и у вложений в чате/обложек блога - см. utils/decoded_image_cache.dart).
+class _Avatar extends StatefulWidget {
+  final String? avatarBase64;
+  final String initials;
+  final bool isUploading;
+  const _Avatar({
+    required this.avatarBase64,
+    required this.initials,
+    required this.isUploading,
+  });
+
+  @override
+  State<_Avatar> createState() => _AvatarState();
+}
+
+class _AvatarState extends State<_Avatar> {
+  Uint8List? _decoded;
+
+  @override
+  void initState() {
+    super.initState();
+    _decode();
+  }
+
+  @override
+  void didUpdateWidget(_Avatar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.avatarBase64 != widget.avatarBase64) {
+      _decoded = null;
+      _decode();
+    }
+  }
+
+  Future<void> _decode() async {
+    final base64 = widget.avatarBase64;
+    if (base64 == null) return;
+    final bytes = await decodeImageCached(base64);
+    if (mounted) setState(() => _decoded = bytes);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 88,
+      height: 88,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: const LinearGradient(
+          colors: [Color(0xFF6C5CE7), Color(0xFF00D9C0)],
+        ),
+        image: _decoded != null
+            ? DecorationImage(image: MemoryImage(_decoded!), fit: BoxFit.cover)
+            : null,
+      ),
+      child: widget.isUploading
+          ? const CircularProgressIndicator(color: Colors.white)
+          : (widget.avatarBase64 == null || _decoded == null)
+          ? Text(
+              widget.initials,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.w700,
+              ),
+            )
+          : null,
     );
   }
 }

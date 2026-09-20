@@ -22,6 +22,12 @@ class ChatStore extends ChangeNotifier {
 
   final StorageService _storage = StorageService();
   final ChatApiService _api = ChatApiService();
+  // используется в sendMessage() - если ChatStore уже уничтожен (logout
+  // во время ещё идущего ответа ИИ - см. app.dart::_onAuthChanged,
+  // ChatApiService.dispose() там же закрывает http.Client и обрывает
+  // текущий SSE-запрос), незачем и уже некому показывать сообщение об
+  // ошибке в интерфейсе, которого больше нет
+  bool _disposed = false;
   // ИИ может сменить оформление приложения через специальный маркер в
   // конце ответа (backend/safety.py: THEME_CONTROL_PROMPT) - не настоящий
   // tool use, а просто текстовый сигнал, который парсится и стирается
@@ -426,13 +432,30 @@ class ChatStore extends ChangeNotifier {
           notifyListeners();
         }
       }
+    } catch (e) {
+      // http.Client.close() (ChatApiService.dispose(), вызывается при
+      // logout - см. app.dart::_onAuthChanged) может прервать реально
+      // идущий запрос прямо посреди await for выше - раньше это
+      // исключение просто проходило сквозь finally ниже и улетало
+      // необработанным наружу из sendMessage(). ChatStore к этому
+      // моменту уже мог быть disposed (аккаунт сменился/вышли) -
+      // показывать ошибку в интерфейсе уже некому и незачем, finally
+      // ниже и так корректно приведёт состояние в порядок
+      if (!_disposed) {
+        assistantMsg.content += '\n\nСоединение прервано.';
+        assistantMsg.isStreaming = false;
+        assistantMsg.isError = true;
+        backendStatus = BackendStatus.offline;
+      }
     } finally {
       assistantMsg.isStreaming = false;
       _sendingConversationIds.remove(convo.id);
       convo.updatedAt = DateTime.now();
       _reorderActiveToTop();
       await _persist();
-      notifyListeners();
+      // ChangeNotifier бросает assertion error при вызове после dispose() -
+      // тот же logout-во-время-стрима сценарий, что и в catch выше
+      if (!_disposed) notifyListeners();
     }
   }
 
@@ -449,6 +472,7 @@ class ChatStore extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     _api.dispose();
     super.dispose();
   }

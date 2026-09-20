@@ -124,6 +124,7 @@ class _PersonalMemoriesScreenState extends State<PersonalMemoriesScreen> {
         token: token,
         comment: result.comment,
         photoBytes: result.photoBytes,
+        photoPath: result.photoPath,
         filename: result.filename,
       );
       await _load();
@@ -471,8 +472,14 @@ class _MemoryDetailScreen extends StatelessWidget {
 class _NewMemoryDraft {
   final String comment;
   final Uint8List? photoBytes;
+  final String? photoPath;
   final String? filename;
-  _NewMemoryDraft({required this.comment, this.photoBytes, this.filename});
+  _NewMemoryDraft({
+    required this.comment,
+    this.photoBytes,
+    this.photoPath,
+    this.filename,
+  });
 }
 
 class _AddMemoryDialog extends StatefulWidget {
@@ -485,6 +492,12 @@ class _AddMemoryDialog extends StatefulWidget {
 class _AddMemoryDialogState extends State<_AddMemoryDialog> {
   final _controller = TextEditingController();
   Uint8List? _photoBytes;
+  // недоступен на вебе (там path - это blob: URL, не реальный файл на
+  // диске) - используется ТОЛЬКО при отправке (см. create() в
+  // personal_memory_service.dart), не вместо _photoBytes: превью в UI
+  // ниже всё ещё показывается через Image.memory(_photoBytes!, ...),
+  // байты для него читаются в любом случае
+  String? _photoPath;
   String? _filename;
 
   @override
@@ -515,6 +528,7 @@ class _AddMemoryDialogState extends State<_AddMemoryDialog> {
     if (!mounted) return;
     setState(() {
       _photoBytes = bytes;
+      _photoPath = file.path;
       _filename = file.name;
     });
   }
@@ -569,6 +583,7 @@ class _AddMemoryDialogState extends State<_AddMemoryDialog> {
                     icon: const Icon(Icons.close_rounded, color: Colors.white),
                     onPressed: () => setState(() {
                       _photoBytes = null;
+                      _photoPath = null;
                       _filename = null;
                     }),
                   ),
@@ -611,6 +626,7 @@ class _AddMemoryDialogState extends State<_AddMemoryDialog> {
                             _NewMemoryDraft(
                               comment: _controller.text.trim(),
                               photoBytes: _photoBytes,
+                              photoPath: _photoPath,
                               filename: _filename,
                             ),
                           ),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
 import 'pinned_http_client.dart';
@@ -26,19 +27,30 @@ class PersonalMemoryService {
     }
   }
 
+  /// photoBytes ИЛИ photoPath - при обоих заданных предпочитается
+  /// photoPath (недоступен на вебе - см. sounds_service.dart для того
+  /// же паттерна): MultipartFile.fromPath читает файл ПОТОКОВО прямо во
+  /// время отправки, не загружая его целиком в память заранее. Раньше
+  /// единственный вариант - bytes - требовал прочитать весь файл в
+  /// память ДО начала отправки.
   Future<PersonalMemory> create({
     required String baseUrl,
     required String token,
     required String comment,
     Uint8List? photoBytes,
+    String? photoPath,
     String? filename,
   }) async {
     final uri = Uri.parse('$baseUrl/api/personal-memories');
     final request = http.MultipartRequest('POST', uri)
       ..headers['Authorization'] = 'Bearer $token'
       ..fields['comment'] = comment;
-    if (photoBytes != null && filename != null) {
-      request.files.add(http.MultipartFile.fromBytes('file', photoBytes, filename: filename));
+    if (filename != null) {
+      if (!kIsWeb && photoPath != null) {
+        request.files.add(await http.MultipartFile.fromPath('file', photoPath, filename: filename));
+      } else if (photoBytes != null) {
+        request.files.add(http.MultipartFile.fromBytes('file', photoBytes, filename: filename));
+      }
     }
 
     final streamed = await _client.send(request).timeout(const Duration(minutes: 2));

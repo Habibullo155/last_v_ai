@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -9,21 +6,12 @@ import 'package:ai_last_v/l10n/app_localizations.dart';
 import '../models/chat_message.dart';
 import '../models/chat_source.dart';
 import '../services/ad_service.dart';
-import '../utils/lru_cache.dart';
+import '../utils/decoded_image_cache.dart';
 import '../state/theme_store.dart';
 import '../theme/app_text_color.dart';
 import 'animated_ai_avatar.dart';
 import 'glass_panel.dart';
 import 'theme_variant_swatch.dart';
-
-// кэш декодированных фото из сообщений чата - общий на всё приложение,
-// не на один экземпляр виджета (тот же base64 может отрисовываться
-// заново после пересоздания виджета при прокрутке). Ограничен по
-// размеру (LruCache) - раньше подобные словари копили байты фото
-// навсегда без вытеснения, что гарантированно роняло бы приложение по
-// OOM на длинной истории чата с множеством фото
-final _decodedImageCache = LruCache<String, Uint8List>(maxEntries: 40);
-
 
 class MessageBubble extends StatelessWidget {
   final ChatMessage message;
@@ -92,7 +80,8 @@ class MessageBubble extends StatelessWidget {
     final bubble = GlassPanel(
       opacity: isUser ? 0.16 : 0.09,
       tint: isUser ? const Color(0xFF6C5CE7) : null,
-      blurred: false, // рендерится по одному на сообщение, BackdropFilter тут дорогой
+      blurred:
+          false, // рендерится по одному на сообщение, BackdropFilter тут дорогой
       borderRadius: BorderRadius.only(
         topLeft: const Radius.circular(20),
         topRight: const Radius.circular(20),
@@ -125,15 +114,22 @@ class MessageBubble extends StatelessWidget {
               const SizedBox(height: 8),
               _SourcesBlock(sources: message.sources!),
             ],
-            if (message.offersTestPrompt && !message.testPromptAnswered && onTestPromptResponse != null) ...[
+            if (message.offersTestPrompt &&
+                !message.testPromptAnswered &&
+                onTestPromptResponse != null) ...[
               const SizedBox(height: 10),
               _TestOfferButtons(onAnswer: onTestPromptResponse!),
             ],
-            if (message.offersThemePicker && !message.themePickerAnswered && onThemePickerDismissed != null) ...[
+            if (message.offersThemePicker &&
+                !message.themePickerAnswered &&
+                onThemePickerDismissed != null) ...[
               const SizedBox(height: 10),
               _InlineThemePicker(onDone: onThemePickerDismissed!),
             ],
-            if (message.dailyLimitReason != null && !message.dailyLimitResolved && onWatchAd != null && onLinkTelegram != null) ...[
+            if (message.dailyLimitReason != null &&
+                !message.dailyLimitResolved &&
+                onWatchAd != null &&
+                onLinkTelegram != null) ...[
               const SizedBox(height: 10),
               _DailyLimitCard(
                 reason: message.dailyLimitReason!,
@@ -142,7 +138,8 @@ class MessageBubble extends StatelessWidget {
                 onResolved: () => onDailyLimitResolved?.call(),
               ),
             ],
-            if (message.modelDowngradedReason != null && onUpgradeSubscription != null) ...[
+            if (message.modelDowngradedReason != null &&
+                onUpgradeSubscription != null) ...[
               const SizedBox(height: 10),
               _ModelDowngradedNotice(onUpgrade: onUpgradeSubscription!),
             ],
@@ -204,8 +201,9 @@ class MessageBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
-        mainAxisAlignment:
-            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isUser
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isUser) _avatar(context, isUser: false),
@@ -228,63 +226,93 @@ class MessageBubble extends StatelessWidget {
       builder: (context) {
         final l10n = AppLocalizations.of(context)!;
         return SafeArea(
-        // фон листа всегда тёмный (0xFF1A2036 выше), текст константами
-        // белый - от темы приложения не зависит
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (onEdit != null)
+          // фон листа всегда тёмный (0xFF1A2036 выше), текст константами
+          // белый - от темы приложения не зависит
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (onEdit != null)
+                ListTile(
+                  leading: const Icon(
+                    Icons.edit_outlined,
+                    color: Colors.white70,
+                  ),
+                  title: Text(
+                    l10n.messageMenuEditRetry,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _showEditDialog(context);
+                  },
+                ),
               ListTile(
-                leading: const Icon(Icons.edit_outlined, color: Colors.white70),
-                title: Text(l10n.messageMenuEditRetry, style: const TextStyle(color: Colors.white)),
-                onTap: () {
+                leading: const Icon(Icons.copy_rounded, color: Colors.white70),
+                title: Text(
+                  l10n.messageMenuCopyText,
+                  style: const TextStyle(color: Colors.white),
+                ),
+                onTap: () async {
                   Navigator.of(context).pop();
-                  _showEditDialog(context);
+                  await Clipboard.setData(ClipboardData(text: message.content));
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(l10n.messageCopiedSnack),
+                        duration: const Duration(seconds: 1),
+                      ),
+                    );
+                  }
                 },
               ),
-            ListTile(
-              leading: const Icon(Icons.copy_rounded, color: Colors.white70),
-              title: Text(l10n.messageMenuCopyText, style: const TextStyle(color: Colors.white)),
-              onTap: () async {
-                Navigator.of(context).pop();
-                await Clipboard.setData(ClipboardData(text: message.content));
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.messageCopiedSnack), duration: const Duration(seconds: 1)),
-                  );
-                }
-              },
-            ),
-            if (onSpeak != null)
-              ListTile(
-                leading: const Icon(Icons.volume_up_rounded, color: Colors.white70),
-                title: Text(l10n.messageMenuReadAloud, style: const TextStyle(color: Colors.white)),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  onSpeak?.call();
-                },
-              ),
-            if (onReport != null)
-              ListTile(
-                leading: const Icon(Icons.flag_outlined, color: Color(0xFFFFD166)),
-                title: Text(l10n.messageMenuReport, style: const TextStyle(color: Colors.white)),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  onReport?.call();
-                },
-              ),
-            if (onDelete != null)
-              ListTile(
-                leading: const Icon(Icons.delete_outline_rounded, color: Color(0xFFFFB4B4)),
-                title: Text(l10n.messageMenuDelete, style: const TextStyle(color: Colors.white)),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  onDelete?.call();
-                },
-              ),
-          ],
-        ),
-      );
+              if (onSpeak != null)
+                ListTile(
+                  leading: const Icon(
+                    Icons.volume_up_rounded,
+                    color: Colors.white70,
+                  ),
+                  title: Text(
+                    l10n.messageMenuReadAloud,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    onSpeak?.call();
+                  },
+                ),
+              if (onReport != null)
+                ListTile(
+                  leading: const Icon(
+                    Icons.flag_outlined,
+                    color: Color(0xFFFFD166),
+                  ),
+                  title: Text(
+                    l10n.messageMenuReport,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    onReport?.call();
+                  },
+                ),
+              if (onDelete != null)
+                ListTile(
+                  leading: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: Color(0xFFFFB4B4),
+                  ),
+                  title: Text(
+                    l10n.messageMenuDelete,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    onDelete?.call();
+                  },
+                ),
+            ],
+          ),
+        );
       },
     );
   }
@@ -297,68 +325,84 @@ class MessageBubble extends StatelessWidget {
       builder: (context) {
         final l10n = AppLocalizations.of(context)!;
         return Dialog(
-        backgroundColor: Colors.transparent,
-        child: GlassPanel(
-          tint: const Color(0xFF1A2036),
-          opacity: 0.95,
-          borderRadius: BorderRadius.circular(20),
-          padding: const EdgeInsets.all(20),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.messageEditDialogTitle,
-                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  l10n.messageEditDialogWarning,
-                  style: const TextStyle(color: Colors.white70, fontSize: 12, height: 1.4),
-                ),
-                const SizedBox(height: 14),
-                TextField(
-                  controller: controller,
-                  autofocus: true,
-                  maxLines: 6,
-                  minLines: 1,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white.withValues(alpha: 0.08),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-                    contentPadding: const EdgeInsets.all(12),
+          backgroundColor: Colors.transparent,
+          child: GlassPanel(
+            tint: const Color(0xFF1A2036),
+            opacity: 0.95,
+            borderRadius: BorderRadius.circular(20),
+            padding: const EdgeInsets.all(20),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.messageEditDialogTitle,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Text(l10n.commonCancel, style: const TextStyle(color: Colors.white70)),
+                  const SizedBox(height: 6),
+                  Text(
+                    l10n.messageEditDialogWarning,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                      height: 1.4,
                     ),
-                    const SizedBox(width: 8),
-                    FilledButton(
-                      style: FilledButton.styleFrom(backgroundColor: const Color(0xFF6C5CE7)),
-                      onPressed: () {
-                        final text = controller.text.trim();
-                        Navigator.of(context).pop();
-                        if (text.isNotEmpty && text != message.content) {
-                          onEdit?.call(text);
-                        }
-                      },
-                      child: Text(l10n.messageRetryButton),
+                  ),
+                  const SizedBox(height: 14),
+                  TextField(
+                    controller: controller,
+                    autofocus: true,
+                    maxLines: 6,
+                    minLines: 1,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white.withValues(alpha: 0.08),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.all(12),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text(
+                          l10n.commonCancel,
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xFF6C5CE7),
+                        ),
+                        onPressed: () {
+                          final text = controller.text.trim();
+                          Navigator.of(context).pop();
+                          if (text.isNotEmpty && text != message.content) {
+                            onEdit?.call(text);
+                          }
+                        },
+                        child: Text(l10n.messageRetryButton),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      );
+        );
       },
     );
   }
@@ -375,7 +419,10 @@ class MessageBubble extends StatelessWidget {
         gradient: LinearGradient(
           colors: isUser
               ? [const Color(0xFF6C5CE7), const Color(0xFF00D9C0)]
-              : [const Color(0xFF6FB1DE), const Color(0xFF4DD0C4)], // приглушённые сине-зелёные для ассистента
+              : [
+                  const Color(0xFF6FB1DE),
+                  const Color(0xFF4DD0C4),
+                ], // приглушённые сине-зелёные для ассистента
         ),
         border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
       ),
@@ -403,13 +450,20 @@ class _CopyIconButton extends StatelessWidget {
           await Clipboard.setData(ClipboardData(text: text));
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.messageCopiedSnack), duration: const Duration(seconds: 1)),
+              SnackBar(
+                content: Text(l10n.messageCopiedSnack),
+                duration: const Duration(seconds: 1),
+              ),
             );
           }
         },
         child: Padding(
           padding: const EdgeInsets.all(2),
-          child: Icon(Icons.copy_rounded, size: 13, color: context.onSurfaceFaded(0.38)),
+          child: Icon(
+            Icons.copy_rounded,
+            size: 13,
+            color: context.onSurfaceFaded(0.38),
+          ),
         ),
       ),
     );
@@ -440,7 +494,9 @@ class _RateIconButton extends StatelessWidget {
           child: Icon(
             active ? activeIcon : icon,
             size: 13,
-            color: active ? const Color(0xFF6C5CE7) : context.onSurfaceFaded(0.38),
+            color: active
+                ? const Color(0xFF6C5CE7)
+                : context.onSurfaceFaded(0.38),
           ),
         ),
       ),
@@ -470,11 +526,19 @@ class _SourcesBlock extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.source_outlined, size: 12, color: context.onSurfaceFaded(0.4)),
+              Icon(
+                Icons.source_outlined,
+                size: 12,
+                color: context.onSurfaceFaded(0.4),
+              ),
               const SizedBox(width: 4),
               Text(
                 l10n.messageSourcesAdminOnly,
-                style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 9.5, letterSpacing: 0.5),
+                style: TextStyle(
+                  color: context.onSurfaceFaded(0.4),
+                  fontSize: 9.5,
+                  letterSpacing: 0.5,
+                ),
               ),
             ],
           ),
@@ -488,7 +552,10 @@ class _SourcesBlock extends StatelessWidget {
                   s.page != null ? l10n.messageSourcePageSuffix(s.page!) : '',
                   (s.similarity * 100).round(),
                 ),
-                style: TextStyle(color: context.onSurfaceFaded(0.55), fontSize: 11),
+                style: TextStyle(
+                  color: context.onSurfaceFaded(0.55),
+                  fontSize: 11,
+                ),
               ),
             ),
         ],
@@ -531,18 +598,7 @@ class _AttachedImagesState extends State<_AttachedImages> {
 
   Future<void> _decodeAll() async {
     for (var i = 0; i < widget.images.length; i++) {
-      final base64Image = widget.images[i];
-      final cached = _decodedImageCache.get(base64Image);
-      if (cached != null) {
-        if (mounted) setState(() => _decoded[i] = cached);
-        continue;
-      }
-      // decode в отдельном изоляте через compute() - base64Decode для
-      // фото несколько сотен КБ синхронно в build() на главном потоке
-      // (как было раньше) заметно подвисает интерфейс при прокрутке
-      // истории с несколькими фото сразу
-      final bytes = await compute(base64Decode, base64Image);
-      _decodedImageCache.put(base64Image, bytes);
+      final bytes = await decodeImageCached(widget.images[i]);
       if (mounted) setState(() => _decoded[i] = bytes);
     }
   }
@@ -586,7 +642,12 @@ class _AttachedImagesState extends State<_AttachedImages> {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.memory(bytes, width: 140, height: 140, fit: BoxFit.cover),
+            child: Image.memory(
+              bytes,
+              width: 140,
+              height: 140,
+              fit: BoxFit.cover,
+            ),
           ),
         );
       }),
@@ -611,7 +672,13 @@ class _InlineThemePicker extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.messageChooseWhatYouLike, style: TextStyle(color: context.onSurfaceFaded(0.55), fontSize: 12)),
+            Text(
+              l10n.messageChooseWhatYouLike,
+              style: TextStyle(
+                color: context.onSurfaceFaded(0.55),
+                fontSize: 12,
+              ),
+            ),
             const SizedBox(height: 8),
             SizedBox(
               height: 70,
@@ -619,25 +686,37 @@ class _InlineThemePicker extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: BackgroundVariant.values
-                      .map((v) => Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: ThemeVariantSwatch(
-                              variant: v,
-                              selected: ThemeStore.instance.variant == v,
-                              onTap: () {
-                                ThemeStore.instance.setVariant(v);
-                                onDone();
-                              },
-                            ),
-                          ))
+                      .map(
+                        (v) => Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: ThemeVariantSwatch(
+                            variant: v,
+                            selected: ThemeStore.instance.variant == v,
+                            onTap: () {
+                              ThemeStore.instance.setVariant(v);
+                              onDone();
+                            },
+                          ),
+                        ),
+                      )
                       .toList(),
                 ),
               ),
             ),
             TextButton(
               onPressed: onDone,
-              style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-              child: Text(l10n.messageNotNow, style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11.5)),
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Text(
+                l10n.messageNotNow,
+                style: TextStyle(
+                  color: context.onSurfaceFaded(0.4),
+                  fontSize: 11.5,
+                ),
+              ),
             ),
           ],
         );
@@ -682,7 +761,12 @@ class _AnswerChip extends StatelessWidget {
   final Color backgroundColor;
   final Color textColor;
   final VoidCallback onTap;
-  const _AnswerChip({required this.label, required this.backgroundColor, required this.textColor, required this.onTap});
+  const _AnswerChip({
+    required this.label,
+    required this.backgroundColor,
+    required this.textColor,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -697,7 +781,14 @@ class _AnswerChip extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             color: backgroundColor,
           ),
-          child: Text(label, style: TextStyle(color: textColor, fontSize: 12.5, fontWeight: FontWeight.w500)),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 12.5,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
       ),
     );
@@ -757,7 +848,8 @@ class _DailyLimitCardState extends State<_DailyLimitCard> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final showTelegramButton = widget.reason == 'telegram_needed';
-    final showAdButton = widget.reason == 'ad_needed' && AdService.isSupportedPlatform;
+    final showAdButton =
+        widget.reason == 'ad_needed' && AdService.isSupportedPlatform;
 
     if (!showTelegramButton && !showAdButton) {
       // ни один вариант недоступен прямо сейчас (например, веб без
@@ -794,7 +886,12 @@ class _DailyLimitActionButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
   final bool isLoading;
-  const _DailyLimitActionButton({required this.label, required this.icon, required this.onTap, required this.isLoading});
+  const _DailyLimitActionButton({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+    required this.isLoading,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -807,7 +904,9 @@ class _DailyLimitActionButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            gradient: const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
+            gradient: const LinearGradient(
+              colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)],
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -816,12 +915,22 @@ class _DailyLimitActionButton extends StatelessWidget {
                 const SizedBox(
                   width: 14,
                   height: 14,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
                 )
               else
                 Icon(icon, size: 16, color: Colors.white),
               const SizedBox(width: 6),
-              Text(label, style: const TextStyle(color: Colors.white, fontSize: 12.5, fontWeight: FontWeight.w600)),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           ),
         ),
@@ -854,12 +963,20 @@ class _ModelDowngradedNotice extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.auto_awesome_outlined, size: 16, color: Color(0xFFFFD166)),
+              const Icon(
+                Icons.auto_awesome_outlined,
+                size: 16,
+                color: Color(0xFFFFD166),
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   l10n.modelDowngradedNotice,
-                  style: TextStyle(color: context.onSurfaceFaded(0.75), fontSize: 12.5, height: 1.4),
+                  style: TextStyle(
+                    color: context.onSurfaceFaded(0.75),
+                    fontSize: 12.5,
+                    height: 1.4,
+                  ),
                 ),
               ),
             ],

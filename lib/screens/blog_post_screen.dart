@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +8,7 @@ import '../services/blog_service.dart';
 import '../state/auth_store.dart';
 import '../theme/app_text_color.dart';
 import '../utils/blog_markup.dart';
+import '../utils/decoded_image_cache.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
@@ -183,7 +184,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
           if (post.coverImageBase64 != null) ...[
             ClipRRect(
               borderRadius: BorderRadius.circular(14),
-              child: Image.memory(base64Decode(post.coverImageBase64!), fit: BoxFit.cover, width: double.infinity, height: 200),
+              child: _CoverImage(base64: post.coverImageBase64!),
             ),
             const SizedBox(height: 16),
           ],
@@ -320,5 +321,58 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
         ],
       ),
     );
+  }
+}
+
+/// Раньше base64Decode(coverImageBase64) вызывался синхронно прямо
+/// внутри build() - на каждую перестройку экрана (например, после
+/// лайка/добавления комментария), не только один раз при открытии
+/// поста. Декодирование уходит в изолят через decodeImageCached (тот
+/// же общий, ограниченный по размеру кэш, что и у вложений в чате/
+/// аватара профиля - см. utils/decoded_image_cache.dart).
+class _CoverImage extends StatefulWidget {
+  final String base64;
+  const _CoverImage({required this.base64});
+
+  @override
+  State<_CoverImage> createState() => _CoverImageState();
+}
+
+class _CoverImageState extends State<_CoverImage> {
+  Uint8List? _decoded;
+
+  @override
+  void initState() {
+    super.initState();
+    _decode();
+  }
+
+  @override
+  void didUpdateWidget(_CoverImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.base64 != widget.base64) {
+      _decoded = null;
+      _decode();
+    }
+  }
+
+  Future<void> _decode() async {
+    final bytes = await decodeImageCached(widget.base64);
+    if (mounted) setState(() => _decoded = bytes);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bytes = _decoded;
+    if (bytes == null) {
+      return Container(
+        width: double.infinity,
+        height: 200,
+        color: Colors.white.withValues(alpha: 0.08),
+        alignment: Alignment.center,
+        child: const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+      );
+    }
+    return Image.memory(bytes, fit: BoxFit.cover, width: double.infinity, height: 200);
   }
 }
