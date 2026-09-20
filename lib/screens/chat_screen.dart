@@ -190,7 +190,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       leading: Icon(
                         s.id == _playingNoiseId
                             ? Icons.graphic_eq_rounded
-                            : Icons.music_note_outlined,
+                            : Icons.library_music,
                         color: s.id == _playingNoiseId
                             ? const Color(0xFF00E6A0)
                             : Colors.white,
@@ -1175,7 +1175,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 : Icon(
                     _playingNoiseId != null
                         ? Icons.graphic_eq_rounded
-                        : Icons.spa_outlined,
+                        : Icons.music_note_rounded,
                     color: _playingNoiseId != null
                         ? const Color(0xFF00E6A0)
                         : context.onSurfaceFaded(0.7),
@@ -1309,7 +1309,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           _menuItem(
             'sleep_music',
-            Icons.music_note_rounded,
+            Icons.my_library_music_outlined,
             l10n.chatMenuSleepMusic,
           ),
         ],
@@ -1454,7 +1454,7 @@ enum _AiMode {
   support(icon: Icons.favorite_border_rounded),
   listen(icon: Icons.hearing_outlined),
   breakup(icon: Icons.heart_broken_outlined),
-  grief(icon: Icons.spa_outlined),
+  grief(icon: Icons.queue_music),
   jobLoss(icon: Icons.work_off_outlined),
   rationalizer(icon: Icons.balance_outlined);
 
