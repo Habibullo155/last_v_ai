@@ -1381,7 +1381,7 @@ class _EmptyState extends StatelessWidget {
                 ],
               ),
               child: Image.asset(
-                'assets/images/ai_icon.png',
+                'assets/icon/ai_icon.png',
                 color: Colors.white,
                 width: 32,
                 height: 32,

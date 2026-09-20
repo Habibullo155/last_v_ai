@@ -104,7 +104,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
             child: Image.asset(
-              'assets/images/ai_icon.png',
+              'assets/icon/ai_icon.png',
               width: 32,
               height: 32,
             ),

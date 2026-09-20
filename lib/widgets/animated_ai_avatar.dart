@@ -101,7 +101,7 @@ class _AnimatedAiAvatarState extends State<AnimatedAiAvatar>
         border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
       ),
       child: Image.asset(
-        'assets/images/ai_icon.png',
+        'assets/icon/ai_icon.png',
         width: widget.size * 0.53,
         height: widget.size * 0.53,
       ),
