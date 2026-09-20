@@ -13,17 +13,14 @@ class AnimatedAiAvatar extends StatefulWidget {
   State<AnimatedAiAvatar> createState() => _AnimatedAiAvatarState();
 }
 
-class _AnimatedAiAvatarState extends State<AnimatedAiAvatar>
-    with SingleTickerProviderStateMixin {
+class _AnimatedAiAvatarState extends State<AnimatedAiAvatar> with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true);
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))
+      ..repeat(reverse: true);
   }
 
   @override
@@ -51,9 +48,7 @@ class _AnimatedAiAvatarState extends State<AnimatedAiAvatar>
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
-        final t = Curves.easeInOut.transform(
-          _controller.value,
-        ); // 0..1 плавно туда-обратно
+        final t = Curves.easeInOut.transform(_controller.value); // 0..1 плавно туда-обратно
         final glowScale = 1.0 + 0.22 * t;
         final glowOpacity = 0.18 + 0.24 * t;
         final iconScale = 1.0 + 0.06 * t;
@@ -81,7 +76,10 @@ class _AnimatedAiAvatarState extends State<AnimatedAiAvatar>
                   ),
                 ),
               ),
-              Transform.scale(scale: iconScale, child: _staticAvatar()),
+              Transform.scale(
+                scale: iconScale,
+                child: _staticAvatar(),
+              ),
             ],
           ),
         );
@@ -95,15 +93,10 @@ class _AnimatedAiAvatarState extends State<AnimatedAiAvatar>
       height: widget.size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          colors: [Color(0xFF6FB1DE), Color(0xFF4DD0C4)],
-        ),
+        gradient: const LinearGradient(colors: [Color(0xFF6FB1DE), Color(0xFF4DD0C4)]),
         border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
       ),
-      child: Image.asset(
-        'assets/icon/ai_icon.png',
-        fit: BoxFit.cover,
-      ),
+      child: Icon(Icons.spa_rounded, size: widget.size * 0.53, color: Colors.white),
     );
   }
 }

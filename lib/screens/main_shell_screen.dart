@@ -127,24 +127,23 @@ class _GlassBottomNav extends StatelessWidget {
   final ValueChanged<int> onTap;
   const _GlassBottomNav({required this.index, required this.onTap});
 
-  @override
+ @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-
+    
     // Явно указываем тип списка, чтобы Dart не путался
     final List<({Widget icon, String label})> items = [
       (
         icon: Image.asset(
-          'assets/icon/ai_icon.png',
+          'assets/images/my_photo.png',
+          width: 24,
+          height: 24,
           fit: BoxFit.cover,
         ),
         label: l10n.navChat,
       ),
       // Оборачиваем остальные элементы в виджет Icon!
-      (
-        icon: const Icon(Icons.self_improvement_rounded),
-        label: l10n.navWellbeing,
-      ),
+      (icon: const Icon(Icons.self_improvement_rounded), label: l10n.navWellbeing),
       (icon: const Icon(Icons.person_rounded), label: l10n.navProfile),
       (icon: const Icon(Icons.music_note_rounded), label: l10n.navSleep),
     ];
@@ -175,7 +174,7 @@ class _GlassBottomNav extends StatelessWidget {
   Widget _buildItem(int i, List<({Widget icon, String label})> items) {
     final selected = i == index;
     final item = items[i];
-
+    
     return Expanded(
       child: Material(
         color: Colors.transparent,
@@ -197,13 +196,11 @@ class _GlassBottomNav extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // IconTheme заставит иконки менять цвет при выборе,
+                // IconTheme заставит иконки менять цвет при выборе, 
                 // при этом не сломает твою картинку (Image)
                 IconTheme(
                   data: IconThemeData(
-                    color: selected
-                        ? Colors.white
-                        : Colors.white.withValues(alpha: 0.5),
+                    color: selected ? Colors.white : Colors.white.withValues(alpha: 0.5),
                     size: 24,
                   ),
                   child: item.icon,

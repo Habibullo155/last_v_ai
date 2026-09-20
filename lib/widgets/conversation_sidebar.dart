@@ -48,13 +48,10 @@ class ConversationSidebar extends StatelessWidget {
         children: [
           Row(
             children: [
-              Image(
-                image: AssetImage(
-                  'assets/icon/ai_icon.png',
-                  package: 'ai_last_v',
-                ),
-                fit: BoxFit.cover,
-              ),
+              Image(image: AssetImage(  
+                'assets/images/ai_icon.png',
+                package: 'ai_last_v',
+              )),
               const SizedBox(width: 8),
               Text(
                 'LOMALU',
