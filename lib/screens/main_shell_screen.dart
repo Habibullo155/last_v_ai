@@ -136,8 +136,6 @@ class _GlassBottomNav extends StatelessWidget {
       (
         icon: Image.asset(
           'assets/icon/ai_icon.png',
-          width: 34,
-          height: 34,
           fit: BoxFit.cover,
         ),
         label: l10n.navChat,

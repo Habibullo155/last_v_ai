@@ -53,6 +53,7 @@ class ConversationSidebar extends StatelessWidget {
                   'assets/icon/ai_icon.png',
                   package: 'ai_last_v',
                 ),
+                fit: BoxFit.cover,
               ),
               const SizedBox(width: 8),
               Text(

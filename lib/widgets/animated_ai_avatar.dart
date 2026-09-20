@@ -102,8 +102,7 @@ class _AnimatedAiAvatarState extends State<AnimatedAiAvatar>
       ),
       child: Image.asset(
         'assets/icon/ai_icon.png',
-        width: widget.size * 0.53,
-        height: widget.size * 0.53,
+        fit: BoxFit.cover,
       ),
     );
   }
