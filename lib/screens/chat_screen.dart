@@ -1320,7 +1320,6 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         _menuItem('settings', Icons.settings_outlined, l10n.settingsTitle),
         _menuItem('my_reports', Icons.flag_outlined, l10n.chatMenuMyReports),
-        _menuItem('my_help', Icons.support_rounded, l10n.chatMenuLiveHelp),
         if (isOperator)
           _menuItem(
             'operator',
