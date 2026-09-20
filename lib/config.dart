@@ -9,6 +9,6 @@
 class AppConfig {
   static const String backendUrl = String.fromEnvironment(
     'BACKEND_URL',
-    defaultValue: 'https://195.170.195.118.nip.io',
+    defaultValue: 'http://localhost:8000',
   );
 }

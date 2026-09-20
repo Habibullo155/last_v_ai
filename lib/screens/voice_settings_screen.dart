@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 
 import 'package:ai_last_v/l10n/app_localizations.dart';
@@ -177,7 +175,7 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
               ),
               Switch(
                 value: voice.settings.voiceUiEnabled,
-                activeColor: const Color(0xFF6C5CE7),
+                activeThumbColor: const Color(0xFF6C5CE7),
                 onChanged: (value) => voice.updateSettings(
                   voice.settings.copyWith(voiceUiEnabled: value),
                 ),
@@ -268,7 +266,7 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
               ),
               Switch(
                 value: voice.settings.autoReadEnabled,
-                activeColor: const Color(0xFF6C5CE7),
+                activeThumbColor: const Color(0xFF6C5CE7),
                 onChanged: (value) => voice.updateSettings(
                   voice.settings.copyWith(autoReadEnabled: value),
                 ),

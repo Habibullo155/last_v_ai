@@ -1,3 +1,5 @@
+
+
 import 'package:ai_last_v/l10n/app_localizations.dart';
 
 /// ASRS-v1.1 Screener (6 вопросов, Часть A) — разработан ВОЗ совместно с
@@ -11,21 +13,21 @@ import 'package:ai_last_v/l10n/app_localizations.dart';
 /// BuildContext, недоступный на уровне файла/константы (тот же приём,
 /// что и в models/phq9_checkin.dart).
 List<String> asrsQuestions(AppLocalizations l10n) => [
-  l10n.asrsQ1,
-  l10n.asrsQ2,
-  l10n.asrsQ3,
-  l10n.asrsQ4,
-  l10n.asrsQ5,
-  l10n.asrsQ6,
-];
+      l10n.asrsQ1,
+      l10n.asrsQ2,
+      l10n.asrsQ3,
+      l10n.asrsQ4,
+      l10n.asrsQ5,
+      l10n.asrsQ6,
+    ];
 
 List<String> asrsResponseLabels(AppLocalizations l10n) => [
-  l10n.asrsScaleNever,
-  l10n.asrsScaleRarely,
-  l10n.asrsScaleSometimes,
-  l10n.asrsScaleOften,
-  l10n.asrsScaleVeryOften,
-];
+      l10n.asrsScaleNever,
+      l10n.asrsScaleRarely,
+      l10n.asrsScaleSometimes,
+      l10n.asrsScaleOften,
+      l10n.asrsScaleVeryOften,
+    ];
 
 class AsrsCheckin {
   final String id;
@@ -52,18 +54,16 @@ class AsrsCheckin {
   bool get suggestsFurtherAssessment => shadedCount >= 4;
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'date': date.toIso8601String(),
-    'answers': answers,
-  };
+        'id': id,
+        'date': date.toIso8601String(),
+        'answers': answers,
+      };
 
   factory AsrsCheckin.fromJson(Map<String, dynamic> json) {
     return AsrsCheckin(
       id: json['id'] as String,
       date: DateTime.tryParse(json['date'] as String? ?? '') ?? DateTime.now(),
-      answers: (json['answers'] as List<dynamic>? ?? [])
-          .map((e) => e as int)
-          .toList(),
+      answers: (json['answers'] as List<dynamic>? ?? []).map((e) => e as int).toList(),
     );
   }
 }

@@ -190,7 +190,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       leading: Icon(
                         s.id == _playingNoiseId
                             ? Icons.graphic_eq_rounded
-                            : Icons.library_music,
+                            : Icons.music_note_outlined,
                         color: s.id == _playingNoiseId
                             ? const Color(0xFF00E6A0)
                             : Colors.white,
@@ -1175,7 +1175,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 : Icon(
                     _playingNoiseId != null
                         ? Icons.graphic_eq_rounded
-                        : Icons.music_note_rounded,
+                        : Icons.music_note,
                     color: _playingNoiseId != null
                         ? const Color(0xFF00E6A0)
                         : context.onSurfaceFaded(0.7),
@@ -1303,13 +1303,8 @@ class _ChatScreenState extends State<ChatScreen> {
             l10n.chatMenuProfile,
           ),
           _menuItem(
-            'wellbeing',
-            Icons.self_improvement_rounded,
-            l10n.chatMenuWellbeing,
-          ),
-          _menuItem(
             'sleep_music',
-            Icons.my_library_music_outlined,
+            Icons.my_library_music_rounded,
             l10n.chatMenuSleepMusic,
           ),
         ],
@@ -1320,7 +1315,6 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         _menuItem('settings', Icons.settings_outlined, l10n.settingsTitle),
         _menuItem('my_reports', Icons.flag_outlined, l10n.chatMenuMyReports),
-        _menuItem('my_help', Icons.support_rounded, l10n.chatMenuLiveHelp),
         if (isOperator)
           _menuItem(
             'operator',
@@ -1454,7 +1448,7 @@ enum _AiMode {
   support(icon: Icons.favorite_border_rounded),
   listen(icon: Icons.hearing_outlined),
   breakup(icon: Icons.heart_broken_outlined),
-  grief(icon: Icons.queue_music),
+  grief(icon: Icons.spa_outlined),
   jobLoss(icon: Icons.work_off_outlined),
   rationalizer(icon: Icons.balance_outlined);
 
