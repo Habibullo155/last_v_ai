@@ -1,9 +1,9 @@
 {
   "@@locale": "ru",
-
   "appTitle": "AI Glass Chat",
-  "@appTitle": {"description": "Название приложения"},
-
+  "@appTitle": {
+    "description": "Название приложения"
+  },
   "commonCancel": "Отмена",
   "commonSave": "Сохранить",
   "commonDelete": "Удалить",
@@ -14,8 +14,7 @@
   "commonError": "Ошибка",
   "commonRetry": "Повторить",
   "commonLogout": "Выйти",
-
-  "authSignInTitle": "Вход в AI Chat",
+  "authSignInTitle": "Вход в LOMALU",
   "authCreateAccount": "Создать аккаунт",
   "authEmailHint": "Email",
   "authPasswordHint": "Пароль",
@@ -30,13 +29,16 @@
   "@authPasswordLengthHint": {
     "description": "Подсказка о минимальной длине пароля при регистрации",
     "placeholders": {
-      "minLength": {"type": "int"},
-      "length": {"type": "int"}
+      "minLength": {
+        "type": "int"
+      },
+      "length": {
+        "type": "int"
+      }
     }
   },
   "authPasswordsMatch": "Пароли совпадают",
   "authPasswordsMismatch": "Пароли не совпадают",
-
   "forgotPasswordTitle": "Восстановление пароля",
   "forgotPasswordEmailPrompt": "Укажи email, на который зарегистрирован аккаунт — пришлём код для сброса пароля.",
   "forgotPasswordSendCode": "Отправить код",
@@ -48,27 +50,26 @@
   "forgotPasswordNewPasswordHint": "Новый пароль",
   "forgotPasswordSubmit": "Сменить пароль",
   "forgotPasswordDone": "Пароль изменён. Теперь можно войти с новым паролем.",
-
   "lockScreenTitle": "Приложение заблокировано",
   "lockScreenFailedHint": "Не удалось подтвердить — попробуй ещё раз.",
   "lockScreenPrompt": "Подтверди личность, чтобы продолжить.",
   "lockScreenUnlockButton": "Разблокировать",
   "lockScreenUsePassword": "Войти паролем",
-
   "verifyEmailTitle": "Подтверждение почты",
   "verifyEmailPromptGeneric": "Введи код, который пришёл на почту при регистрации.",
   "verifyEmailPromptWithEmail": "Введи код, который пришёл на {email}.",
   "@verifyEmailPromptWithEmail": {
     "description": "Подсказка с адресом почты, на который отправлен код",
     "placeholders": {
-      "email": {"type": "String"}
+      "email": {
+        "type": "String"
+      }
     }
   },
   "verifyEmailCodeHint": "Код из письма",
   "verifyEmailResendButton": "Отправить код ещё раз",
   "verifyEmailSubmitButton": "Подтвердить",
   "verifyEmailResentMessage": "Код отправлен повторно — проверь почту.",
-
   "settingsTitle": "Настройки",
   "settingsSectionAppearance": "ОФОРМЛЕНИЕ",
   "settingsThemeLabel": "Тема",
@@ -104,7 +105,6 @@
   "settingsDeleteAccountWarning": "Это необратимо: аккаунт, история обращений в поддержку и статистика использования будут удалены полностью. История переписки на этом устройстве останется — она никогда не хранилась на сервере, и её можно удалить отдельно.",
   "settingsConfirmWithPassword": "Подтверди паролем",
   "settingsDeleteForeverButton": "Удалить навсегда",
-
   "chatNoSoundsUploaded": "Пока нет загруженных звуков — админ ещё не добавил их.",
   "chatStopButton": "Остановить",
   "chatRoleUser": "Пользователь",
@@ -146,7 +146,6 @@
   "chatSuggestion3": "Помоги придумать название для проекта",
   "chatSuggestion4": "Как улучшить свой код на Dart?",
   "chatWhatCanIHelpWith": "Чем помочь сегодня?",
-
   "aiModeSupportTitle": "Поддержать",
   "aiModeSupportSubtitle": "Просто побыть рядом в разговоре",
   "aiModeSupportOpener": "Мне сейчас нужна поддержка — просто побудь рядом в разговоре, подбодри меня.",
@@ -165,12 +164,15 @@
   "aiModeRationalizerTitle": "Рационализатор",
   "aiModeRationalizerSubtitle": "Разобрать тревожную мысль по методике КПТ",
   "aiModeRationalizerOpener": "У меня есть тревожная мысль, которая не даёт покоя. Помоги мне разобрать её по методике КПТ — задавай мне наводящие вопросы по одному за раз (например, какие есть доказательства этой мысли, что самое худшее может случиться и насколько это вероятно), чтобы посмотреть на ситуацию яснее.",
-
   "profileBirthDateHelpText": "Дата рождения",
   "profileAgeYears": "{age, plural, one {{age} год} few {{age} года} many {{age} лет} other {{age} лет}}",
   "@profileAgeYears": {
     "description": "Возраст в годах с правильным склонением",
-    "placeholders": {"age": {"type": "int"}}
+    "placeholders": {
+      "age": {
+        "type": "int"
+      }
+    }
   },
   "profileTakePhoto": "Сделать фото",
   "profileChooseFromGallery": "Выбрать из галереи",
@@ -204,16 +206,23 @@
   "profileChangeEmailTitle": "Изменить почту",
   "profileCurrentEmailLabel": "Сейчас: {email}",
   "@profileCurrentEmailLabel": {
-    "placeholders": {"email": {"type": "String"}}
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
   },
   "profileNewEmailLabel": "Новый адрес",
   "profileCodeSentMessage": "Код отправлен на {email}. Введи его ниже, чтобы завершить смену.",
   "@profileCodeSentMessage": {
-    "placeholders": {"email": {"type": "String"}}
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
   },
   "profileCodeFromEmailLabel": "Код из письма",
   "profileSendCodeButton": "Отправить код",
-
   "sidebarCalendarTitle": "Календарь",
   "sidebarCalendarSubtitle": "Результаты опросников по дням",
   "sidebarWellbeingSubtitle": "Пройти тест, ситуативная помощь",
@@ -225,13 +234,15 @@
   "sidebarDeleteChatTitle": "Удалить чат?",
   "sidebarDeleteChatBody": "Переписка «{title}» будет удалена без возможности восстановить.",
   "@sidebarDeleteChatBody": {
-    "placeholders": {"title": {"type": "String"}}
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
   },
   "sidebarEmptyConversation": "Пусто",
-
   "crisisResourcesDefaultTitle": "Если хочется поговорить с кем-то",
   "crisisResourcesBody": "• Экстренная психологическая помощь для взрослых и детей в России, круглосуточно и бесплатно: 8-800-100-49-94\n• Детский и подростковый телефон доверия: 8-800-2000-122 (короткий номер — 124)\n\nЕсли ты не в России — поищи местную кризисную линию по запросу «suicide crisis line» и название своей страны; в США и Канаде можно позвонить или написать на 988.",
-
   "navChat": "Чат",
   "navProfile": "Профиль",
   "navSleep": "Сон",
@@ -242,7 +253,6 @@
   "customTestListEmpty": "Пока нет доступных тестов.",
   "blogTitle": "Блог",
   "blogListEmpty": "Постов пока нет — загляни позже.",
-
   "who5Q1": "Я чувствую себя бодрой(-ым) и в хорошем настроении",
   "who5Q2": "Я чувствую себя спокойной(-ым) и раскованной(-ым)",
   "who5Q3": "Я чувствую себя активной(-ым) и энергичной(-ым)",
@@ -290,8 +300,12 @@
   "who5DiscussPrompt": "Я прошёл(ла) опросник ВОЗ-5 (общее самочувствие): {score}%{extra}. Можешь прокомментировать результат и поддержать меня?",
   "@who5DiscussPrompt": {
     "placeholders": {
-      "score": {"type": "String"},
-      "extra": {"type": "String"}
+      "score": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
     }
   },
   "who5RecommendSpecialist": " — методика рекомендует обсудить со специалистом",
@@ -307,53 +321,140 @@
   "asrsTileTitle": "ASRS-v1.1 — скрининг СДВГ",
   "asrsTileSubtitle": "6 вопросов, 1-2 минуты",
   "who5LicenseAttribution": "Опросник: World Health Organization-Five Well-Being Index (WHO-5), © World Health Organization 2024, лицензия CC BY-NC-SA 3.0 IGO. Использование ВОЗ этого приложения не подразумевается.",
-
   "helpNoCheckinsSnack": "Пока нет пройденных опросников — их можно пройти в разделе «Самочувствие».",
   "helpPickResultTitle": "Какой результат отправить?",
   "helpWeekSummaryTitle": "Сводка за неделю",
   "helpWeekSummaryScore": "{count} записей",
   "@helpWeekSummaryScore": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "helpWeekSummaryHeader": "Результаты опросников за последние 7 дней:",
   "helpWeekLineWho5": "• ВОЗ-5 ({date}): {percent}%",
   "@helpWeekLineWho5": {
-    "placeholders": {"date": {"type": "String"}, "percent": {"type": "int"}}
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
   },
   "helpWeekLinePhq9": "• PHQ-9 ({date}): {score}/27, «{severity}»{risk}",
   "@helpWeekLinePhq9": {
-    "placeholders": {"date": {"type": "String"}, "score": {"type": "int"}, "severity": {"type": "String"}, "risk": {"type": "String"}}
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "severity": {
+        "type": "String"
+      },
+      "risk": {
+        "type": "String"
+      }
+    }
   },
   "helpWeekLineGad7": "• GAD-7 ({date}): {score}/21, «{severity}»",
   "@helpWeekLineGad7": {
-    "placeholders": {"date": {"type": "String"}, "score": {"type": "int"}, "severity": {"type": "String"}}
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "severity": {
+        "type": "String"
+      }
+    }
   },
   "helpWeekLineAsrs": "• ASRS-v1.1 ({date}): {shaded}/6",
   "@helpWeekLineAsrs": {
-    "placeholders": {"date": {"type": "String"}, "shaded": {"type": "int"}}
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "shaded": {
+        "type": "int"
+      }
+    }
   },
   "helpRiskSignalPhq9Week": " — отмечены мысли о самоповреждении",
   "helpSingleWho5Result": "Результат опросника ВОЗ-5 ({date}): {percent}%{extra}.",
   "@helpSingleWho5Result": {
-    "placeholders": {"date": {"type": "String"}, "percent": {"type": "int"}, "extra": {"type": "String"}}
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
   },
   "helpSinglePhq9Result": "Результат опросника PHQ-9 ({date}): {score}/27, методика описывает это как «{severity}»{risk}.",
   "@helpSinglePhq9Result": {
-    "placeholders": {"date": {"type": "String"}, "score": {"type": "int"}, "severity": {"type": "String"}, "risk": {"type": "String"}}
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "severity": {
+        "type": "String"
+      },
+      "risk": {
+        "type": "String"
+      }
+    }
   },
   "helpPhq9RiskNote": ". Отмечены мысли о самоповреждении в пункте 9",
   "helpSingleGad7Result": "Результат опросника GAD-7 ({date}): {score}/21, методика описывает это как «{severity}».",
   "@helpSingleGad7Result": {
-    "placeholders": {"date": {"type": "String"}, "score": {"type": "int"}, "severity": {"type": "String"}}
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "severity": {
+        "type": "String"
+      }
+    }
   },
   "helpSingleAsrsResult": "Результат опросника ASRS-v1.1 ({date}): {shaded}/6 в зоне значимости{extra}.",
   "@helpSingleAsrsResult": {
-    "placeholders": {"date": {"type": "String"}, "shaded": {"type": "int"}, "extra": {"type": "String"}}
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "shaded": {
+        "type": "int"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
   },
   "helpClosedStatus": "Обращение закрыто",
   "helpConnectedStatus": "Подключён: {email}",
   "@helpConnectedStatus": {
-    "placeholders": {"email": {"type": "String"}}
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
   },
   "helpWaitingStatus": "Ждём, когда кто-то подключится…",
   "helpSendTestResultsTooltip": "Отправить результаты теста",
@@ -366,7 +467,6 @@
   "helpRatingQuestion": "Как прошло общение с оператором?",
   "helpCommentHint": "Комментарий (необязательно)",
   "commonSend": "Отправить",
-
   "phq9Q1": "Вас мало интересовали дела или ничто не доставляло удовольствия",
   "phq9Q2": "Вы испытывали чувство подавленности, депрессии или безнадёжности",
   "phq9Q3": "У вас были проблемы с засыпанием или сном, или вы слишком много спали",
@@ -392,7 +492,6 @@
   "pfizerSeverityModerate": "умеренная выраженность",
   "phq9SeverityModeratelySevere": "умеренно выраженная тяжесть",
   "pfizerSeveritySevere": "выраженная тяжесть симптомов",
-
   "phq9IntroTitle": "Опросник выраженности депрессивных симптомов",
   "phq9IntroBody": "Официальный, широко используемый в первичной медицинской помощи скрининговый инструмент (Patient Health Questionnaire-9). 9 вопросов, 2-3 минуты. Это не диагностика — результат показывает выраженность симптомов за последние 2 недели, а не медицинское заключение. Проходишь и видишь результат только ты — на сервер ничего не отправляется.",
   "gad7IntroTitle": "Опросник выраженности тревожных симптомов",
@@ -404,23 +503,48 @@
   "checkinIfHardRightNow": "Если тебе сейчас тяжело",
   "pfizerSeverityDescription": "Методика описывает такой результат как: {severity}.",
   "@pfizerSeverityDescription": {
-    "placeholders": {"severity": {"type": "String"}}
+    "placeholders": {
+      "severity": {
+        "type": "String"
+      }
+    }
   },
   "pfizerSuggestAssessment": "При таком результате методика рекомендует обсудить его со специалистом — это скрининг, не диагноз.",
   "pfizerNoAssessmentNeeded": "Официальная методика не считает такой результат поводом для дополнительной оценки — но если тебе тяжело, это не отменяется этой цифрой.",
   "phq9RiskNoteDiscuss": " В пункте про мысли о самоповреждении был отмечен положительный ответ.",
   "phq9DiscussPrompt": "Я прошёл(ла) опросник PHQ-9 (депрессивные симптомы): {score}/27, методика описывает это как «{severity}».{riskNote} Можешь прокомментировать результат и поддержать меня?",
   "@phq9DiscussPrompt": {
-    "placeholders": {"score": {"type": "int"}, "severity": {"type": "String"}, "riskNote": {"type": "String"}}
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "severity": {
+        "type": "String"
+      },
+      "riskNote": {
+        "type": "String"
+      }
+    }
   },
   "gad7DiscussPrompt": "Я прошёл(ла) опросник GAD-7 (тревожные симптомы): {score}/21, методика описывает это как «{severity}». Можешь прокомментировать результат и поддержать меня?",
   "@gad7DiscussPrompt": {
-    "placeholders": {"score": {"type": "int"}, "severity": {"type": "String"}}
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "severity": {
+        "type": "String"
+      }
+    }
   },
   "commonDone": "Готово",
   "checkinMaxScoreSuffix": "из {max}",
   "@checkinMaxScoreSuffix": {
-    "placeholders": {"max": {"type": "int"}}
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
   },
   "purchaseAdNotReadyYet": "Реклама пока недоступна, попробуй чуть позже.",
   "purchaseCheckoutOpenFailed": "Не удалось открыть страницу оплаты.",
@@ -434,25 +558,54 @@
   "purchaseWatchAdButton": "Смотреть рекламу (+3)",
   "purchaseAdBonusRemaining": "Бонусных запросов от рекламы осталось: {count}",
   "@purchaseAdBonusRemaining": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "purchaseCurrentPlanLabel": "Текущий тариф",
   "purchaseTokensUsedNoLimit": "{used} токенов использовано в этом месяце · без лимита",
   "@purchaseTokensUsedNoLimit": {
-    "placeholders": {"used": {"type": "int"}}
+    "placeholders": {
+      "used": {
+        "type": "int"
+      }
+    }
   },
   "purchaseTokensUsedWithLimit": "{used} из {limit} токенов в этом месяце",
   "@purchaseTokensUsedWithLimit": {
-    "placeholders": {"used": {"type": "int"}, "limit": {"type": "int"}}
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
   },
   "purchaseCurrentBadge": "текущий",
   "purchaseFreeDuration": "Бесплатно · {days} дней",
   "@purchaseFreeDuration": {
-    "placeholders": {"days": {"type": "int"}}
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
   },
   "purchasePriceDuration": "{rub} / {usd} · {days} дней",
   "@purchasePriceDuration": {
-    "placeholders": {"rub": {"type": "String"}, "usd": {"type": "String"}, "days": {"type": "int"}}
+    "placeholders": {
+      "rub": {
+        "type": "String"
+      },
+      "usd": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
   },
   "purchaseComingSoon": "Скоро будет доступно",
   "purchaseBuyButton": "Купить",
@@ -460,7 +613,6 @@
   "purchaseTelegramDialogTitle": "Привязка Telegram",
   "purchaseTelegramDialogBody": "Открой бота и отправь ему этот код в личные сообщения:",
   "purchaseOpenBotButton": "Открыть бота",
-
   "voiceSettingsTitle": "Голос",
   "voiceSettingsDisabledByAdmin": "Голосовые функции временно выключены администратором.",
   "voiceSettingsUseVoice": "Использовать голос",
@@ -478,55 +630,93 @@
   "voiceSettingsOtherSection": "ДРУГИЕ ВАРИАНТЫ",
   "voiceSettingsCouldNotClassify": "Не удалось определить голос по имени — просто послушай и выбери.",
   "voiceSettingsPreviewTooltip": "Прослушать",
-
   "authNetworkError": "Не удалось связаться с сервером.\n{details}",
   "@authNetworkError": {
-    "placeholders": {"details": {"type": "String"}}
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
   },
   "authUnexpectedResponse": "Сервер вернул неожиданный ответ (код {code}).",
   "@authUnexpectedResponse": {
-    "placeholders": {"code": {"type": "int"}}
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
   },
   "authDeleteAccountFailed": "Не удалось удалить аккаунт (код {code}).",
   "@authDeleteAccountFailed": {
-    "placeholders": {"code": {"type": "int"}}
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
   },
   "authRequestFailed": "Не удалось отправить запрос (код {code}).",
   "@authRequestFailed": {
-    "placeholders": {"code": {"type": "int"}}
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
   },
   "authChangePasswordFailed": "Не удалось сменить пароль (код {code}).",
   "@authChangePasswordFailed": {
-    "placeholders": {"code": {"type": "int"}}
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
   },
   "authResendCodeFailed": "Не удалось отправить код повторно (код {code}).",
   "@authResendCodeFailed": {
-    "placeholders": {"code": {"type": "int"}}
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
   },
   "authGenericError": "Ошибка авторизации.",
-
   "operatorIssueWarningTitle": "Выдать выговор",
   "operatorWarningReasonHint": "За что — эта причина сохранится в истории",
   "operatorIssueButton": "Выдать",
   "operatorRevokeAccessTitle": "Снять доступ к живой помощи?",
   "operatorRevokeAccessBody": "{email} больше не сможет принимать обращения. Аккаунт и история останутся.",
   "@operatorRevokeAccessBody": {
-    "placeholders": {"email": {"type": "String"}}
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
   },
   "operatorRevokeAccessConfirm": "Снять доступ",
   "operatorDeleteAccountTitle": "Удалить аккаунт целиком?",
   "operatorDeleteAccountBody": "Необратимо: {email} и вся история обращений будут удалены. Если нужно просто убрать доступ, не удаляя аккаунт — используй \"Снять доступ\".",
   "@operatorDeleteAccountBody": {
-    "placeholders": {"email": {"type": "String"}}
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
   },
   "operatorDeleteAccountConfirm": "Удалить",
   "operatorWarningsSectionCount": "ВЫГОВОРЫ ({count})",
   "@operatorWarningsSectionCount": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "operatorSessionsSectionCount": "ОБРАЩЕНИЯ ({count})",
   "@operatorSessionsSectionCount": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "operatorNoSessionsYet": "Ещё не принимал обращений",
   "operatorWarningButtonShort": "Выговор",
@@ -534,15 +724,22 @@
   "operatorDeleteAccountTooltip": "Удалить аккаунт целиком",
   "operatorIssuedByPrefix": "· {email}",
   "@operatorIssuedByPrefix": {
-    "placeholders": {"email": {"type": "String"}}
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
   },
   "operatorUnknownUser": "неизвестно",
   "operatorNoRating": "без оценки",
   "operatorQuotedComment": "«{comment}»",
   "@operatorQuotedComment": {
-    "placeholders": {"comment": {"type": "String"}}
+    "placeholders": {
+      "comment": {
+        "type": "String"
+      }
+    }
   },
-
   "asrsQ1": "Как часто вам трудно завершить последние детали проекта, когда основная сложная часть уже сделана?",
   "asrsQ2": "Как часто у вас возникают сложности с тем, чтобы навести порядок, когда задача требует организованности?",
   "asrsQ3": "Как часто у вас возникают проблемы с тем, чтобы не забыть о встречах или обязательствах?",
@@ -562,18 +759,27 @@
   "asrsNoAssessmentNeeded": "Официальная методика не считает такой результат поводом для дополнительной оценки — но если что-то из этого тебя беспокоит, это можно обсудить со специалистом в любом случае.",
   "asrsDiscussPrompt": "Я прошёл(ла) скрининг ASRS-v1.1 (СДВГ): {shaded}/6 в зоне значимости{extra}. Можешь прокомментировать результат и поддержать меня?",
   "@asrsDiscussPrompt": {
-    "placeholders": {"shaded": {"type": "int"}, "extra": {"type": "String"}}
+    "placeholders": {
+      "shaded": {
+        "type": "int"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
   },
-
   "authBiometricNotConfigured": "На этом устройстве не настроена биометрия (Face ID/отпечаток) — сначала включи её в настройках самого устройства.",
   "authBiometricConfirmReason": "Подтверди, чтобы включить вход по биометрии",
   "authBiometricConfirmFailed": "Не удалось подтвердить — попробуй ещё раз.",
   "authUnexpectedErrorGeneric": "Непредвиденная ошибка: {error}",
   "@authUnexpectedErrorGeneric": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "authSessionNotFound": "Сессия не найдена. Войди заново.",
-
   "messageMenuEditRetry": "Редактировать и переспросить",
   "messageMenuCopyText": "Скопировать текст",
   "messageCopiedSnack": "Скопировано",
@@ -586,21 +792,30 @@
   "messageSourcesAdminOnly": "ИСТОЧНИКИ (видно только админу)",
   "messageSourcePageSuffix": ", стр. {page}",
   "@messageSourcePageSuffix": {
-    "placeholders": {"page": {"type": "int"}}
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
   },
   "messageSourceLine": "{filename}{pageSuffix} · {similarity}%",
   "@messageSourceLine": {
     "placeholders": {
-      "filename": {"type": "String"},
-      "pageSuffix": {"type": "String"},
-      "similarity": {"type": "int"}
+      "filename": {
+        "type": "String"
+      },
+      "pageSuffix": {
+        "type": "String"
+      },
+      "similarity": {
+        "type": "int"
+      }
     }
   },
   "messageChooseWhatYouLike": "Выбери, что понравится:",
   "messageNotNow": "Не сейчас",
   "messageYesLetsTest": "Да, давай тест",
   "messageNoLetsContinue": "Нет, продолжим так",
-
   "profilePasswordTooShort": "Новый пароль должен быть не короче 8 символов.",
   "profilePasswordsDontMatch": "Пароли не совпадают.",
   "profileChangePasswordTitle": "Изменить пароль",
@@ -610,22 +825,33 @@
   "profileChangeEmailTitle": "Изменить почту",
   "profileCurrentEmailLabel": "Сейчас: {email}",
   "@profileCurrentEmailLabel": {
-    "placeholders": {"email": {"type": "String"}}
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
   },
   "profileNewEmailLabel": "Новый адрес",
   "profileCodeSentToEmail": "Код отправлен на {email}. Введи его ниже, чтобы завершить смену.",
   "@profileCodeSentToEmail": {
-    "placeholders": {"email": {"type": "String"}}
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
   },
   "profileCodeFromEmailLabel": "Код из письма",
   "profileConfirmButton": "Подтвердить",
-
   "freewritingTitle": "Фрирайтинг",
   "freewritingIntro": "Пиши непрерывно всё, что приходит в голову — без цензуры, без исправления ошибок, не останавливаясь. Это не для красивого текста, а чтобы разгрузить голову.",
   "freewritingHowManyMinutes": "Сколько минут?",
   "freewritingMinutesOption": "{minutes} мин",
   "@freewritingMinutesOption": {
-    "placeholders": {"minutes": {"type": "int"}}
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
   },
   "freewritingStartButton": "Начать писать",
   "freewritingFinishButton": "Закончить",
@@ -634,7 +860,6 @@
   "freewritingEmptyPlaceholder": "(пусто)",
   "freewritingEraseButton": "Стереть",
   "freewritingKeepAndCloseButton": "Оставить и закрыть",
-
   "groundingSightSense": "Зрение",
   "groundingSightPrompt": "Назови 5 вещей, которые видишь вокруг себя",
   "groundingTouchSense": "Осязание",
@@ -651,7 +876,6 @@
   "groundingDoneSubtitle": "Можно повторить в любой момент.",
   "groundingIfAnxietyPersists": "Если тревога не отступает — это нормально, что одной техники может быть недостаточно. Можно поговорить с близким человеком или специалистом.",
   "groundingStartOverButton": "Начать заново",
-
   "muscleHandsGroup": "Кисти рук",
   "muscleHandsTense": "Сильно сожми кулаки",
   "muscleHandsRelease": "Резко расслабь и почувствуй тепло",
@@ -670,41 +894,73 @@
   "muscleRelaxationTitle": "Мышечная релаксация",
   "muscleRelaxationIntro": "По очереди напряжём и расслабим {count} групп мышц. На каждую — несколько секунд напряжения, потом расслабление. Устройся поудобнее, чтобы двигать руками/ногами было ничем не стеснено.",
   "@muscleRelaxationIntro": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "muscleStartButton": "Начать",
   "muscleStepProgress": "{current} из {total}",
   "@muscleStepProgress": {
-    "placeholders": {"current": {"type": "int"}, "total": {"type": "int"}}
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   },
   "muscleDoneText": "Готово — все группы мышц пройдены.",
   "muscleRepeatButton": "Пройти ещё раз",
   "muscleNextButton": "Далее",
   "musclePreviewDuration": "Займёт {seconds} сек",
   "@musclePreviewDuration": {
-    "placeholders": {"seconds": {"type": "int"}}
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
   },
-
   "chatServerNotResponding": "Сервер не отвечает. Проверь, что бэкенд запущен на {baseUrl}",
   "@chatServerNotResponding": {
-    "placeholders": {"baseUrl": {"type": "String"}}
+    "placeholders": {
+      "baseUrl": {
+        "type": "String"
+      }
+    }
   },
   "chatConnectionFailed": "Не удалось подключиться к {baseUrl}.\n{error}",
   "@chatConnectionFailed": {
-    "placeholders": {"baseUrl": {"type": "String"}, "error": {"type": "String"}}
+    "placeholders": {
+      "baseUrl": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "chatSessionExpired": "Сессия истекла. Выйди и войди заново.",
   "chatServerErrorCode": "Сервер вернул ошибку {code}",
   "@chatServerErrorCode": {
-    "placeholders": {"code": {"type": "int"}}
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
   },
   "chatConnectionDroppedMidResponse": "\n\n⚠️ Соединение оборвалось во время ответа (например, отвалился туннель). Попробуй отправить сообщение ещё раз.\n{error}",
   "@chatConnectionDroppedMidResponse": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "chatResponseTruncated": "\n\n⚠️ Ответ обрезался — соединение закрылось раньше, чем модель закончила. Попробуй ещё раз.",
   "chatDoctorSummaryPrompt": "Кратко, в 2-3 предложениях, от третьего лица опиши врачу состояние человека на основе этого разговора — что беспокоит, как давно, что уже обсуждалось. Пиши для врача как для коллеги, не для самого человека, и не используй обращение \"ты\"/\"вы\".",
-
   "memoryReleaseIntro": "Напиши то, что тяжело держать в себе — тяжёлую мысль, обиду, воспоминание. Никто это не увидит и не сохранит — после того, как отпустишь, текст исчезнет насовсем, без возможности вернуть.",
   "memoryReleaseHint": "Пиши здесь…",
   "memoryReleaseEnvelopeMode": "Запечатать",
@@ -712,7 +968,6 @@
   "memoryReleaseEnvelopeResult": "Запечатано и разрезано — от текста ничего не осталось.",
   "memoryReleaseShatteredResult": "Разбилось вдребезги — текста больше нет.",
   "memoryReleaseWriteMoreButton": "Написать ещё",
-
   "blogLoadFailed": "Не удалось загрузить блог.",
   "blogLoadPostFailed": "Не удалось загрузить пост.",
   "blogLoadListFailed": "Не удалось загрузить список постов.",
@@ -723,7 +978,6 @@
   "blogLoadCommentsFailed": "Не удалось загрузить комментарии.",
   "blogSendCommentFailed": "Не удалось отправить комментарий.",
   "blogDeleteCommentFailed": "Не удалось удалить комментарий.",
-
   "myHelpCallPersonTitle": "Позвать человека на помощь",
   "myHelpCallPersonDescription": "Подключится врач или специалист из команды. Это не замена экстренной службе — если ситуация требует срочной медицинской помощи, звони в местную службу экстренной помощи или обратись в скорую напрямую.",
   "myHelpDescribeHint": "Коротко, что случилось (необязательно)",
@@ -732,41 +986,63 @@
   "myHelpStatusPending": "Ждём подключения",
   "myHelpStatusActive": "Подключено",
   "myHelpStatusClosed": "Закрыто",
-
   "customTestDefaultTitle": "Тест",
   "customTestLoadFailed": "Не удалось загрузить тест.",
   "customTestQuestionCount": "{count} вопрос(ов)",
   "@customTestQuestionCount": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "customTestQuestionProgress": "Вопрос {current} из {total}",
   "@customTestQuestionProgress": {
-    "placeholders": {"current": {"type": "int"}, "total": {"type": "int"}}
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   },
   "chatMaxAttachmentsReached": "Можно прикрепить не более {count} фото за раз",
   "@chatMaxAttachmentsReached": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "customTestPointsLabel": "баллов",
   "customTestDiscussPrompt": "Я прошёл(ла) тест «{title}»: {score} балл(ов){resultNote}. Можешь прокомментировать результат и поддержать меня?",
   "@customTestDiscussPrompt": {
     "placeholders": {
-      "title": {"type": "String"},
-      "score": {"type": "int"},
-      "resultNote": {"type": "String"}
+      "title": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "resultNote": {
+        "type": "String"
+      }
     }
   },
   "customTestResultNote": " — результат: «{label}»",
   "@customTestResultNote": {
-    "placeholders": {"label": {"type": "String"}}
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
   },
-
   "reportSentTitle": "Жалоба отправлена",
   "reportSentBody": "Спасибо — мы посмотрим этот ответ. Текст вопроса и ответа передан вместе с жалобой, чтобы можно было сразу разобраться, не переспрашивая.",
   "reportDialogTitle": "Пожаловаться на ответ",
   "reportDialogBody": "Вопрос и ответ, на который жалуешься, будут переданы вместе с жалобой — иначе не получится разобраться, что именно пошло не так.",
   "reportReasonHint": "Что не так с этим ответом? (необязательно)",
-
   "helpCreateSessionFailed": "Не удалось создать обращение.",
   "helpLoadSessionsFailed": "Не удалось загрузить обращения.",
   "helpLoadMessagesFailed": "Не удалось загрузить сообщения.",
@@ -777,7 +1053,6 @@
   "helpLoadActiveSessionsFailed": "Не удалось загрузить активные обращения.",
   "helpRequestAlreadyTaken": "Эту заявку уже забрал другой оператор.",
   "helpAcceptRequestFailed": "Не удалось принять заявку.",
-
   "breathingInhale": "Вдох",
   "breathingHold": "Задержка",
   "breathingExhale": "Выдох",
@@ -785,7 +1060,6 @@
   "breathingReadyToStart": "Готов(а) начать?",
   "breathingStopButton": "Остановить",
   "breathingDisclaimer": "Простая техника саморегуляции дыхания — не заменяет профессиональную помощь. Если чувствуешь головокружение — останови упражнение и дыши в привычном темпе.",
-
   "themeVariantViolet": "Фиолетовый",
   "themeVariantOcean": "Океан",
   "themeVariantMidnight": "Полночь",
@@ -795,7 +1069,6 @@
   "themeVariantAmber": "Янтарь",
   "themeVariantSlate": "Графит",
   "themeVariantMint": "Мята",
-
   "customTestsLoadListFailed": "Не удалось загрузить список тестов.",
   "customTestsLoadTestFailed": "Не удалось загрузить тест.",
   "customTestsSubmitAnswersFailed": "Не удалось отправить ответы.",
@@ -803,47 +1076,75 @@
   "customTestsCreateFailed": "Не удалось создать тест.",
   "customTestsSaveFailed": "Не удалось сохранить тест.",
   "customTestsDeleteFailed": "Не удалось удалить тест.",
-
   "safeContainmentIntro": "Если мысль или чувство слишком сильные, но сейчас не время с ними разбираться — напиши и убери в сейф. Не пропадёт навсегда, просто подождёт, пока будет время вернуться.",
   "safeContainmentHint": "Что нужно убрать на потом?",
   "safeContainmentPutAwayButton": "Убрать в сейф",
   "safeContainmentDoneBody": "Надёжно спрятано. Оно больше не будет отвлекать прямо сейчас — вернёмся к этому, когда будешь готов(а).",
-
   "voicePreviewPhrase": "Привет! Так звучит этот голос.",
-
   "appSettingsChangeFailed": "Не удалось изменить настройку (код {code}).",
   "@appSettingsChangeFailed": {
-    "placeholders": {"code": {"type": "int"}}
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
   },
   "appSettingsRestoreFailed": "Не удалось восстановить настройки (код {code}).",
   "@appSettingsRestoreFailed": {
-    "placeholders": {"code": {"type": "int"}}
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
   },
   "appSettingsLoadPersonaFailed": "Не удалось загрузить настройки личности ИИ (код {code}).",
   "@appSettingsLoadPersonaFailed": {
-    "placeholders": {"code": {"type": "int"}}
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
   },
   "appSettingsSavePersonaFailed": "Не удалось сохранить личность ИИ (код {code}).",
   "@appSettingsSavePersonaFailed": {
-    "placeholders": {"code": {"type": "int"}}
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
   },
   "appSettingsResetPersonaFailed": "Не удалось сбросить личность ИИ (код {code}).",
   "@appSettingsResetPersonaFailed": {
-    "placeholders": {"code": {"type": "int"}}
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
   },
   "appSettingsLoadModelFailed": "Не удалось загрузить настройки модели (код {code}).",
   "@appSettingsLoadModelFailed": {
-    "placeholders": {"code": {"type": "int"}}
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
   },
   "appSettingsSaveModelFailed": "Не удалось сохранить настройки модели (код {code}).",
   "@appSettingsSaveModelFailed": {
-    "placeholders": {"code": {"type": "int"}}
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
   },
   "appSettingsResetModelFailed": "Не удалось сбросить настройки модели (код {code}).",
   "@appSettingsResetModelFailed": {
-    "placeholders": {"code": {"type": "int"}}
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
   },
-
   "reminderPrompt1": "Как прошёл день? Если хочется поговорить — я здесь.",
   "reminderPrompt2": "Небольшая пауза — как ты сейчас, в целом?",
   "reminderPrompt3": "Если накопилось что-то, о чём хочется рассказать — самое время.",
@@ -866,7 +1167,6 @@
   "reminderPrompt20": "Как ты сейчас — физически и внутри? Необязательно отвечать развёрнуто.",
   "reminderChannelName": "Ежедневные напоминания",
   "reminderChannelDescription": "Напоминание проверить, как дела, в выбранное время",
-
   "supportTitle": "Поддержка",
   "supportMyTicketsSection": "ТВОИ ОБРАЩЕНИЯ",
   "supportNoTicketsYet": "Обращений пока нет",
@@ -874,7 +1174,6 @@
   "supportHint": "Например: не приходит ответ от модели на длинные вопросы…",
   "supportSending": "Отправляю…",
   "supportTicketOpen": "Открыто",
-
   "myReportsTitle": "Мои жалобы",
   "myReportsNoneYet": "Жалоб пока нет",
   "myReportsResolved": "Разобрано",
@@ -883,41 +1182,52 @@
   "myReportsAiResponseLabel": "Ответ ИИ, на который пожаловался(-ась)",
   "myReportsReasonLabel": "Причина жалобы",
   "myReportsTeamResponseSection": "ОТВЕТ ОТ КОМАНДЫ",
-
   "leavesOnStreamTitle": "Листья на ручье",
   "leavesOnStreamIntro": "Напиши мысль, от которой хочешь отпустить себя. Она уплывёт по ручью и растворится — никуда не сохраняется.",
   "leavesOnStreamHint": "Например: я боюсь, что не справлюсь...",
   "leavesOnStreamDoneText": "Мысль уплыла.",
-
   "bilateralTitle": "Билатеральная стимуляция",
   "bilateralIntro": "Следи за шаром только глазами, не поворачивая голову. Это помогает снизить остроту тревоги. Не заменяет работу со специалистом, если тревога сильная или частая.",
-
   "operatorDashboardTitle": "Кабинет оператора",
   "operatorDashboardMyActiveSection": "МОИ АКТИВНЫЕ ({count})",
   "@operatorDashboardMyActiveSection": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "operatorDashboardPendingSection": "ОЖИДАЮТ ПОДКЛЮЧЕНИЯ ({count})",
   "@operatorDashboardPendingSection": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "operatorDashboardNoOneWaiting": "Пока никто не ждёт подключения",
   "operatorDashboardNoDescription": "Без описания",
   "operatorDashboardAcceptButton": "Принять",
-
   "gratitudeTitle": "Дневник благодарности",
   "gratitudePrompt": "Три вещи, за которые ты сегодня благодарен(на)",
   "gratitudeHint": "Не обязательно что-то большое — подойдёт и мелочь.",
   "gratitudeEntriesSection": "ЗАПИСИ",
   "gratitudeBulletItem": "· {item}",
   "@gratitudeBulletItem": {
-    "placeholders": {"item": {"type": "String"}}
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
   },
-
   "wellbeingCalendarWho5Label": "ВОЗ-5",
   "wellbeingCalendarScoreSuffix": "{score} балл(ов)",
   "@wellbeingCalendarScoreSuffix": {
-    "placeholders": {"score": {"type": "int"}}
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
   },
   "wellbeingCalendarTitle": "Календарь самочувствия",
   "wellbeingCalendarTakeTestButton": "Пройти тест",
@@ -929,27 +1239,30 @@
   "weekdayFri": "Пт",
   "weekdaySat": "Сб",
   "weekdaySun": "Вс",
-
   "chatQuestionNotFound": "(вопрос не найден)",
   "chatTestDeclinedContinuation": "Пользователь нажал \"Нет, не сейчас\" на предложение теста. Просто продолжи разговор дальше, естественно, не упоминая явно сам отказ и не извиняясь за предложение.",
-
   "cloudVoiceLabelFemale": "{name} (женский)",
   "@cloudVoiceLabelFemale": {
-    "placeholders": {"name": {"type": "String"}}
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "cloudVoiceLabelMale": "{name} (мужской)",
   "@cloudVoiceLabelMale": {
-    "placeholders": {"name": {"type": "String"}}
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
-
   "modelDowngradedNotice": "Закончились токены на продвинутую версию ИИ в этом месяце — этот ответ от обычной модели. Оформи подписку выше, чтобы получить больше.",
   "modelDowngradedUpgradeButton": "Повысить тариф",
-
   "settingsLanguageLabel": "Язык",
   "settingsLanguageSystem": "Системный",
   "settingsLanguageRussian": "Русский",
   "settingsLanguageEnglish": "English",
-
   "sleepMusicTabCatalog": "Каталог",
   "sleepMusicTabPlaylists": "Мои плейлисты",
   "sleepMusicNoPlaylists": "Плейлистов пока нет — создай первый.",
@@ -962,21 +1275,37 @@
   "sleepMusicRemoveFromPlaylist": "Убрать из плейлиста",
   "sleepMusicDeletePlaylist": "Удалить плейлист",
   "sleepMusicDeletePlaylistConfirm": "Удалить плейлист «{name}»? Сами треки останутся в каталоге/личной библиотеке.",
-  "@sleepMusicDeletePlaylistConfirm": {"placeholders": {"name": {"type": "String"}}},
+  "@sleepMusicDeletePlaylistConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "sleepMusicOwnFileWebNotice": "На вебе свой файл проиграется только до перезагрузки страницы — сохранить насовсем здесь нельзя.",
   "sleepMusicFileReadError": "Не удалось прочитать файл.",
   "sleepMusicNoTracksInCatalogYet": "В каталоге пока нет звуков — сначала их должен добавить админ.",
-
   "sleepMusicTimerCancel": "Отключить таймер",
   "sleepMusicTimerMinutes": "{minutes} минут",
-  "@sleepMusicTimerMinutes": {"placeholders": {"minutes": {"type": "int"}}},
+  "@sleepMusicTimerMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "sleepMusicRenamePlaylist": "Переименовать плейлист",
   "sleepMusicLikedTitle": "Избранное",
   "sleepMusicNoLikedYet": "Пока нет лайкнутых треков — нажми на сердечко у любого трека.",
-
   "sleepMusicUploadFolder": "Добавить папку целиком",
   "sleepMusicFolderAddedCount": "Добавлено треков: {count}",
-  "@sleepMusicFolderAddedCount": {"placeholders": {"count": {"type": "int"}}},
+  "@sleepMusicFolderAddedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "sleepMusicRepeatOff": "Повтор выключен",
   "sleepMusicRepeatAll": "Повтор плейлиста",
   "sleepMusicRepeatOne": "Повтор трека",

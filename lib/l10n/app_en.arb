@@ -11,7 +11,7 @@
   "commonError": "Error",
   "commonRetry": "Retry",
   "commonLogout": "Log out",
-  "authSignInTitle": "Sign in to AI Chat",
+  "authSignInTitle": "Sign in to LOMALU",
   "authCreateAccount": "Create account",
   "authEmailHint": "Email",
   "authPasswordHint": "Password",
@@ -459,7 +459,7 @@
   "helpRequestSentHint": "Request sent — a message will appear once someone joins.",
   "helpWriteWhatHappenedHint": "Write what happened.",
   "helpMessageHint": "Write a message…",
-  "helpChatContextHeader": "What happened in the AI chat before this request",
+  "helpChatContextHeader": "What happened in the LOMALU before this request",
   "helpYourRatingTitle": "Your rating",
   "helpRatingQuestion": "How did it go with the operator?",
   "helpCommentHint": "Comment (optional)",
@@ -898,7 +898,11 @@
   "muscleNextButton": "Next",
   "musclePreviewDuration": "Takes {seconds} sec",
   "@musclePreviewDuration": {
-    "placeholders": {"seconds": {"type": "int"}}
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
   },
   "chatServerNotResponding": "The server isn't responding. Check that the backend is running at {baseUrl}",
   "@chatServerNotResponding": {
@@ -1274,10 +1278,15 @@
   "sleepMusicRenamePlaylist": "Rename playlist",
   "sleepMusicLikedTitle": "Liked",
   "sleepMusicNoLikedYet": "No liked tracks yet — tap the heart on any track.",
-
   "sleepMusicUploadFolder": "Add whole folder",
   "sleepMusicFolderAddedCount": "Tracks added: {count}",
-  "@sleepMusicFolderAddedCount": {"placeholders": {"count": {"type": "int"}}},
+  "@sleepMusicFolderAddedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "sleepMusicRepeatOff": "Repeat off",
   "sleepMusicRepeatAll": "Repeat playlist",
   "sleepMusicRepeatOne": "Repeat track",

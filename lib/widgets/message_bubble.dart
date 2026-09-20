@@ -427,7 +427,10 @@ class MessageBubble extends StatelessWidget {
         border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
       ),
       child: Icon(
-        isUser ? Icons.person_rounded : Icons.spa_rounded,
+        (isUser
+                ? Icons.person_rounded
+                : Image.asset('assets/images/ai_icon.png'))
+            as IconData?,
         size: 18,
         color: Colors.white,
       ),
@@ -956,7 +959,9 @@ class _ModelDowngradedNotice extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
         color: const Color(0xFFFFD166).withValues(alpha: 0.08),
-        border: Border.all(color: const Color(0xFFFFD166).withValues(alpha: 0.3)),
+        border: Border.all(
+          color: const Color(0xFFFFD166).withValues(alpha: 0.3),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -164,7 +164,7 @@ abstract class AppLocalizations {
   /// No description provided for @authSignInTitle.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to AI Chat'**
+  /// **'Sign in to LOMALU'**
   String get authSignInTitle;
 
   /// No description provided for @authCreateAccount.
@@ -1796,7 +1796,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpChatContextHeader.
   ///
   /// In en, this message translates to:
-  /// **'What happened in the AI chat before this request'**
+  /// **'What happened in the LOMALU before this request'**
   String get helpChatContextHeader;
 
   /// No description provided for @helpYourRatingTitle.

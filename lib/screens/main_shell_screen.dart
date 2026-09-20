@@ -131,7 +131,10 @@ class _GlassBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final items = [
-      (icon: Icons.spa_rounded, label: l10n.navChat),
+      (
+        Image.asset('assets/images/ai_icon.png', width: 32, height: 32),
+        label: l10n.navChat,
+      ),
       (icon: Icons.self_improvement_rounded, label: l10n.navWellbeing),
       (icon: Icons.person_rounded, label: l10n.navProfile),
       (icon: Icons.music_note_rounded, label: l10n.navSleep),

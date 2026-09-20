@@ -42,7 +42,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonLogout => 'Log out';
 
   @override
-  String get authSignInTitle => 'Sign in to AI Chat';
+  String get authSignInTitle => 'Sign in to LOMALU';
 
   @override
   String get authCreateAccount => 'Create account';
@@ -89,13 +89,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get forgotPasswordTitle => 'Reset password';
 
   @override
-  String get forgotPasswordEmailPrompt => 'Enter the email your account is registered with — we\'ll send a reset code.';
+  String get forgotPasswordEmailPrompt =>
+      'Enter the email your account is registered with — we\'ll send a reset code.';
 
   @override
   String get forgotPasswordSendCode => 'Send code';
 
   @override
-  String get forgotPasswordCheckEmail => 'If that email is registered, a reset code has been sent to it. Check your inbox (and spam folder) and enter the code below along with your new password.';
+  String get forgotPasswordCheckEmail =>
+      'If that email is registered, a reset code has been sent to it. Check your inbox (and spam folder) and enter the code below along with your new password.';
 
   @override
   String get forgotPasswordHaveCode => 'I have a code';
@@ -116,7 +118,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get forgotPasswordSubmit => 'Change password';
 
   @override
-  String get forgotPasswordDone => 'Password changed. You can now sign in with your new password.';
+  String get forgotPasswordDone =>
+      'Password changed. You can now sign in with your new password.';
 
   @override
   String get lockScreenTitle => 'App is locked';
@@ -137,7 +140,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get verifyEmailTitle => 'Verify your email';
 
   @override
-  String get verifyEmailPromptGeneric => 'Enter the code sent to your email at sign-up.';
+  String get verifyEmailPromptGeneric =>
+      'Enter the code sent to your email at sign-up.';
 
   @override
   String verifyEmailPromptWithEmail(String email) {
@@ -184,7 +188,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsPerformanceModeLabel => 'Battery saver mode';
 
   @override
-  String get settingsPerformanceModeDescription => 'Turns off the animated background and glass blur throughout the app. Worth enabling if your phone is weak, laggy, or overheating — most devices don\'t need this.';
+  String get settingsPerformanceModeDescription =>
+      'Turns off the animated background and glass blur throughout the app. Worth enabling if your phone is weak, laggy, or overheating — most devices don\'t need this.';
 
   @override
   String get settingsSectionNotifications => 'NOTIFICATIONS';
@@ -202,7 +207,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsVoiceButtonsInChat => 'Voice buttons in chat';
 
   @override
-  String get settingsVoiceAndSpeechRecognition => 'Voice selection and speech recognition';
+  String get settingsVoiceAndSpeechRecognition =>
+      'Voice selection and speech recognition';
 
   @override
   String get settingsSectionSecurity => 'SECURITY';
@@ -211,13 +217,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsBiometricLogin => 'Biometric sign-in';
 
   @override
-  String get settingsBiometricNotSupported => 'Biometrics (Face ID/fingerprint) isn\'t set up on this device — enable it in your device settings if you\'d like to use it here.';
+  String get settingsBiometricNotSupported =>
+      'Biometrics (Face ID/fingerprint) isn\'t set up on this device — enable it in your device settings if you\'d like to use it here.';
 
   @override
   String get settingsSectionReminders => 'REMINDERS';
 
   @override
-  String get settingsReminderDescription => 'Once a day, at a time you choose (e.g. when you\'re usually home) — a gentle nudge to check in if you feel like talking.';
+  String get settingsReminderDescription =>
+      'Once a day, at a time you choose (e.g. when you\'re usually home) — a gentle nudge to check in if you feel like talking.';
 
   @override
   String get settingsDailyReminder => 'Daily reminder';
@@ -226,7 +234,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsReminderTimeLabel => 'Time';
 
   @override
-  String get settingsReminderPermissionDenied => 'Notifications aren\'t allowed — enable them for this app in your device settings.';
+  String get settingsReminderPermissionDenied =>
+      'Notifications aren\'t allowed — enable them for this app in your device settings.';
 
   @override
   String get settingsSectionAccount => 'ACCOUNT';
@@ -253,7 +262,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsDeleteAccountDialogTitle => 'Delete account?';
 
   @override
-  String get settingsDeleteAccountWarning => 'This is irreversible: your account, support history, and usage stats will be permanently deleted. Chat history on this device will remain — it was never stored on the server, and you can delete it separately.';
+  String get settingsDeleteAccountWarning =>
+      'This is irreversible: your account, support history, and usage stats will be permanently deleted. Chat history on this device will remain — it was never stored on the server, and you can delete it separately.';
 
   @override
   String get settingsConfirmWithPassword => 'Confirm with your password';
@@ -262,7 +272,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsDeleteForeverButton => 'Delete forever';
 
   @override
-  String get chatNoSoundsUploaded => 'No sounds uploaded yet — the admin hasn\'t added any.';
+  String get chatNoSoundsUploaded =>
+      'No sounds uploaded yet — the admin hasn\'t added any.';
 
   @override
   String get chatStopButton => 'Stop';
@@ -283,7 +294,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatTakeTestTitle => 'Take a test';
 
   @override
-  String get chatTakeTestSubtitle => 'A questionnaire — we\'ll discuss the result right here';
+  String get chatTakeTestSubtitle =>
+      'A questionnaire — we\'ll discuss the result right here';
 
   @override
   String get chatWhichQuestionnaire => 'Which questionnaire?';
@@ -307,10 +319,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatCallHelpTitle => 'Call in a real person for help?';
 
   @override
-  String get chatCallHelpDescription => 'A doctor or specialist from the team will join. This isn\'t a substitute for emergency services — if the situation needs urgent medical help, call your local emergency number.';
+  String get chatCallHelpDescription =>
+      'A doctor or specialist from the team will join. This isn\'t a substitute for emergency services — if the situation needs urgent medical help, call your local emergency number.';
 
   @override
-  String get chatPrepareSummaryQuestion => 'Prepare a short summary of your conversation with the AI for the doctor (not the whole chat), so you don\'t have to explain everything again?';
+  String get chatPrepareSummaryQuestion =>
+      'Prepare a short summary of your conversation with the AI for the doctor (not the whole chat), so you don\'t have to explain everything again?';
 
   @override
   String get chatYesPrepareSummary => 'Yes, prepare a summary';
@@ -328,7 +342,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatNewChatTitle => 'New chat';
 
   @override
-  String get chatDisclaimer => 'The AI can make mistakes. Double-check important information yourself.';
+  String get chatDisclaimer =>
+      'The AI can make mistakes. Double-check important information yourself.';
 
   @override
   String get chatVerifyEmailBanner => 'Verify your email';
@@ -391,7 +406,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aiModeSupportSubtitle => 'Just be there in the conversation';
 
   @override
-  String get aiModeSupportOpener => 'I need some support right now — just be here with me in the conversation and cheer me up.';
+  String get aiModeSupportOpener =>
+      'I need some support right now — just be here with me in the conversation and cheer me up.';
 
   @override
   String get aiModeListenTitle => 'Just listen';
@@ -400,7 +416,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aiModeListenSubtitle => 'No need to jump to advice';
 
   @override
-  String get aiModeListenOpener => 'I just need to talk it out — listen, no need to give advice right away.';
+  String get aiModeListenOpener =>
+      'I just need to talk it out — listen, no need to give advice right away.';
 
   @override
   String get aiModeBreakupTitle => 'Divorce or breakup';
@@ -409,7 +426,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aiModeBreakupSubtitle => 'Start a conversation about it';
 
   @override
-  String get aiModeBreakupOpener => 'I\'m going through a divorce or breakup right now, and it\'s hard to cope. Can you support me while I talk about it?';
+  String get aiModeBreakupOpener =>
+      'I\'m going through a divorce or breakup right now, and it\'s hard to cope. Can you support me while I talk about it?';
 
   @override
   String get aiModeGriefTitle => 'Loss and grief';
@@ -418,7 +436,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aiModeGriefSubtitle => 'Start a conversation about it';
 
   @override
-  String get aiModeGriefOpener => 'I recently lost someone close to me, and I\'d like to talk to someone about it.';
+  String get aiModeGriefOpener =>
+      'I recently lost someone close to me, and I\'d like to talk to someone about it.';
 
   @override
   String get aiModeJobLossTitle => 'Job loss or major life change';
@@ -427,16 +446,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aiModeJobLossSubtitle => 'Start a conversation about it';
 
   @override
-  String get aiModeJobLossOpener => 'I\'m going through a tough time — I lost my job or a sudden change happened in my life, and it\'s hard to deal with. Can you support me while I talk about it?';
+  String get aiModeJobLossOpener =>
+      'I\'m going through a tough time — I lost my job or a sudden change happened in my life, and it\'s hard to deal with. Can you support me while I talk about it?';
 
   @override
   String get aiModeRationalizerTitle => 'Thought checker';
 
   @override
-  String get aiModeRationalizerSubtitle => 'Break down an anxious thought using CBT';
+  String get aiModeRationalizerSubtitle =>
+      'Break down an anxious thought using CBT';
 
   @override
-  String get aiModeRationalizerOpener => 'I have an anxious thought that won\'t leave me alone. Help me break it down using CBT — ask me guiding questions one at a time (for example, what evidence supports this thought, what\'s the worst that could happen and how likely is it) so I can see the situation more clearly.';
+  String get aiModeRationalizerOpener =>
+      'I have an anxious thought that won\'t leave me alone. Help me break it down using CBT — ask me guiding questions one at a time (for example, what evidence supports this thought, what\'s the worst that could happen and how likely is it) so I can see the situation more clearly.';
 
   @override
   String get profileBirthDateHelpText => 'Date of birth';
@@ -510,7 +532,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileEditTitle => 'Personal details';
 
   @override
-  String get profileEditHint => 'All fields are optional — leave blank to clear.';
+  String get profileEditHint =>
+      'All fields are optional — leave blank to clear.';
 
   @override
   String get profileEmergencySectionLabel => 'IN CASE OF EMERGENCY';
@@ -522,7 +545,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileLogoutButton => 'Log out';
 
   @override
-  String get profilePasswordTooShort => 'The new password must be at least 8 characters long.';
+  String get profilePasswordTooShort =>
+      'The new password must be at least 8 characters long.';
 
   @override
   String get profilePasswordsMismatch => 'Passwords don\'t match.';
@@ -597,10 +621,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sidebarEmptyConversation => 'Empty';
 
   @override
-  String get crisisResourcesDefaultTitle => 'If you feel like talking to someone';
+  String get crisisResourcesDefaultTitle =>
+      'If you feel like talking to someone';
 
   @override
-  String get crisisResourcesBody => '• Emergency psychological support for adults and children in Russia, 24/7 and free: 8-800-100-49-94\n• Child and teen helpline (Russia): 8-800-2000-122 (short number: 124)\n\nIf you\'re not in Russia, search for a local crisis line for your country; in the US and Canada you can call or text 988.';
+  String get crisisResourcesBody =>
+      '• Emergency psychological support for adults and children in Russia, 24/7 and free: 8-800-100-49-94\n• Child and teen helpline (Russia): 8-800-2000-122 (short number: 124)\n\nIf you\'re not in Russia, search for a local crisis line for your country; in the US and Canada you can call or text 988.';
 
   @override
   String get navChat => 'Chat';
@@ -618,7 +644,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sleepMusicTitle => 'Sleep music';
 
   @override
-  String get sleepMusicNoneUploaded => 'No music uploaded yet — the admin hasn\'t added any.';
+  String get sleepMusicNoneUploaded =>
+      'No music uploaded yet — the admin hasn\'t added any.';
 
   @override
   String get customTestListTitle => 'Tests';
@@ -645,7 +672,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get who5Q4 => 'I woke up feeling fresh and rested';
 
   @override
-  String get who5Q5 => 'My daily life has been filled with things that interest me';
+  String get who5Q5 =>
+      'My daily life has been filled with things that interest me';
 
   @override
   String get who5ScaleAllTime => 'All of the time';
@@ -666,7 +694,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get who5ScaleNever => 'At no time';
 
   @override
-  String get wellbeingSaveFailed => 'Couldn\'t save the result locally. You can take it again.';
+  String get wellbeingSaveFailed =>
+      'Couldn\'t save the result locally. You can take it again.';
 
   @override
   String get wellbeingToolsSection => 'TOOLS';
@@ -699,7 +728,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wellbeingSafeTitle => 'Safe';
 
   @override
-  String get wellbeingSafeSubtitle => 'Write down a thought to come back to later';
+  String get wellbeingSafeSubtitle =>
+      'Write down a thought to come back to later';
 
   @override
   String get wellbeingFreewritingTitle => 'Freewriting';
@@ -711,7 +741,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wellbeingQuestionnairesSection => 'QUESTIONNAIRES';
 
   @override
-  String get wellbeingQuestionnairesDisclaimer => 'Official, freely distributed tools. Not a diagnosis — just self-screening.';
+  String get wellbeingQuestionnairesDisclaimer =>
+      'Official, freely distributed tools. Not a diagnosis — just self-screening.';
 
   @override
   String get who5CardTitle => 'WHO-5 — general wellbeing';
@@ -720,7 +751,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wellbeingReleaseTitle => 'Let go';
 
   @override
-  String get wellbeingReleaseSubtitle => 'Write down a heavy thought and burn/smash it';
+  String get wellbeingReleaseSubtitle =>
+      'Write down a heavy thought and burn/smash it';
 
   @override
   String get wellbeingSleepMusicTitle => 'Sleep music';
@@ -732,16 +764,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wellbeingLiveHelpTitle => 'Live help';
 
   @override
-  String get wellbeingLiveHelpSubtitle => 'Message an operator if you need a real person';
+  String get wellbeingLiveHelpSubtitle =>
+      'Message an operator if you need a real person';
 
   @override
-  String get wellbeingCustomTestsSubtitle => 'Extra questionnaires, if the admin added any';
+  String get wellbeingCustomTestsSubtitle =>
+      'Extra questionnaires, if the admin added any';
 
   @override
   String get who5HistorySection => 'WHO-5 HISTORY';
 
   @override
-  String get who5Instructions => 'Mark what\'s closest to how you\'ve felt over the last two weeks.';
+  String get who5Instructions =>
+      'Mark what\'s closest to how you\'ve felt over the last two weeks.';
 
   @override
   String get commonBack => 'Back';
@@ -759,10 +794,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get who5ResultNormal => 'Score within the normal range';
 
   @override
-  String get who5DescriptionLow => 'This isn\'t a diagnosis. Under the WHO method, a score below 50% is a reason to see a specialist for a more accurate assessment, especially if this has continued for more than two weeks.';
+  String get who5DescriptionLow =>
+      'This isn\'t a diagnosis. Under the WHO method, a score below 50% is a reason to see a specialist for a more accurate assessment, especially if this has continued for more than two weeks.';
 
   @override
-  String get who5DescriptionNormal => 'The official WHO method considers this result a sign of normal psychological wellbeing over the last two weeks.';
+  String get who5DescriptionNormal =>
+      'The official WHO method considers this result a sign of normal psychological wellbeing over the last two weeks.';
 
   @override
   String who5DiscussPrompt(String score, String extra) {
@@ -770,7 +807,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get who5RecommendSpecialist => ' — the method recommends discussing this with a specialist';
+  String get who5RecommendSpecialist =>
+      ' — the method recommends discussing this with a specialist';
 
   @override
   String get who5DiscussButton => 'Discuss with AI';
@@ -779,7 +817,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get who5BackToHistory => 'Back to history';
 
   @override
-  String get wellbeingAiDisclaimer => 'The AI and automatic scoring can make mistakes. This questionnaire is a self-monitoring tool, not a diagnosis. For an accurate assessment of your psychological state, see a doctor or therapist.';
+  String get wellbeingAiDisclaimer =>
+      'The AI and automatic scoring can make mistakes. This questionnaire is a self-monitoring tool, not a diagnosis. For an accurate assessment of your psychological state, see a doctor or therapist.';
 
   @override
   String get wellbeingBreathingSubtitle => '4 phases, 4 sec each';
@@ -806,10 +845,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get asrsTileSubtitle => '6 questions, 1-2 minutes';
 
   @override
-  String get who5LicenseAttribution => 'Questionnaire: World Health Organization-Five Well-Being Index (WHO-5), © World Health Organization 2024, licensed under CC BY-NC-SA 3.0 IGO. WHO endorsement of this application is not implied.';
+  String get who5LicenseAttribution =>
+      'Questionnaire: World Health Organization-Five Well-Being Index (WHO-5), © World Health Organization 2024, licensed under CC BY-NC-SA 3.0 IGO. WHO endorsement of this application is not implied.';
 
   @override
-  String get helpNoCheckinsSnack => 'No completed questionnaires yet — you can take one in the Wellbeing section.';
+  String get helpNoCheckinsSnack =>
+      'No completed questionnaires yet — you can take one in the Wellbeing section.';
 
   @override
   String get helpPickResultTitle => 'Which result to send?';
@@ -823,7 +864,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get helpWeekSummaryHeader => 'Questionnaire results over the last 7 days:';
+  String get helpWeekSummaryHeader =>
+      'Questionnaire results over the last 7 days:';
 
   @override
   String helpWeekLineWho5(String date, int percent) {
@@ -831,7 +873,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String helpWeekLinePhq9(String date, int score, String severity, String risk) {
+  String helpWeekLinePhq9(
+    String date,
+    int score,
+    String severity,
+    String risk,
+  ) {
     return '• PHQ-9 ($date): $score/27, \"$severity\"$risk';
   }
 
@@ -854,7 +901,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String helpSinglePhq9Result(String date, int score, String severity, String risk) {
+  String helpSinglePhq9Result(
+    String date,
+    int score,
+    String severity,
+    String risk,
+  ) {
     return 'PHQ-9 questionnaire result ($date): $score/27, the method describes this as \"$severity\"$risk.';
   }
 
@@ -889,7 +941,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpFinishButton => 'Finish';
 
   @override
-  String get helpRequestSentHint => 'Request sent — a message will appear once someone joins.';
+  String get helpRequestSentHint =>
+      'Request sent — a message will appear once someone joins.';
 
   @override
   String get helpWriteWhatHappenedHint => 'Write what happened.';
@@ -898,7 +951,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpMessageHint => 'Write a message…';
 
   @override
-  String get helpChatContextHeader => 'What happened in the AI chat before this request';
+  String get helpChatContextHeader =>
+      'What happened in the LOMALU before this request';
 
   @override
   String get helpYourRatingTitle => 'Your rating';
@@ -919,7 +973,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phq9Q2 => 'Feeling down, depressed, or hopeless';
 
   @override
-  String get phq9Q3 => 'Trouble falling or staying asleep, or sleeping too much';
+  String get phq9Q3 =>
+      'Trouble falling or staying asleep, or sleeping too much';
 
   @override
   String get phq9Q4 => 'Feeling tired or having little energy';
@@ -928,16 +983,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phq9Q5 => 'Poor appetite or overeating';
 
   @override
-  String get phq9Q6 => 'Feeling bad about yourself — or that you are a failure or have let yourself or your family down';
+  String get phq9Q6 =>
+      'Feeling bad about yourself — or that you are a failure or have let yourself or your family down';
 
   @override
-  String get phq9Q7 => 'Trouble concentrating on things, such as reading the newspaper or watching television';
+  String get phq9Q7 =>
+      'Trouble concentrating on things, such as reading the newspaper or watching television';
 
   @override
-  String get phq9Q8 => 'Moving or speaking so slowly that other people could have noticed. Or the opposite — being so fidgety or restless that you have been moving around a lot more than usual';
+  String get phq9Q8 =>
+      'Moving or speaking so slowly that other people could have noticed. Or the opposite — being so fidgety or restless that you have been moving around a lot more than usual';
 
   @override
-  String get phq9Q9 => 'Thoughts that you would be better off dead, or of hurting yourself in some way';
+  String get phq9Q9 =>
+      'Thoughts that you would be better off dead, or of hurting yourself in some way';
 
   @override
   String get gad7Q1 => 'Feeling nervous, anxious, or on edge';
@@ -991,13 +1050,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phq9IntroTitle => 'Depression symptom screener';
 
   @override
-  String get phq9IntroBody => 'An official, widely used primary-care screening tool (Patient Health Questionnaire-9). 9 questions, 2-3 minutes. This isn\'t a diagnosis — the result shows symptom severity over the last 2 weeks, not a medical conclusion. Only you take it and see the result — nothing is sent to the server.';
+  String get phq9IntroBody =>
+      'An official, widely used primary-care screening tool (Patient Health Questionnaire-9). 9 questions, 2-3 minutes. This isn\'t a diagnosis — the result shows symptom severity over the last 2 weeks, not a medical conclusion. Only you take it and see the result — nothing is sent to the server.';
 
   @override
   String get gad7IntroTitle => 'Anxiety symptom screener';
 
   @override
-  String get gad7IntroBody => 'An official, widely used primary-care screening tool (Generalized Anxiety Disorder-7). 7 questions, 1-2 minutes. This isn\'t a diagnosis — the result shows symptom severity over the last 2 weeks, not a medical conclusion. Only you take it and see the result — nothing is sent to the server.';
+  String get gad7IntroBody =>
+      'An official, widely used primary-care screening tool (Generalized Anxiety Disorder-7). 7 questions, 1-2 minutes. This isn\'t a diagnosis — the result shows symptom severity over the last 2 weeks, not a medical conclusion. Only you take it and see the result — nothing is sent to the server.';
 
   @override
   String get checkinTakeTestButton => 'Take the questionnaire';
@@ -1009,7 +1070,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get checkinHistorySection => 'HISTORY';
 
   @override
-  String get pfizerInstructions => 'Over the last 2 weeks, how often have you been bothered by the following problems?';
+  String get pfizerInstructions =>
+      'Over the last 2 weeks, how often have you been bothered by the following problems?';
 
   @override
   String get checkinIfHardRightNow => 'If it\'s hard right now';
@@ -1020,13 +1082,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get pfizerSuggestAssessment => 'At this result, the method recommends discussing it with a specialist — this is a screening, not a diagnosis.';
+  String get pfizerSuggestAssessment =>
+      'At this result, the method recommends discussing it with a specialist — this is a screening, not a diagnosis.';
 
   @override
-  String get pfizerNoAssessmentNeeded => 'The official method doesn\'t consider this result a reason for further assessment — but if you\'re struggling, that\'s not erased by this number.';
+  String get pfizerNoAssessmentNeeded =>
+      'The official method doesn\'t consider this result a reason for further assessment — but if you\'re struggling, that\'s not erased by this number.';
 
   @override
-  String get phq9RiskNoteDiscuss => ' A positive response was noted on the item about thoughts of self-harm.';
+  String get phq9RiskNoteDiscuss =>
+      ' A positive response was noted on the item about thoughts of self-harm.';
 
   @override
   String phq9DiscussPrompt(int score, String severity, String riskNote) {
@@ -1047,7 +1112,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get purchaseAdNotReadyYet => 'Ad isn\'t available yet, try again in a bit.';
+  String get purchaseAdNotReadyYet =>
+      'Ad isn\'t available yet, try again in a bit.';
 
   @override
   String get purchaseCheckoutOpenFailed => 'Couldn\'t open the payment page.';
@@ -1065,7 +1131,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get purchaseFreeRequestsGone => 'Out of free requests for today?';
 
   @override
-  String get purchaseTelegramPitch => 'Subscribe to our Telegram channel — get more requests today, every day, while you\'re subscribed.';
+  String get purchaseTelegramPitch =>
+      'Subscribe to our Telegram channel — get more requests today, every day, while you\'re subscribed.';
 
   @override
   String get purchaseTelegramLinked => 'Telegram linked';
@@ -1120,7 +1187,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get purchaseTelegramDialogTitle => 'Link Telegram';
 
   @override
-  String get purchaseTelegramDialogBody => 'Open the bot and send it this code in a direct message:';
+  String get purchaseTelegramDialogBody =>
+      'Open the bot and send it this code in a direct message:';
 
   @override
   String get purchaseOpenBotButton => 'Open bot';
@@ -1129,37 +1197,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get voiceSettingsTitle => 'Voice';
 
   @override
-  String get voiceSettingsDisabledByAdmin => 'Voice features are temporarily disabled by the admin.';
+  String get voiceSettingsDisabledByAdmin =>
+      'Voice features are temporarily disabled by the admin.';
 
   @override
   String get voiceSettingsUseVoice => 'Use voice';
 
   @override
-  String get voiceSettingsHiddenHint => 'The microphone and reading responses aloud are hidden. Turn on the toggle above to bring them back.';
+  String get voiceSettingsHiddenHint =>
+      'The microphone and reading responses aloud are hidden. Turn on the toggle above to bring them back.';
 
   @override
   String get voiceSettingsSpeechRecognitionSection => 'SPEECH RECOGNITION';
 
   @override
-  String get voiceSettingsMicAvailable => 'Microphone available — the button will appear next to the input field';
+  String get voiceSettingsMicAvailable =>
+      'Microphone available — the button will appear next to the input field';
 
   @override
-  String get voiceSettingsMicUnavailable => 'Microphone unavailable on this device (no permission or recognition engine)';
+  String get voiceSettingsMicUnavailable =>
+      'Microphone unavailable on this device (no permission or recognition engine)';
 
   @override
   String get voiceSettingsAutoReadSection => 'READING RESPONSES ALOUD';
 
   @override
-  String get voiceSettingsAutoReadToggle => 'Read responses aloud automatically';
+  String get voiceSettingsAutoReadToggle =>
+      'Read responses aloud automatically';
 
   @override
   String get voiceSettingsVoiceSection => 'VOICE';
 
   @override
-  String get voiceSettingsVoiceInstructions => 'Listen to each one and pick whichever sounds calmer to you — by ear is more reliable than a description.';
+  String get voiceSettingsVoiceInstructions =>
+      'Listen to each one and pick whichever sounds calmer to you — by ear is more reliable than a description.';
 
   @override
-  String get voiceSettingsNoVoicesLoaded => 'Voices haven\'t loaded yet or aren\'t available on this device.';
+  String get voiceSettingsNoVoicesLoaded =>
+      'Voices haven\'t loaded yet or aren\'t available on this device.';
 
   @override
   String get voiceSettingsFemaleSection => 'FEMALE VOICE';
@@ -1171,7 +1246,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get voiceSettingsOtherSection => 'OTHER OPTIONS';
 
   @override
-  String get voiceSettingsCouldNotClassify => 'Couldn\'t tell the voice\'s gender from its name — just listen and pick.';
+  String get voiceSettingsCouldNotClassify =>
+      'Couldn\'t tell the voice\'s gender from its name — just listen and pick.';
 
   @override
   String get voiceSettingsPreviewTooltip => 'Preview';
@@ -1213,7 +1289,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get operatorIssueWarningTitle => 'Issue a warning';
 
   @override
-  String get operatorWarningReasonHint => 'What for — this reason will stay in the history';
+  String get operatorWarningReasonHint =>
+      'What for — this reason will stay in the history';
 
   @override
   String get operatorIssueButton => 'Issue';
@@ -1279,22 +1356,28 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get asrsQ1 => 'How often do you have trouble wrapping up the final details of a project, once the challenging parts have been done?';
+  String get asrsQ1 =>
+      'How often do you have trouble wrapping up the final details of a project, once the challenging parts have been done?';
 
   @override
-  String get asrsQ2 => 'How often do you have difficulty getting things in order when you have to do a task that requires organization?';
+  String get asrsQ2 =>
+      'How often do you have difficulty getting things in order when you have to do a task that requires organization?';
 
   @override
-  String get asrsQ3 => 'How often do you have problems remembering appointments or obligations?';
+  String get asrsQ3 =>
+      'How often do you have problems remembering appointments or obligations?';
 
   @override
-  String get asrsQ4 => 'When you have a task that requires a lot of thought, how often do you avoid or delay getting started?';
+  String get asrsQ4 =>
+      'When you have a task that requires a lot of thought, how often do you avoid or delay getting started?';
 
   @override
-  String get asrsQ5 => 'How often do you fidget or squirm with your hands or feet when you have to sit down for a long time?';
+  String get asrsQ5 =>
+      'How often do you fidget or squirm with your hands or feet when you have to sit down for a long time?';
 
   @override
-  String get asrsQ6 => 'How often do you feel overly active and compelled to do things, like you were driven by a motor?';
+  String get asrsQ6 =>
+      'How often do you feel overly active and compelled to do things, like you were driven by a motor?';
 
   @override
   String get asrsScaleNever => 'Never';
@@ -1315,19 +1398,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get asrsIntroTitle => 'Adult ADHD symptom screening';
 
   @override
-  String get asrsIntroBody => 'An official WHO questionnaire (Adult ADHD Self-Report Scale, short 6-question version). 1-2 minutes. This is a screening, not a diagnosis — a positive result means it\'s worth discussing with a specialist, not that a diagnosis is already there. Only you take it and see the result — nothing is sent to the server.';
+  String get asrsIntroBody =>
+      'An official WHO questionnaire (Adult ADHD Self-Report Scale, short 6-question version). 1-2 minutes. This is a screening, not a diagnosis — a positive result means it\'s worth discussing with a specialist, not that a diagnosis is already there. Only you take it and see the result — nothing is sent to the server.';
 
   @override
-  String get asrsInstructions => 'Over the last 6 months, how often has this happened?';
+  String get asrsInstructions =>
+      'Over the last 6 months, how often has this happened?';
 
   @override
   String get asrsShadedCountSuffix => 'out of 6 in the significant range';
 
   @override
-  String get asrsSuggestAssessment => 'The method\'s official threshold (4 out of 6) has been reached — it recommends discussing this with a specialist. This is a screening, not a diagnosis.';
+  String get asrsSuggestAssessment =>
+      'The method\'s official threshold (4 out of 6) has been reached — it recommends discussing this with a specialist. This is a screening, not a diagnosis.';
 
   @override
-  String get asrsNoAssessmentNeeded => 'The official method doesn\'t consider this result a reason for further assessment — but if any of this is bothering you, it\'s still worth discussing with a specialist.';
+  String get asrsNoAssessmentNeeded =>
+      'The official method doesn\'t consider this result a reason for further assessment — but if any of this is bothering you, it\'s still worth discussing with a specialist.';
 
   @override
   String asrsDiscussPrompt(int shaded, String extra) {
@@ -1335,10 +1422,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get authBiometricNotConfigured => 'Biometrics (Face ID/fingerprint) aren\'t set up on this device — turn it on in the device\'s own settings first.';
+  String get authBiometricNotConfigured =>
+      'Biometrics (Face ID/fingerprint) aren\'t set up on this device — turn it on in the device\'s own settings first.';
 
   @override
-  String get authBiometricConfirmReason => 'Confirm to turn on biometric sign-in';
+  String get authBiometricConfirmReason =>
+      'Confirm to turn on biometric sign-in';
 
   @override
   String get authBiometricConfirmFailed => 'Couldn\'t confirm — try again.';
@@ -1373,7 +1462,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messageEditDialogTitle => 'Edit message';
 
   @override
-  String get messageEditDialogWarning => 'The model\'s response to this message and everything after it will be deleted — the model will answer again based on the edited text.';
+  String get messageEditDialogWarning =>
+      'The model\'s response to this message and everything after it will be deleted — the model will answer again based on the edited text.';
 
   @override
   String get messageRetryButton => 'Ask again';
@@ -1418,7 +1508,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get freewritingTitle => 'Freewriting';
 
   @override
-  String get freewritingIntro => 'Write continuously, whatever comes to mind — no censoring, no fixing mistakes, don\'t stop. This isn\'t about nice-sounding text, it\'s about clearing your head.';
+  String get freewritingIntro =>
+      'Write continuously, whatever comes to mind — no censoring, no fixing mistakes, don\'t stop. This isn\'t about nice-sounding text, it\'s about clearing your head.';
 
   @override
   String get freewritingHowManyMinutes => 'How many minutes?';
@@ -1438,7 +1529,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get freewritingHint => 'Keep writing, don\'t stop…';
 
   @override
-  String get freewritingTimeUpBody => 'Time\'s up. You can leave the text on screen and reread it, or clear it right away — whichever suits you.';
+  String get freewritingTimeUpBody =>
+      'Time\'s up. You can leave the text on screen and reread it, or clear it right away — whichever suits you.';
 
   @override
   String get freewritingEmptyPlaceholder => '(empty)';
@@ -1477,13 +1569,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groundingTasteSense => 'Taste';
 
   @override
-  String get groundingTastePrompt => 'Name 1 thing you can taste or remember tasting';
+  String get groundingTastePrompt =>
+      'Name 1 thing you can taste or remember tasting';
 
   @override
   String get groundingTitle => 'Grounding technique';
 
   @override
-  String get groundingListeningHint => 'Listening — I\'ll switch on my own once you\'re done talking';
+  String get groundingListeningHint =>
+      'Listening — I\'ll switch on my own once you\'re done talking';
 
   @override
   String get groundingNextButton => 'Next';
@@ -1492,7 +1586,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groundingDoneSubtitle => 'You can repeat this any time.';
 
   @override
-  String get groundingIfAnxietyPersists => 'If the anxiety doesn\'t ease up — it\'s normal for one technique not to be enough. You can talk to someone close to you or a specialist.';
+  String get groundingIfAnxietyPersists =>
+      'If the anxiety doesn\'t ease up — it\'s normal for one technique not to be enough. You can talk to someone close to you or a specialist.';
 
   @override
   String get groundingStartOverButton => 'Start over';
@@ -1510,7 +1605,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get muscleShouldersGroup => 'Shoulders';
 
   @override
-  String get muscleShouldersTense => 'Raise your shoulders as high as you can toward your ears';
+  String get muscleShouldersTense =>
+      'Raise your shoulders as high as you can toward your ears';
 
   @override
   String get muscleShouldersRelease => 'Let go, let your shoulders drop';
@@ -1583,7 +1679,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get chatSessionExpired => 'Your session expired. Sign out and sign in again.';
+  String get chatSessionExpired =>
+      'Your session expired. Sign out and sign in again.';
 
   @override
   String chatServerErrorCode(int code) {
@@ -1596,13 +1693,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get chatResponseTruncated => '\n\n⚠️ The response got cut off — the connection closed before the model finished. Try again.';
+  String get chatResponseTruncated =>
+      '\n\n⚠️ The response got cut off — the connection closed before the model finished. Try again.';
 
   @override
-  String get chatDoctorSummaryPrompt => 'In 2-3 sentences, briefly describe the person\'s condition to a doctor in the third person, based on this conversation — what\'s bothering them, for how long, what\'s already been discussed. Write it for the doctor as a colleague, not for the person themselves, and don\'t use \"you\".';
+  String get chatDoctorSummaryPrompt =>
+      'In 2-3 sentences, briefly describe the person\'s condition to a doctor in the third person, based on this conversation — what\'s bothering them, for how long, what\'s already been discussed. Write it for the doctor as a colleague, not for the person themselves, and don\'t use \"you\".';
 
   @override
-  String get memoryReleaseIntro => 'Write down what\'s hard to hold onto — a heavy thought, a grudge, a memory. No one will see or save it — once you let it go, the text disappears for good, with no way to get it back.';
+  String get memoryReleaseIntro =>
+      'Write down what\'s hard to hold onto — a heavy thought, a grudge, a memory. No one will see or save it — once you let it go, the text disappears for good, with no way to get it back.';
 
   @override
   String get memoryReleaseHint => 'Write here…';
@@ -1614,10 +1714,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get memoryReleaseShatterMode => 'Shatter';
 
   @override
-  String get memoryReleaseEnvelopeResult => 'Sealed and sliced apart — nothing\'s left of the text.';
+  String get memoryReleaseEnvelopeResult =>
+      'Sealed and sliced apart — nothing\'s left of the text.';
 
   @override
-  String get memoryReleaseShatteredResult => 'Shattered to pieces — the text is gone.';
+  String get memoryReleaseShatteredResult =>
+      'Shattered to pieces — the text is gone.';
 
   @override
   String get memoryReleaseWriteMoreButton => 'Write more';
@@ -1656,7 +1758,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myHelpCallPersonTitle => 'Call for human help';
 
   @override
-  String get myHelpCallPersonDescription => 'A doctor or specialist from the team will join. This isn\'t a substitute for emergency services — if the situation calls for urgent medical help, call your local emergency number or go straight to an emergency room.';
+  String get myHelpCallPersonDescription =>
+      'A doctor or specialist from the team will join. This isn\'t a substitute for emergency services — if the situation calls for urgent medical help, call your local emergency number or go straight to an emergency room.';
 
   @override
   String get myHelpDescribeHint => 'Briefly, what happened (optional)';
@@ -1714,13 +1817,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportSentTitle => 'Report sent';
 
   @override
-  String get reportSentBody => 'Thanks — we\'ll take a look at this response. The question and answer text was sent along with the report, so it can be reviewed right away without asking you again.';
+  String get reportSentBody =>
+      'Thanks — we\'ll take a look at this response. The question and answer text was sent along with the report, so it can be reviewed right away without asking you again.';
 
   @override
   String get reportDialogTitle => 'Report this response';
 
   @override
-  String get reportDialogBody => 'The question and the response you\'re reporting will be sent along with the report — otherwise it won\'t be possible to figure out what exactly went wrong.';
+  String get reportDialogBody =>
+      'The question and the response you\'re reporting will be sent along with the report — otherwise it won\'t be possible to figure out what exactly went wrong.';
 
   @override
   String get reportReasonHint => 'What\'s wrong with this response? (optional)';
@@ -1750,7 +1855,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpLoadActiveSessionsFailed => 'Couldn\'t load active requests.';
 
   @override
-  String get helpRequestAlreadyTaken => 'This request was already taken by another operator.';
+  String get helpRequestAlreadyTaken =>
+      'This request was already taken by another operator.';
 
   @override
   String get helpAcceptRequestFailed => 'Couldn\'t accept the request.';
@@ -1774,7 +1880,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get breathingStopButton => 'Stop';
 
   @override
-  String get breathingDisclaimer => 'A simple breath self-regulation technique — it doesn\'t replace professional help. If you feel dizzy — stop the exercise and breathe at your usual pace.';
+  String get breathingDisclaimer =>
+      'A simple breath self-regulation technique — it doesn\'t replace professional help. If you feel dizzy — stop the exercise and breathe at your usual pace.';
 
   @override
   String get themeVariantViolet => 'Violet';
@@ -1825,7 +1932,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customTestsDeleteFailed => 'Couldn\'t delete the test.';
 
   @override
-  String get safeContainmentIntro => 'If a thought or feeling is too intense but this isn\'t the time to deal with it — write it down and put it in the safe. It won\'t disappear forever, it\'ll just wait until you have time to come back to it.';
+  String get safeContainmentIntro =>
+      'If a thought or feeling is too intense but this isn\'t the time to deal with it — write it down and put it in the safe. It won\'t disappear forever, it\'ll just wait until you have time to come back to it.';
 
   @override
   String get safeContainmentHint => 'What needs to be set aside for later?';
@@ -1834,7 +1942,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get safeContainmentPutAwayButton => 'Put in the safe';
 
   @override
-  String get safeContainmentDoneBody => 'Safely tucked away. It won\'t distract you right now — we\'ll come back to it when you\'re ready.';
+  String get safeContainmentDoneBody =>
+      'Safely tucked away. It won\'t distract you right now — we\'ll come back to it when you\'re ready.';
 
   @override
   String get voicePreviewPhrase => 'Hi! This is what this voice sounds like.';
@@ -1880,70 +1989,91 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get reminderPrompt1 => 'How was your day? If you feel like talking — I\'m here.';
+  String get reminderPrompt1 =>
+      'How was your day? If you feel like talking — I\'m here.';
 
   @override
-  String get reminderPrompt2 => 'A short pause — how are you doing overall right now?';
+  String get reminderPrompt2 =>
+      'A short pause — how are you doing overall right now?';
 
   @override
-  String get reminderPrompt3 => 'If something\'s been building up that you want to talk about — now\'s a good time.';
+  String get reminderPrompt3 =>
+      'If something\'s been building up that you want to talk about — now\'s a good time.';
 
   @override
-  String get reminderPrompt4 => 'How\'s your mood today? Stop by if you need to get something off your chest.';
+  String get reminderPrompt4 =>
+      'How\'s your mood today? Stop by if you need to get something off your chest.';
 
   @override
-  String get reminderPrompt5 => 'Just a reminder that you can stop by and share how your day went.';
+  String get reminderPrompt5 =>
+      'Just a reminder that you can stop by and share how your day went.';
 
   @override
-  String get reminderPrompt6 => 'If today was packed, a couple of minutes to breathe wouldn\'t hurt.';
+  String get reminderPrompt6 =>
+      'If today was packed, a couple of minutes to breathe wouldn\'t hurt.';
 
   @override
-  String get reminderPrompt7 => 'Sometimes it helps just to say your thoughts out loud. I\'m listening.';
+  String get reminderPrompt7 =>
+      'Sometimes it helps just to say your thoughts out loud. I\'m listening.';
 
   @override
-  String get reminderPrompt8 => 'How\'s your body feeling today — shoulders relaxed, fists unclenched?';
+  String get reminderPrompt8 =>
+      'How\'s your body feeling today — shoulders relaxed, fists unclenched?';
 
   @override
-  String get reminderPrompt9 => 'Feeling anxious? Try a quick breathing exercise — it\'s in the Care section.';
+  String get reminderPrompt9 =>
+      'Feeling anxious? Try a quick breathing exercise — it\'s in the Care section.';
 
   @override
-  String get reminderPrompt10 => 'If it\'s hard to unwind before bed, sleep music might help — worth a look.';
+  String get reminderPrompt10 =>
+      'If it\'s hard to unwind before bed, sleep music might help — worth a look.';
 
   @override
-  String get reminderPrompt11 => 'Muscles tense up quietly over the day. There\'s an exercise that helps let it go.';
+  String get reminderPrompt11 =>
+      'Muscles tense up quietly over the day. There\'s an exercise that helps let it go.';
 
   @override
-  String get reminderPrompt12 => 'Anything today worth keeping? You can save a photo with a thought in My moments.';
+  String get reminderPrompt12 =>
+      'Anything today worth keeping? You can save a photo with a thought in My moments.';
 
   @override
-  String get reminderPrompt13 => 'You don\'t have to wait until it gets hard — you can just stop by and share how things are.';
+  String get reminderPrompt13 =>
+      'You don\'t have to wait until it gets hard — you can just stop by and share how things are.';
 
   @override
-  String get reminderPrompt14 => 'Did you manage to breathe out even for a minute today?';
+  String get reminderPrompt14 =>
+      'Did you manage to breathe out even for a minute today?';
 
   @override
-  String get reminderPrompt15 => 'If today was rough, you don\'t need to explain everything at once. Start anywhere.';
+  String get reminderPrompt15 =>
+      'If today was rough, you don\'t need to explain everything at once. Start anywhere.';
 
   @override
-  String get reminderPrompt16 => 'Sometimes it\'s worth just noting: this day happened. How was it for you?';
+  String get reminderPrompt16 =>
+      'Sometimes it\'s worth just noting: this day happened. How was it for you?';
 
   @override
-  String get reminderPrompt17 => 'No need to prepare for this conversation — just write whatever comes to mind first.';
+  String get reminderPrompt17 =>
+      'No need to prepare for this conversation — just write whatever comes to mind first.';
 
   @override
-  String get reminderPrompt18 => 'If something good happened today, share it — nice things are better shared.';
+  String get reminderPrompt18 =>
+      'If something good happened today, share it — nice things are better shared.';
 
   @override
-  String get reminderPrompt19 => 'Self-care isn\'t always big steps. Sometimes a couple of minutes\' pause is enough.';
+  String get reminderPrompt19 =>
+      'Self-care isn\'t always big steps. Sometimes a couple of minutes\' pause is enough.';
 
   @override
-  String get reminderPrompt20 => 'How are you doing right now — physically and inside? No need for a long answer.';
+  String get reminderPrompt20 =>
+      'How are you doing right now — physically and inside? No need for a long answer.';
 
   @override
   String get reminderChannelName => 'Daily reminders';
 
   @override
-  String get reminderChannelDescription => 'A reminder to check in at your chosen time';
+  String get reminderChannelDescription =>
+      'A reminder to check in at your chosen time';
 
   @override
   String get supportTitle => 'Support';
@@ -1955,10 +2085,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get supportNoTicketsYet => 'No tickets yet';
 
   @override
-  String get supportDescribeProblem => 'Describe the problem — we\'ll take a look and reply';
+  String get supportDescribeProblem =>
+      'Describe the problem — we\'ll take a look and reply';
 
   @override
-  String get supportHint => 'For example: the model doesn\'t respond to long questions…';
+  String get supportHint =>
+      'For example: the model doesn\'t respond to long questions…';
 
   @override
   String get supportSending => 'Sending…';
@@ -1994,10 +2126,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get leavesOnStreamTitle => 'Leaves on the stream';
 
   @override
-  String get leavesOnStreamIntro => 'Write down a thought you want to let go of. It\'ll float down the stream and dissolve — nothing is saved.';
+  String get leavesOnStreamIntro =>
+      'Write down a thought you want to let go of. It\'ll float down the stream and dissolve — nothing is saved.';
 
   @override
-  String get leavesOnStreamHint => 'For example: I\'m afraid I won\'t manage...';
+  String get leavesOnStreamHint =>
+      'For example: I\'m afraid I won\'t manage...';
 
   @override
   String get leavesOnStreamDoneText => 'The thought floated away.';
@@ -2006,7 +2140,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bilateralTitle => 'Bilateral stimulation';
 
   @override
-  String get bilateralIntro => 'Follow the ball with your eyes only, without turning your head. This helps reduce the intensity of anxiety. It doesn\'t replace working with a specialist if the anxiety is strong or frequent.';
+  String get bilateralIntro =>
+      'Follow the ball with your eyes only, without turning your head. This helps reduce the intensity of anxiety. It doesn\'t replace working with a specialist if the anxiety is strong or frequent.';
 
   @override
   String get operatorDashboardTitle => 'Operator dashboard';
@@ -2022,7 +2157,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get operatorDashboardNoOneWaiting => 'No one is waiting to connect right now';
+  String get operatorDashboardNoOneWaiting =>
+      'No one is waiting to connect right now';
 
   @override
   String get operatorDashboardNoDescription => 'No description';
@@ -2037,7 +2173,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gratitudePrompt => 'Three things you\'re grateful for today';
 
   @override
-  String get gratitudeHint => 'It doesn\'t have to be something big — a small thing works too.';
+  String get gratitudeHint =>
+      'It doesn\'t have to be something big — a small thing works too.';
 
   @override
   String get gratitudeEntriesSection => 'ENTRIES';
@@ -2062,7 +2199,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wellbeingCalendarTakeTestButton => 'Take a test';
 
   @override
-  String get wellbeingCalendarEmptyState => 'No completed questionnaires yet — they\'ll show up here\nonce you take one in the \"Wellbeing\" section.';
+  String get wellbeingCalendarEmptyState =>
+      'No completed questionnaires yet — they\'ll show up here\nonce you take one in the \"Wellbeing\" section.';
 
   @override
   String get weekdayMon => 'Mon';
@@ -2089,7 +2227,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatQuestionNotFound => '(question not found)';
 
   @override
-  String get chatTestDeclinedContinuation => 'The user tapped \"No, not now\" on the test suggestion. Just continue the conversation naturally, without explicitly mentioning the decline or apologizing for the suggestion.';
+  String get chatTestDeclinedContinuation =>
+      'The user tapped \"No, not now\" on the test suggestion. Just continue the conversation naturally, without explicitly mentioning the decline or apologizing for the suggestion.';
 
   @override
   String cloudVoiceLabelFemale(String name) {
@@ -2102,7 +2241,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get modelDowngradedNotice => 'You\'ve run out of tokens for the advanced AI version this month — this reply came from the regular model. Upgrade your subscription above to get more.';
+  String get modelDowngradedNotice =>
+      'You\'ve run out of tokens for the advanced AI version this month — this reply came from the regular model. Upgrade your subscription above to get more.';
 
   @override
   String get modelDowngradedUpgradeButton => 'Upgrade plan';
@@ -2126,7 +2266,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sleepMusicTabPlaylists => 'My playlists';
 
   @override
-  String get sleepMusicNoPlaylists => 'No playlists yet — create your first one.';
+  String get sleepMusicNoPlaylists =>
+      'No playlists yet — create your first one.';
 
   @override
   String get sleepMusicCreatePlaylist => 'Create playlist';
@@ -2158,13 +2299,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get sleepMusicOwnFileWebNotice => 'On the web your own file will only play until the page reloads — it can\'t be saved permanently here.';
+  String get sleepMusicOwnFileWebNotice =>
+      'On the web your own file will only play until the page reloads — it can\'t be saved permanently here.';
 
   @override
   String get sleepMusicFileReadError => 'Couldn\'t read the file.';
 
   @override
-  String get sleepMusicNoTracksInCatalogYet => 'No sounds in the catalog yet — an admin needs to add some first.';
+  String get sleepMusicNoTracksInCatalogYet =>
+      'No sounds in the catalog yet — an admin needs to add some first.';
 
   @override
   String get sleepMusicTimerCancel => 'Turn off timer';
@@ -2181,7 +2324,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sleepMusicLikedTitle => 'Liked';
 
   @override
-  String get sleepMusicNoLikedYet => 'No liked tracks yet — tap the heart on any track.';
+  String get sleepMusicNoLikedYet =>
+      'No liked tracks yet — tap the heart on any track.';
 
   @override
   String get sleepMusicUploadFolder => 'Add whole folder';

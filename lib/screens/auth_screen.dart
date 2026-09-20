@@ -103,7 +103,11 @@ class _AuthScreenState extends State<AuthScreen> {
                 colors: [Color(0xFF6C5CE7), Color(0xFF00D9C0)],
               ),
             ),
-            child: const Icon(Icons.spa_rounded, color: Colors.white, size: 30),
+            child: Image.asset(
+              'assets/images/ai_icon.png',
+              width: 32,
+              height: 32,
+            ),
           ),
           const SizedBox(height: 20),
           Text(
