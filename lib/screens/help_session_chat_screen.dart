@@ -46,6 +46,12 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
   List<HelpMessage> _messages = [];
   late HelpSession _session;
   bool _isLoading = true;
+  // защита от наслаивающихся запросов - при медленной сети (запрос
+  // дольше 4с - интервала поллинга) Timer.periodic раньше запускал
+  // ещё один _load() поверх ещё не завершившегося, и так на каждый
+  // тик - лавина параллельных запросов, растущая без остановки, пока
+  // сеть не отпустит хотя бы один из них
+  bool _requestInFlight = false;
   bool _isSending = false;
   final _picker = ImagePicker();
   final List<String> _pickedImages = [];
@@ -85,6 +91,10 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
   Future<void> _load({bool silent = false}) async {
     final token = widget.authStore.token;
     if (token == null) return;
+    if (_requestInFlight) {
+      return; // предыдущий опрос ещё не завершился - не наслаиваем ещё один
+    }
+    _requestInFlight = true;
     if (!silent) setState(() => _isLoading = true);
     try {
       final messages = await _service.getMessages(
@@ -105,6 +115,8 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
         _error = e.message;
         _isLoading = false;
       });
+    } finally {
+      _requestInFlight = false;
     }
   }
 
@@ -151,7 +163,25 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
     }
   }
 
+  static const _maxAttachments = 6;
+
   Future<void> _pickImage(ImageSource source) async {
+    // ограничение на число вложений за раз - та же причина, что и в
+    // чате с ИИ (chat_input_bar.dart)
+    if (_pickedImages.length >= _maxAttachments) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(
+                context,
+              )!.chatMaxAttachmentsReached(_maxAttachments),
+            ),
+          ),
+        );
+      }
+      return;
+    }
     // то же сжатие, что и в чате с ИИ (chat_input_bar.dart) - не раздувать
     // хранилище переписки несжатыми фото с камеры
     final file = await _picker.pickImage(

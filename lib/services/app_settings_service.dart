@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 import '../navigation.dart';
 
 class AppSettingsException implements Exception {
@@ -76,7 +78,7 @@ class ModelSettings {
 }
 
 class AppSettingsService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   /// Если сервер недоступен — не блокируем голосовые функции ими: базовый
   /// голос на устройстве работает независимо от бэкенда, а облачную

@@ -29,6 +29,7 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
   final _service = HelpService();
   final _reasonController = TextEditingController();
   List<HelpSession> _sessions = [];
+  // ignore: unused_field
   bool _isLoading = true;
   bool _isCreating = false;
   String? _error;

@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "LOMALU",
+  "appTitle": "AI Glass Chat",
   "commonCancel": "Cancel",
   "commonSave": "Save",
   "commonDelete": "Delete",
@@ -980,6 +980,14 @@
         "type": "int"
       },
       "total": {
+        "type": "int"
+      }
+    }
+  },
+  "chatMaxAttachmentsReached": "You can attach up to {count} photos at a time",
+  "@chatMaxAttachmentsReached": {
+    "placeholders": {
+      "count": {
         "type": "int"
       }
     }

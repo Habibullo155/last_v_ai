@@ -16,6 +16,7 @@ import '../theme/app_text_color.dart';
 import '../utils/io_stub.dart'
     if (dart.library.io) 'dart:io'
     show Directory, File, Platform;
+import '../utils/lru_cache.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
@@ -82,7 +83,11 @@ class _SleepMusicScreenState extends State<SleepMusicScreen> {
   // байты уже добавленных в ЭТУ сессию своих треков в памяти отдельно,
   // чтобы их вообще можно было проиграть здесь и сейчас. После
   // перезагрузки страницы это пропадёт - см. sleepMusicOwnFileWebNotice
-  final Map<String, Uint8List> _webSessionBytes = {};
+  // ограничен по размеру (LruCache) - раньше обычный Map копил байты
+  // добавленных треков навсегда без вытеснения; лимит меньше, чем у
+  // кэшей фото (personal_memories_screen.dart/blog_list_screen.dart) -
+  // аудиофайлы обычно в разы больше по размеру
+  final _webSessionBytes = LruCache<String, Uint8List>(maxEntries: 10);
 
   // Таймер сна - автостоп воспроизведения через заданное время, чтобы
   // музыка не играла всю ночь. null - таймер не установлен (обычный
@@ -319,7 +324,7 @@ class _SleepMusicScreenState extends State<SleepMusicScreen> {
         if (track.filePath != null) {
           await _player.play(DeviceFileSource(track.filePath!));
         } else {
-          final bytes = _webSessionBytes[track.id];
+          final bytes = _webSessionBytes.get(track.id);
           if (bytes == null) {
             return; // добавлен в другой сессии на вебе - байтов уже нет
           }
@@ -626,7 +631,7 @@ class _SleepMusicScreenState extends State<SleepMusicScreen> {
 
     if (kIsWeb) {
       try {
-        _webSessionBytes[track.id] = await file.readAsBytes();
+        _webSessionBytes.put(track.id, await file.readAsBytes());
       } catch (_) {
         if (mounted) setState(() => _error = l10n.sleepMusicFileReadError);
         return;

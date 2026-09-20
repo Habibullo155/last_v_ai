@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -8,6 +9,8 @@ import '../models/personal_memory.dart';
 import '../services/personal_memory_service.dart';
 import '../state/auth_store.dart';
 import '../theme/app_text_color.dart';
+import '../utils/concurrency.dart';
+import '../utils/lru_cache.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
@@ -42,7 +45,10 @@ class _PersonalMemoriesScreenState extends State<PersonalMemoriesScreen> {
   String? _error;
   // photoBytes кэшируются по id - иначе каждая пересборка списка
   // заново скачивала бы все фото с сервера
-  final Map<int, Uint8List> _photoCache = {};
+  // ограничен по размеру (LruCache) - раньше обычный Map копил фото
+  // навсегда без вытеснения, что при просмотре многих записей Сейфа
+  // гарантированно привело бы к OOM
+  final _photoCache = LruCache<int, Uint8List>(maxEntries: 60);
 
   @override
   void initState() {
@@ -70,22 +76,27 @@ class _PersonalMemoriesScreenState extends State<PersonalMemoriesScreen> {
         _error = null;
       });
       // фото подгружаем в фоне только там, где оно реально есть - не
-      // дёргаем /photo для текстовых записей, там гарантированно 404
-      for (final memory in memories) {
-        if (!memory.hasPhoto || _photoCache.containsKey(memory.id)) continue;
-        _service
-            .fetchPhotoBytes(
+      // дёргаем /photo для текстовых записей, там гарантированно 404.
+      // Не более 4 одновременных загрузок (runWithConcurrencyLimit) -
+      // раньше запускался отдельный запрос НА КАЖДУЮ запись сразу,
+      // десятки одновременных HTTP-запросов от одного клиента разом
+      final toFetch = memories
+          .where((m) => m.hasPhoto && !_photoCache.containsKey(m.id))
+          .toList();
+      unawaited(
+        runWithConcurrencyLimit(toFetch, 4, (memory) async {
+          try {
+            final bytes = await _service.fetchPhotoBytes(
               baseUrl: widget.authStore.baseUrl,
               token: token,
               memoryId: memory.id,
-            )
-            .then((bytes) {
-              if (mounted) setState(() => _photoCache[memory.id] = bytes);
-            })
-            .catchError((_) {
-              // одно недогрузившееся фото не должно ронять весь список
-            });
-      }
+            );
+            if (mounted) setState(() => _photoCache.put(memory.id, bytes));
+          } catch (_) {
+            // одно недогрузившееся фото не должно ронять весь список
+          }
+        }),
+      );
     } on PersonalMemoryException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
@@ -156,7 +167,7 @@ class _PersonalMemoriesScreenState extends State<PersonalMemoriesScreen> {
       MaterialPageRoute(
         builder: (_) => _MemoryDetailScreen(
           memory: memory,
-          photoBytes: _photoCache[memory.id],
+          photoBytes: _photoCache.get(memory.id),
           onDiscuss: widget.onStartAiConversation == null
               ? null
               : () async {
@@ -248,7 +259,7 @@ class _PersonalMemoriesScreenState extends State<PersonalMemoriesScreen> {
                         itemCount: memories.length,
                         itemBuilder: (context, i) => _MemoryCard(
                           memory: memories[i],
-                          photoBytes: _photoCache[memories[i].id],
+                          photoBytes: _photoCache.get(memories[i].id),
                           onTap: () => _openDetail(memories[i]),
                         ),
                       ),

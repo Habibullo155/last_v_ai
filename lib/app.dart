@@ -88,6 +88,14 @@ class _GlassChatAppState extends State<GlassChatApp> {
       if (user != null && _chatStore == null) {
         _setUpChatStoreFor(user.id.toString());
       }
+      // токен мог обновиться (например, после silent-refresh или
+      // повторного восстановления сессии) БЕЗ пересоздания всего
+      // VoiceStore целиком - раньше он получал токен только один раз
+      // при первом создании (см. _setUpChatStoreFor -
+      // voice.init(..., authToken: ...)) и продолжал использовать
+      // устаревшее значение до полного рестарта приложения, что
+      // приводило к 401 у голосовых запросов после смены токена
+      _voiceStore?.updateAuthToken(_authStore.token);
       if (_needsOnboardingSurvey == null) {
         _checkOnboardingSurveyStatus();
       }
@@ -106,17 +114,25 @@ class _GlassChatAppState extends State<GlassChatApp> {
   Future<void> _checkOnboardingSurveyStatus() async {
     final token = _authStore.token;
     if (token == null) return;
-    try {
-      final status = await _onboardingService.getStatus(
-        baseUrl: AppConfig.backendUrl,
-        token: token,
-      );
-      if (mounted) setState(() => _needsOnboardingSurvey = status == 'pending');
-    } catch (_) {
-      // сетевой сбой - не блокируем вход в приложение из-за этого,
-      // просто не покажем опросник в этот раз
-      if (mounted) setState(() => _needsOnboardingSurvey = false);
+    // до 3 попыток с растущей паузой - раньше единственная неудача
+    // (например, включённый на секунду авиарежим или просто плохая сеть
+    // ровно в момент первого входа) НАВСЕГДА помечала опросник
+    // "не нужен" - ни при каком последующем восстановлении сети
+    // человек уже не увидел бы его снова, даже если бы хотел пройти
+    for (final delaySeconds in [0, 2, 5]) {
+      if (delaySeconds > 0) await Future.delayed(Duration(seconds: delaySeconds));
+      if (!mounted) return;
+      try {
+        final status = await _onboardingService.getStatus(baseUrl: AppConfig.backendUrl, token: token);
+        if (mounted) setState(() => _needsOnboardingSurvey = status == 'pending');
+        return;
+      } catch (_) {
+        // пробуем ещё раз (если попытки остались) - см. цикл выше
+      }
     }
+    // все попытки исчерпаны - не блокируем вход в приложение из-за
+    // этого, просто не покажем опросник в этот раз
+    if (mounted) setState(() => _needsOnboardingSurvey = false);
   }
 
   void _setUpChatStoreFor(String userId) {
@@ -127,14 +143,9 @@ class _GlassChatAppState extends State<GlassChatApp> {
     final store = ChatStore(
       getAuthToken: () => _authStore.token,
       onSessionExpired: _authStore.logout,
-      onAssistantTextChunk:
-          ({required messageId, required fullContent, required isDone}) {
-            voice.onIncomingText(
-              messageId: messageId,
-              fullContent: fullContent,
-              isDone: isDone,
-            );
-          },
+      onAssistantTextChunk: ({required messageId, required fullContent, required isDone}) {
+        voice.onIncomingText(messageId: messageId, fullContent: fullContent, isDone: isDone);
+      },
     );
     store.init(userId);
     _chatStore = store;
@@ -156,7 +167,7 @@ class _GlassChatAppState extends State<GlassChatApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: navigatorKey,
-      title: 'LOMALU',
+      title: 'AI Glass Chat',
       debugShowCheckedModeBanner: false,
       // null (режим "system" в LocaleStore) - Flutter сам подхватывает
       // системный язык устройства, как было раньше всегда. Явный
@@ -169,7 +180,10 @@ class _GlassChatAppState extends State<GlassChatApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('ru'), Locale('en')],
+      supportedLocales: const [
+        Locale('ru'),
+        Locale('en'),
+      ],
       themeMode: switch (_themeStore.mode) {
         AppThemeMode.light => ThemeMode.light,
         AppThemeMode.dark => ThemeMode.dark,
@@ -218,8 +232,7 @@ class _GlassChatAppState extends State<GlassChatApp> {
       case AuthStatus.authenticated:
         final chatStore = _chatStore;
         final voiceStore = _voiceStore;
-        if (chatStore == null || voiceStore == null)
-          return const _LoadingScreen();
+        if (chatStore == null || voiceStore == null) return const _LoadingScreen();
         // опросник - ПОСЛЕ того, как chatStore/voiceStore готовы (не
         // блокирует их инициализацию), но ДО основного экрана - null
         // означает "ещё проверяем", тогда просто ждём (не мигаем
@@ -256,7 +269,9 @@ class _LoadingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: Color(0xFF0B0F1E),
-      body: Center(child: CircularProgressIndicator(color: Color(0xFF6C5CE7))),
+      body: Center(
+        child: CircularProgressIndicator(color: Color(0xFF6C5CE7)),
+      ),
     );
   }
 }

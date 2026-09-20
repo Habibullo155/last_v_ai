@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 class TelegramException implements Exception {
   final String message;
   TelegramException(this.message);
@@ -23,7 +25,7 @@ class TelegramLinkInfo {
 }
 
 class TelegramService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   Future<TelegramLinkInfo> startLink({required String baseUrl, required String token}) async {
     final res = await _client

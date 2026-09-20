@@ -34,6 +34,9 @@ class _PurchaseScreenState extends State<PurchaseScreen>
   bool _isLoading = true;
   String? _error;
   String? _startingCheckoutFor;
+  // orderId для provider="alfabank", ожидающий подтверждения при
+  // возврате в приложение - см. didChangeAppLifecycleState выше
+  String? _pendingAlfabankOrderId;
   bool _isTelegramLinked = false;
   bool _isWatchingAd = false;
   int? _adBonusRemaining;
@@ -65,7 +68,27 @@ class _PurchaseScreenState extends State<PurchaseScreen>
     // "оплата прошла" без deep link'ов, поэтому просто перепроверяем при
     // каждом возврате в приложение — дёшево и достаточно.
     if (state == AppLifecycleState.resumed) {
+      _confirmPendingAlfabankOrderIfAny();
       _loadUsage();
+    }
+  }
+
+  Future<void> _confirmPendingAlfabankOrderIfAny() async {
+    final orderId = _pendingAlfabankOrderId;
+    final token = widget.authStore.token;
+    if (orderId == null || token == null) return;
+    // сбрасываем сразу - даже если запрос не удастся, не будем повторять
+    // его на каждый последующий возврат в приложение бесконечно
+    _pendingAlfabankOrderId = null;
+    try {
+      await _billingService.confirmAlfabankOrder(
+        baseUrl: widget.authStore.baseUrl,
+        token: token,
+        orderId: orderId,
+      );
+    } on BillingException catch (_) {
+      // не критично - если оплата реально прошла, человек может просто
+      // открыть экран покупки заново, вызвав ту же проверку явно
     }
   }
 
@@ -164,19 +187,26 @@ class _PurchaseScreenState extends State<PurchaseScreen>
     final token = widget.authStore.token;
     if (token == null || !plan.isPurchasable) return;
 
-    // если доступны оба способа оплаты - даём выбрать, не решаем за
-    // человека молча в пользу одного из них
+    // список РЕАЛЬНО доступных способов - если доступен только один,
+    // не спрашиваем, сразу используем его; если больше одного - даём
+    // выбрать, не решаем за человека молча в пользу одного из них
+    final available = [
+      if (plan.stripeAvailable) 'stripe',
+      if (plan.yoomoneyAvailable) 'yoomoney',
+      if (plan.alfabankAvailable) 'alfabank',
+    ];
     String provider;
-    if (plan.stripeAvailable && plan.yoomoneyAvailable) {
+    if (available.length > 1) {
       final choice = await showModalBottomSheet<String>(
         context: context,
         backgroundColor: Colors.transparent,
-        builder: (context) => _PaymentMethodSheet(),
+        builder: (context) =>
+            _PaymentMethodSheet(availableProviders: available),
       );
       if (choice == null) return;
       provider = choice;
     } else {
-      provider = plan.stripeAvailable ? 'stripe' : 'yoomoney';
+      provider = available.first;
     }
 
     setState(() {
@@ -184,13 +214,17 @@ class _PurchaseScreenState extends State<PurchaseScreen>
       _error = null;
     });
     try {
-      final url = await _billingService.createCheckoutUrl(
+      final (checkoutUrl, orderId) = await _billingService.createCheckoutUrl(
         baseUrl: widget.authStore.baseUrl,
         token: token,
         tariff: plan.tariff,
         provider: provider,
       );
-      final uri = Uri.parse(url);
+      // запоминаем для проверки при возврате в приложение (см.
+      // didChangeAppLifecycleState) - актуально только для alfabank,
+      // для stripe/yoomoney orderId всегда null и просто ничего не делает
+      _pendingAlfabankOrderId = orderId;
+      final uri = Uri.parse(checkoutUrl);
       final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!opened && mounted) {
         setState(
@@ -629,6 +663,9 @@ class _PurchaseScreenState extends State<PurchaseScreen>
 }
 
 class _PaymentMethodSheet extends StatelessWidget {
+  final List<String> availableProviders;
+  const _PaymentMethodSheet({required this.availableProviders});
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -642,28 +679,42 @@ class _PaymentMethodSheet extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(
-              leading: const Icon(
-                Icons.credit_card_rounded,
-                color: Colors.white,
+            if (availableProviders.contains('stripe'))
+              ListTile(
+                leading: const Icon(
+                  Icons.credit_card_rounded,
+                  color: Colors.white,
+                ),
+                title: Text(
+                  l10n.purchaseStripeOption,
+                  style: const TextStyle(color: Colors.white),
+                ),
+                onTap: () => Navigator.of(context).pop('stripe'),
               ),
-              title: Text(
-                l10n.purchaseStripeOption,
-                style: const TextStyle(color: Colors.white),
+            if (availableProviders.contains('yoomoney'))
+              ListTile(
+                leading: const Icon(
+                  Icons.account_balance_wallet_outlined,
+                  color: Colors.white,
+                ),
+                title: const Text(
+                  'YooMoney',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () => Navigator.of(context).pop('yoomoney'),
               ),
-              onTap: () => Navigator.of(context).pop('stripe'),
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.account_balance_wallet_outlined,
-                color: Colors.white,
+            if (availableProviders.contains('alfabank'))
+              ListTile(
+                leading: const Icon(
+                  Icons.account_balance_rounded,
+                  color: Colors.white,
+                ),
+                title: const Text(
+                  'Альфа-Банк',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () => Navigator.of(context).pop('alfabank'),
               ),
-              title: const Text(
-                'YooMoney',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () => Navigator.of(context).pop('yoomoney'),
-            ),
           ],
         ),
       ),

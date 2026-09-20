@@ -7,6 +7,7 @@ class BillingPlan {
   final int? monthlyTokenLimit;
   final bool stripeAvailable;
   final bool yoomoneyAvailable;
+  final bool alfabankAvailable;
 
   BillingPlan({
     required this.tariff,
@@ -17,10 +18,11 @@ class BillingPlan {
     required this.monthlyTokenLimit,
     required this.stripeAvailable,
     required this.yoomoneyAvailable,
+    required this.alfabankAvailable,
   });
 
   bool get isFree => priceRubCents == 0;
-  bool get isPurchasable => stripeAvailable || yoomoneyAvailable;
+  bool get isPurchasable => stripeAvailable || yoomoneyAvailable || alfabankAvailable;
   String get priceRubDisplay => '${(priceRubCents / 100).toStringAsFixed(0)} ₽';
   String get priceUsdDisplay => '\$${(priceUsdCents / 100).toStringAsFixed(2)}';
 
@@ -34,6 +36,7 @@ class BillingPlan {
       monthlyTokenLimit: json['monthly_token_limit'] as int?,
       stripeAvailable: json['stripe_available'] as bool? ?? false,
       yoomoneyAvailable: json['yoomoney_available'] as bool? ?? false,
+      alfabankAvailable: json['alfabank_available'] as bool? ?? false,
     );
   }
 }

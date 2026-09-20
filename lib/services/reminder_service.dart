@@ -18,51 +18,32 @@ class ReminderService {
   static const _minuteKey = 'daily_reminder_minute_v1';
   static const _notificationId = 7001;
 
-  final FlutterLocalNotificationsPlugin _plugin =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
   bool _initialized = false;
 
   List<String> get _prompts {
     final l10n = currentL10n();
     return [
-      l10n?.reminderPrompt1 ??
-          'Как прошёл день? Если хочется поговорить — я здесь.',
+      l10n?.reminderPrompt1 ?? 'Как прошёл день? Если хочется поговорить — я здесь.',
       l10n?.reminderPrompt2 ?? 'Небольшая пауза — как ты сейчас, в целом?',
-      l10n?.reminderPrompt3 ??
-          'Если накопилось что-то, о чём хочется рассказать — самое время.',
-      l10n?.reminderPrompt4 ??
-          'Как настроение сегодня? Загляни, если нужно выговориться.',
-      l10n?.reminderPrompt5 ??
-          'Просто напоминаю, что можно зайти и поделиться, как прошёл день.',
-      l10n?.reminderPrompt6 ??
-          'Если весь день был плотным — пара минут на выдох тебе не помешает.',
-      l10n?.reminderPrompt7 ??
-          'Иногда полезно просто проговорить мысли вслух. Я слушаю.',
-      l10n?.reminderPrompt8 ??
-          'Как твоё тело сегодня — не зажаты плечи, не сжаты кулаки?',
-      l10n?.reminderPrompt9 ??
-          'Если тревожно — попробуй короткое дыхательное упражнение, оно есть в разделе Забота.',
-      l10n?.reminderPrompt10 ??
-          'Перед сном иногда помогает музыка для сна — загляни, если сложно расслабиться.',
-      l10n?.reminderPrompt11 ??
-          'Мышцы часто напрягаются незаметно за день. Есть упражнение, которое помогает их отпустить.',
-      l10n?.reminderPrompt12 ??
-          'Было сегодня что-то, что хочется сохранить? Можно оставить фото с мыслью в разделе Мои моменты.',
-      l10n?.reminderPrompt13 ??
-          'Не обязательно ждать, пока станет тяжело — можно просто заглянуть и рассказать, как дела.',
+      l10n?.reminderPrompt3 ?? 'Если накопилось что-то, о чём хочется рассказать — самое время.',
+      l10n?.reminderPrompt4 ?? 'Как настроение сегодня? Загляни, если нужно выговориться.',
+      l10n?.reminderPrompt5 ?? 'Просто напоминаю, что можно зайти и поделиться, как прошёл день.',
+      l10n?.reminderPrompt6 ?? 'Если весь день был плотным — пара минут на выдох тебе не помешает.',
+      l10n?.reminderPrompt7 ?? 'Иногда полезно просто проговорить мысли вслух. Я слушаю.',
+      l10n?.reminderPrompt8 ?? 'Как твоё тело сегодня — не зажаты плечи, не сжаты кулаки?',
+      l10n?.reminderPrompt9 ?? 'Если тревожно — попробуй короткое дыхательное упражнение, оно есть в разделе Забота.',
+      l10n?.reminderPrompt10 ?? 'Перед сном иногда помогает музыка для сна — загляни, если сложно расслабиться.',
+      l10n?.reminderPrompt11 ?? 'Мышцы часто напрягаются незаметно за день. Есть упражнение, которое помогает их отпустить.',
+      l10n?.reminderPrompt12 ?? 'Было сегодня что-то, что хочется сохранить? Можно оставить фото с мыслью в разделе Мои моменты.',
+      l10n?.reminderPrompt13 ?? 'Не обязательно ждать, пока станет тяжело — можно просто заглянуть и рассказать, как дела.',
       l10n?.reminderPrompt14 ?? 'Ты сегодня успел(а) выдохнуть хоть на минуту?',
-      l10n?.reminderPrompt15 ??
-          'Если день был непростым — не нужно объяснять сразу всё. Начни с чего угодно.',
-      l10n?.reminderPrompt16 ??
-          'Иногда важно просто отметить: этот день был. Как он прошёл для тебя?',
-      l10n?.reminderPrompt17 ??
-          'Здесь не нужно готовиться к разговору — можно просто написать первое, что приходит в голову.',
-      l10n?.reminderPrompt18 ??
-          'Если сегодня было что-то хорошее — поделись, приятно порадоваться вместе.',
-      l10n?.reminderPrompt19 ??
-          'Забота о себе — это не всегда большие шаги. Иногда достаточно пары минут на паузу.',
-      l10n?.reminderPrompt20 ??
-          'Как ты сейчас — физически и внутри? Необязательно отвечать развёрнуто.',
+      l10n?.reminderPrompt15 ?? 'Если день был непростым — не нужно объяснять сразу всё. Начни с чего угодно.',
+      l10n?.reminderPrompt16 ?? 'Иногда важно просто отметить: этот день был. Как он прошёл для тебя?',
+      l10n?.reminderPrompt17 ?? 'Здесь не нужно готовиться к разговору — можно просто написать первое, что приходит в голову.',
+      l10n?.reminderPrompt18 ?? 'Если сегодня было что-то хорошее — поделись, приятно порадоваться вместе.',
+      l10n?.reminderPrompt19 ?? 'Забота о себе — это не всегда большие шаги. Иногда достаточно пары минут на паузу.',
+      l10n?.reminderPrompt20 ?? 'Как ты сейчас — физически и внутри? Необязательно отвечать развёрнуто.',
     ];
   }
 
@@ -72,10 +53,7 @@ class ReminderService {
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosInit = DarwinInitializationSettings();
     await _plugin.initialize(
-      settings: const InitializationSettings(
-        android: androidInit,
-        iOS: iosInit,
-      ),
+      settings: const InitializationSettings(android: androidInit, iOS: iosInit),
     );
     _initialized = true;
   }
@@ -109,27 +87,17 @@ class ReminderService {
   Future<bool> enable({required int hour, required int minute}) async {
     await _ensureInitialized();
 
-    final androidPlugin = _plugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >();
-    final iosPlugin = _plugin
-        .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin
-        >();
+    final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    final iosPlugin = _plugin.resolvePlatformSpecificImplementation<
+        IOSFlutterLocalNotificationsPlugin>();
 
     bool granted = true;
     if (androidPlugin != null) {
       granted = await androidPlugin.requestNotificationsPermission() ?? false;
     }
     if (iosPlugin != null) {
-      granted =
-          await iosPlugin.requestPermissions(
-            alert: true,
-            badge: true,
-            sound: true,
-          ) ??
-          false;
+      granted = await iosPlugin.requestPermissions(alert: true, badge: true, sound: true) ?? false;
     }
     if (!granted) return false;
 
@@ -158,14 +126,7 @@ class ReminderService {
 
   Future<void> _scheduleDaily({required int hour, required int minute}) async {
     final now = tz.TZDateTime.now(tz.local);
-    var scheduled = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      hour,
-      minute,
-    );
+    var scheduled = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
     if (scheduled.isBefore(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }
@@ -176,16 +137,14 @@ class ReminderService {
 
     await _plugin.zonedSchedule(
       id: _notificationId,
-      title: 'LOMALU',
+      title: 'AI Glass Chat',
       body: prompt,
       scheduledDate: scheduled,
       notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
           'daily_reminder',
           currentL10n()?.reminderChannelName ?? 'Ежедневные напоминания',
-          channelDescription:
-              currentL10n()?.reminderChannelDescription ??
-              'Напоминание проверить, как дела, в выбранное время',
+          channelDescription: currentL10n()?.reminderChannelDescription ?? 'Напоминание проверить, как дела, в выбранное время',
           importance: Importance.defaultImportance,
           priority: Priority.defaultPriority,
         ),
@@ -196,8 +155,7 @@ class ReminderService {
       // 19.0.0 (см. pubspec.yaml — пакет теперь на ^22.3.0) — параметр
       // был нужен только для iOS < 10, которые эта версия пакета уже не
       // поддерживает, так что просто не передаём его вообще.
-      matchDateTimeComponents:
-          DateTimeComponents.time, // повтор каждый день в это время
+      matchDateTimeComponents: DateTimeComponents.time, // повтор каждый день в это время
     );
   }
 }

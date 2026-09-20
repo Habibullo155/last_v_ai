@@ -336,7 +336,11 @@ class _ConversationTile extends StatelessWidget {
                   autofocus: true,
                   style: TextStyle(color: context.onSurface),
                   onSubmitted: (value) {
-                    onRename(value);
+                    final trimmed = value.trim();
+                    if (trimmed.isEmpty) {
+                      return; // пустое/из одних пробелов имя не сохраняем - оставляем диалог открытым
+                    }
+                    onRename(trimmed);
                     Navigator.of(context).pop();
                   },
                   decoration: InputDecoration(
@@ -366,7 +370,11 @@ class _ConversationTile extends StatelessWidget {
                         backgroundColor: const Color(0xFF6C5CE7),
                       ),
                       onPressed: () {
-                        onRename(controller.text);
+                        final trimmed = controller.text.trim();
+                        if (trimmed.isEmpty) {
+                          return; // пустое/из одних пробелов имя не сохраняем - оставляем диалог открытым
+                        }
+                        onRename(trimmed);
                         Navigator.of(context).pop();
                       },
                       child: Text(l10n.commonSave),

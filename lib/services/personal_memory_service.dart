@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 import '../models/personal_memory.dart';
 
 class PersonalMemoryException implements Exception {
@@ -13,7 +15,7 @@ class PersonalMemoryException implements Exception {
 }
 
 class PersonalMemoryService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   String? _extractError(String body) {
     try {

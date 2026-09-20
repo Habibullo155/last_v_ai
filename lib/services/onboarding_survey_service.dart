@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 class OnboardingSurveyException implements Exception {
   final String message;
   OnboardingSurveyException(this.message);
@@ -34,7 +36,7 @@ class OnboardingSurveyStat {
 }
 
 class OnboardingSurveyService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   Future<String> getStatus({required String baseUrl, required String token}) async {
     final res = await _client

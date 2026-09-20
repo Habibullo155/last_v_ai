@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 import '../models/chat_message.dart';
 import '../models/chat_source.dart';
 import '../navigation.dart';
@@ -40,7 +42,7 @@ class ChatStreamEvent {
 /// Клиент к FastAPI-бэкенду. Отправляет всю историю сообщений и читает
 /// потоковый ответ (Server-Sent Events), эмулируя "печатает..." эффект.
 class ChatApiService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   Stream<ChatStreamEvent> sendMessage({
     required String baseUrl,

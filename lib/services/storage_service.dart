@@ -1,19 +1,21 @@
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../models/chat_conversation.dart';
+import 'encrypted_storage.dart';
 
 /// Локальное хранение истории чатов на устройстве (без бэкенда).
 /// История привязана к конкретному пользователю (userId), чтобы на одном
 /// устройстве разные аккаунты не видели историю друг друга.
+///
+/// Данные шифруются перед сохранением (см. encrypted_storage.dart) - это
+/// личная переписка о своих переживаниях, хранить её чистым текстом на
+/// диске неприемлемо.
 class StorageService {
   String _keyFor(String userId) => 'conversations_v1_$userId';
 
   Future<List<ChatConversation>> loadConversations(String userId) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(_keyFor(userId));
+      final raw = await EncryptedStorage.getString(_keyFor(userId));
       if (raw == null || raw.isEmpty) return [];
       final list = jsonDecode(raw) as List<dynamic>;
       return list
@@ -30,9 +32,8 @@ class StorageService {
   /// это best-effort операция, она не должна ронять вызывающий код.
   Future<bool> saveConversations(String userId, List<ChatConversation> conversations) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
       final raw = jsonEncode(conversations.map((c) => c.toJson()).toList());
-      await prefs.setString(_keyFor(userId), raw);
+      await EncryptedStorage.setString(_keyFor(userId), raw);
       return true;
     } catch (_) {
       return false;

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
+import 'encrypted_storage.dart';
 
 import '../models/gratitude_entry.dart';
 
@@ -12,8 +12,7 @@ class GratitudeService {
 
   Future<List<GratitudeEntry>> loadEntries(String userId) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(_keyFor(userId));
+      final raw = await EncryptedStorage.getString(_keyFor(userId));
       if (raw == null || raw.isEmpty) return [];
       final list = jsonDecode(raw) as List<dynamic>;
       return list.map((e) => GratitudeEntry.fromJson(e as Map<String, dynamic>)).toList();
@@ -24,9 +23,8 @@ class GratitudeService {
 
   Future<bool> _saveEntries(String userId, List<GratitudeEntry> entries) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
       final raw = jsonEncode(entries.map((e) => e.toJson()).toList());
-      await prefs.setString(_keyFor(userId), raw);
+      await EncryptedStorage.setString(_keyFor(userId), raw);
       return true;
     } catch (_) {
       return false;

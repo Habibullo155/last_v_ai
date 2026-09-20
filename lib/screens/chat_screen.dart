@@ -1175,7 +1175,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 : Icon(
                     _playingNoiseId != null
                         ? Icons.graphic_eq_rounded
-                        : Icons.queue_music_rounded,
+                        : Icons.spa_outlined,
                     color: _playingNoiseId != null
                         ? const Color(0xFF00E6A0)
                         : context.onSurfaceFaded(0.7),
@@ -1380,7 +1380,11 @@ class _EmptyState extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Image.asset('assets/images/app_icon.icon.png'),
+              child: const Icon(
+                Icons.spa_rounded,
+                color: Colors.white,
+                size: 34,
+              ),
             ),
             const SizedBox(height: 20),
             Text(

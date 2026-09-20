@@ -35,6 +35,12 @@ class _CustomTestTakingScreenState extends State<CustomTestTakingScreen> {
   CustomTest? _test;
   String? _error;
   int _currentQuestion = 0;
+  // защита от быстрых повторных тапов - без неё каждый тап за 180мс
+  // окна перехода запускал СВОЙ Future.delayed, и все они срабатывали
+  // подряд, увеличивая _currentQuestion несколько раз за один переход -
+  // индекс мог выйти за пределы test.questions, вызывая Index Out Of
+  // Bounds и падение приложения
+  bool _isTransitioning = false;
   final Map<int, int> _answers = {}; // questionIndex -> optionIndex
   CustomTestResult? _result;
   bool _isSubmitting = false;
@@ -77,14 +83,22 @@ class _CustomTestTakingScreenState extends State<CustomTestTakingScreen> {
   }
 
   void _selectAnswer(int optionIndex) {
+    if (_isTransitioning) {
+      return; // уже идёт переход к следующему вопросу - лишний тап игнорируем
+    }
     setState(() => _answers[_currentQuestion] = optionIndex);
     final test = _test!;
+    _isTransitioning = true;
     if (_currentQuestion < test.questions.length - 1) {
       Future.delayed(const Duration(milliseconds: 180), () {
+        _isTransitioning = false;
         if (mounted) setState(() => _currentQuestion++);
       });
     } else {
-      Future.delayed(const Duration(milliseconds: 180), _submit);
+      Future.delayed(const Duration(milliseconds: 180), () {
+        _isTransitioning = false;
+        _submit();
+      });
     }
   }
 

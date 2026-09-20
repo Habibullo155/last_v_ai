@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -6,6 +9,8 @@ import '../models/blog_post.dart';
 import '../services/blog_service.dart';
 import '../state/auth_store.dart';
 import '../theme/app_text_color.dart';
+import '../utils/concurrency.dart';
+import '../utils/lru_cache.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 import 'blog_post_screen.dart';
@@ -23,6 +28,12 @@ class _BlogListScreenState extends State<BlogListScreen> {
   List<BlogPostSummary> _posts = [];
   bool _isLoading = true;
   String? _error;
+  // обложки кэшируются по id поста - подгружаются в фоне, не блокируя
+  // показ самого списка (текст+лайки видны сразу, фото появляется следом)
+  // ограничен по размеру (LruCache) - раньше обычный Map копил обложки
+  // постов навсегда без вытеснения, что при просмотре длинной ленты
+  // блога гарантированно привело бы к OOM
+  final _coverCache = LruCache<int, Uint8List>(maxEntries: 60);
 
   @override
   void initState() {
@@ -49,6 +60,25 @@ class _BlogListScreenState extends State<BlogListScreen> {
         token: token,
       );
       if (mounted) setState(() => _posts = posts);
+      // не более 4 одновременных загрузок обложек (runWithConcurrencyLimit) -
+      // раньше запускался отдельный запрос НА КАЖДЫЙ пост сразу
+      final toFetch = posts
+          .where((p) => p.hasCoverImage && !_coverCache.containsKey(p.id))
+          .toList();
+      unawaited(
+        runWithConcurrencyLimit(toFetch, 4, (post) async {
+          try {
+            final bytes = await _service.fetchCoverBytes(
+              baseUrl: widget.authStore.baseUrl,
+              token: token,
+              postId: post.id,
+            );
+            if (mounted) setState(() => _coverCache.put(post.id, bytes));
+          } catch (_) {
+            // одна недогрузившаяся обложка не должна ронять весь список
+          }
+        }),
+      );
     } on BlogException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } finally {
@@ -126,10 +156,11 @@ class _BlogListScreenState extends State<BlogListScreen> {
                                         .map(
                                           (p) => Padding(
                                             padding: const EdgeInsets.only(
-                                              bottom: 12,
+                                              bottom: 18,
                                             ),
-                                            child: _PostTile(
+                                            child: _PostCard(
                                               post: p,
+                                              coverBytes: _coverCache.get(p.id),
                                               onTap: () =>
                                                   Navigator.of(context).push(
                                                     MaterialPageRoute(
@@ -161,10 +192,20 @@ class _BlogListScreenState extends State<BlogListScreen> {
   }
 }
 
-class _PostTile extends StatelessWidget {
+/// Карточка поста в духе Instagram - фото во всю ширину сверху (если
+/// у поста есть обложка), заголовок+короткое превью текста под ним,
+/// лайки/комментарии внизу. Раньше карточка была чисто текстовой
+/// строкой без фото вообще - теперь фото это главный, первый элемент,
+/// на который падает взгляд, как в настоящей ленте.
+class _PostCard extends StatelessWidget {
   final BlogPostSummary post;
+  final Uint8List? coverBytes;
   final VoidCallback onTap;
-  const _PostTile({required this.post, required this.onTap});
+  const _PostCard({
+    required this.post,
+    required this.coverBytes,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -176,10 +217,35 @@ class _PostTile extends StatelessWidget {
         child: GlassPanel(
           opacity: 0.08,
           borderRadius: BorderRadius.circular(18),
-          padding: const EdgeInsets.all(16),
-          child: Row(
+          padding: EdgeInsets.zero,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
+              if (post.hasCoverImage)
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(18),
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: 4 / 3,
+                    child: coverBytes != null
+                        ? Image.memory(
+                            coverBytes!,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          )
+                        : Container(
+                            color: context.onSurfaceFaded(0.06),
+                            alignment: Alignment.center,
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Color(0xFF6C5CE7),
+                            ),
+                          ),
+                  ),
+                ),
+              Padding(
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -187,49 +253,62 @@ class _PostTile extends StatelessWidget {
                       post.title,
                       style: TextStyle(
                         color: context.onSurface,
-                        fontSize: 15.5,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      post.publishedAt != null
-                          ? DateFormat.yMMMd().format(post.publishedAt!)
-                          : '',
-                      style: TextStyle(
-                        color: context.onSurfaceFaded(0.4),
-                        fontSize: 12,
+                    if (post.excerpt.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        post.excerpt,
+                        style: TextStyle(
+                          color: context.onSurfaceFaded(0.6),
+                          fontSize: 13.5,
+                          height: 1.4,
+                        ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    const SizedBox(height: 6),
+                    ],
+                    const SizedBox(height: 10),
                     Row(
                       children: [
                         Icon(
                           Icons.favorite_rounded,
-                          size: 13,
-                          color: context.onSurfaceFaded(0.35),
+                          size: 15,
+                          color: context.onSurfaceFaded(0.4),
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 5),
                         Text(
                           '${post.likeCount}',
                           style: TextStyle(
-                            color: context.onSurfaceFaded(0.4),
-                            fontSize: 11.5,
+                            color: context.onSurfaceFaded(0.45),
+                            fontSize: 12.5,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 14),
                         Icon(
                           Icons.chat_bubble_rounded,
-                          size: 12,
-                          color: context.onSurfaceFaded(0.35),
+                          size: 14,
+                          color: context.onSurfaceFaded(0.4),
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 5),
                         Text(
                           '${post.commentCount}',
                           style: TextStyle(
-                            color: context.onSurfaceFaded(0.4),
+                            color: context.onSurfaceFaded(0.45),
+                            fontSize: 12.5,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          post.publishedAt != null
+                              ? DateFormat.yMMMd().format(post.publishedAt!)
+                              : '',
+                          style: TextStyle(
+                            color: context.onSurfaceFaded(0.35),
                             fontSize: 11.5,
                           ),
                         ),
@@ -237,10 +316,6 @@ class _PostTile extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: context.onSurfaceFaded(0.3),
               ),
             ],
           ),

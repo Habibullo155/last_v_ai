@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 import '../models/usage_info.dart';
 
 class UsageException implements Exception {
@@ -12,7 +14,7 @@ class UsageException implements Exception {
 }
 
 class UsageService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   Future<UsageInfo> getMyUsage({required String baseUrl, required String token}) async {
     final res = await _client

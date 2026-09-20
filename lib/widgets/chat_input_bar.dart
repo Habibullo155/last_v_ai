@@ -59,8 +59,21 @@ class _ChatInputBarState extends State<ChatInputBar> {
   // base64 уже выбранных, но ещё не отправленных фото — с превью выше
   // поля ввода, можно убрать перед отправкой
   final List<String> _pickedImages = [];
+  static const _maxAttachments = 6;
 
   Future<void> _pickImage(ImageSource source) async {
+    // ограничение на число вложений за раз - раньше поле ввода не
+    // ограничивало ничем: человек мог прикрепить десятки фото подряд
+    // (каждый вызов этой функции просто добавлял ещё одно), что
+    // создавало риск зависания при отправке разом стольких изображений
+    if (_pickedImages.length >= _maxAttachments) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Можно прикрепить не более $_maxAttachments фото за раз')),
+        );
+      }
+      return;
+    }
     // сжимаем сразу при выборе (не после) — иначе несжатое фото с камеры
     // в несколько МБ раздувало бы локальную историю чата на каждое
     // отправленное фото. 1280px и качество 70 — разумный компромисс:

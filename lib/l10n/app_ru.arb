@@ -1,7 +1,7 @@
 {
   "@@locale": "ru",
 
-  "appTitle": "LOMALU",
+  "appTitle": "AI Glass Chat",
   "@appTitle": {"description": "Название приложения"},
 
   "commonCancel": "Отмена",
@@ -742,6 +742,10 @@
   "customTestQuestionProgress": "Вопрос {current} из {total}",
   "@customTestQuestionProgress": {
     "placeholders": {"current": {"type": "int"}, "total": {"type": "int"}}
+  },
+  "chatMaxAttachmentsReached": "Можно прикрепить не более {count} фото за раз",
+  "@chatMaxAttachmentsReached": {
+    "placeholders": {"count": {"type": "int"}}
   },
   "customTestPointsLabel": "баллов",
   "customTestDiscussPrompt": "Я прошёл(ла) тест «{title}»: {score} балл(ов){resultNote}. Можешь прокомментировать результат и поддержать меня?",

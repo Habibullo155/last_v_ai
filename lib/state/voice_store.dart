@@ -488,6 +488,7 @@ class VoiceStore extends ChangeNotifier {
     try {
       await _stt.listen(
         onResult: (result) => onResult(result.recognizedWords),
+        // ignore: deprecated_member_use
         localeId: settings.sttLocaleId,
       );
       isListening = true;

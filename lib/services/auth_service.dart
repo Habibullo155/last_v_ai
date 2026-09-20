@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 import 'package:ai_last_v/l10n/app_localizations.dart';
 import '../models/app_user.dart';
 
@@ -96,7 +98,7 @@ class AuthException implements Exception {
 }
 
 class AuthService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
   final _storage = const FlutterSecureStorage();
   static const _tokenKey = 'auth_token';
 
