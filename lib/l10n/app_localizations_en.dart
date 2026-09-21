@@ -385,16 +385,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatMenuBlog => 'Blog';
 
   @override
-  String get chatSuggestion1 => 'Explain quantum physics in simple terms';
+  String get chatSuggestion1 =>
+      'I am feeling overwhelmed and emotionally burnt out';
 
   @override
-  String get chatSuggestion2 => 'Write a weekly workout plan';
+  String get chatSuggestion2 => 'How can I deal with anxiety right now?';
 
   @override
-  String get chatSuggestion3 => 'Help me name my project';
+  String get chatSuggestion3 =>
+      'Help me navigate a conflict with someone close to m';
 
   @override
-  String get chatSuggestion4 => 'How do I improve my Dart code?';
+  String get chatSuggestion4 =>
+      'I want to better understand my true goals and desires';
 
   @override
   String get chatWhatCanIHelpWith => 'What can I help with today?';

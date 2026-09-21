@@ -1,4 +1,4 @@
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 import 'phq9_checkin.dart' show pfizerFrequencyScaleLabels;
 
 /// Официальный перевод GAD-7 (Copyright© 1999 Pfizer Inc., с 2010 года

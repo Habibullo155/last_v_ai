@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 import '../services/reminder_service.dart';
 import '../state/auth_store.dart';
 import '../state/chat_store.dart';
@@ -374,7 +374,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                           value: PerformanceModeStore
                                               .instance
                                               .enabled,
-                                          activeThumbColor: const Color(0xFF6C5CE7),
+                                          activeThumbColor: const Color(
+                                            0xFF6C5CE7,
+                                          ),
                                           onChanged: (v) => PerformanceModeStore
                                               .instance
                                               .setEnabled(v),
@@ -426,7 +428,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         ),
                                         Switch(
                                           value: prefs.soundEnabled,
-                                          activeThumbColor: const Color(0xFF6C5CE7),
+                                          activeThumbColor: const Color(
+                                            0xFF6C5CE7,
+                                          ),
                                           onChanged: (v) =>
                                               prefs.setSoundEnabled(v),
                                         ),
@@ -454,7 +458,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         ),
                                         Switch(
                                           value: prefs.vibrationEnabled,
-                                          activeThumbColor: const Color(0xFF6C5CE7),
+                                          activeThumbColor: const Color(
+                                            0xFF6C5CE7,
+                                          ),
                                           onChanged: (v) =>
                                               prefs.setVibrationEnabled(v),
                                         ),
@@ -500,7 +506,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         ),
                                         Switch(
                                           value: voice.settings.voiceUiEnabled,
-                                          activeThumbColor: const Color(0xFF6C5CE7),
+                                          activeThumbColor: const Color(
+                                            0xFF6C5CE7,
+                                          ),
                                           onChanged: (v) =>
                                               voice.updateSettings(
                                                 voice.settings.copyWith(
@@ -600,7 +608,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       else
                                         Switch(
                                           value: _biometricEnabled,
-                                          activeThumbColor: const Color(0xFF6C5CE7),
+                                          activeThumbColor: const Color(
+                                            0xFF6C5CE7,
+                                          ),
                                           onChanged: _toggleBiometric,
                                         ),
                                     ],
@@ -687,7 +697,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     else
                                       Switch(
                                         value: _reminderEnabled,
-                                        activeThumbColor: const Color(0xFF6C5CE7),
+                                        activeThumbColor: const Color(
+                                          0xFF6C5CE7,
+                                        ),
                                         onChanged: _toggleReminder,
                                       ),
                                   ],

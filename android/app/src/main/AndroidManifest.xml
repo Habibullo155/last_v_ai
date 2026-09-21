@@ -14,7 +14,7 @@
      debug-сборок - явно проверь, что строка есть и в release -->
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:label="ai_last_v"
+        android:label="LOMALU"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

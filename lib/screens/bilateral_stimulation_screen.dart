@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
@@ -267,9 +267,12 @@ class _BilateralStimulationScreenState extends State<BilateralStimulationScreen>
                                                       // RadialGradient в 1.7 раза больше шара,
                                                       // выглядевший как второй шар/тень - убран
                                                       BoxShadow(
-                                                        color: const Color(
-                                                          0xFF6C5CE7,
-                                                        ).withValues(alpha: 0.5),
+                                                        color:
+                                                            const Color(
+                                                              0xFF6C5CE7,
+                                                            ).withValues(
+                                                              alpha: 0.5,
+                                                            ),
                                                         blurRadius: 14,
                                                         spreadRadius: 1,
                                                       ),
@@ -287,7 +290,9 @@ class _BilateralStimulationScreenState extends State<BilateralStimulationScreen>
                                                     decoration: BoxDecoration(
                                                       shape: BoxShape.circle,
                                                       color: Colors.white
-                                                          .withValues(alpha: 0.45),
+                                                          .withValues(
+                                                            alpha: 0.45,
+                                                          ),
                                                     ),
                                                   ),
                                                 ),

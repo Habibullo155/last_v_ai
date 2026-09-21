@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 import 'pinned_http_client.dart';
 
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 import '../models/app_user.dart';
 
 class AuthResult {

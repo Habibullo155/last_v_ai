@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 import '../models/personal_memory.dart';
 import '../services/personal_memory_service.dart';
 import '../state/auth_store.dart';

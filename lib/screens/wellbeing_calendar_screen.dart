@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 import '../models/custom_test.dart';
 import '../services/asrs_service.dart';
 import '../services/custom_tests_service.dart';

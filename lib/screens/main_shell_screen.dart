@@ -1,7 +1,7 @@
-import 'package:ai_last_v/widgets/app_background.dart';
+import 'package:LOMALU/widgets/app_background.dart';
 import 'package:flutter/material.dart';
 
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 import '../state/auth_store.dart';
 import '../state/chat_store.dart';
 import '../state/theme_store.dart';

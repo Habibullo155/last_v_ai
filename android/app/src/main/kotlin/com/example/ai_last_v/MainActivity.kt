@@ -1,4 +1,4 @@
-package com.example.ai_last_v
+package com.example.LOMALU
 
 import io.flutter.embedding.android.FlutterActivity
 

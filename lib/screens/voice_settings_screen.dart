@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 import '../models/cloud_voice.dart';
 import '../state/voice_store.dart';
 import '../theme/app_text_color.dart';

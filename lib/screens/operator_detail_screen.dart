@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 import '../models/help_session.dart';
 import '../models/operator_stats.dart';
 import '../services/admin_users_service.dart';
@@ -435,7 +435,9 @@ class _OperatorDetailScreenState extends State<OperatorDetailScreen> {
           child: OutlinedButton.icon(
             onPressed: _isBusy ? null : _issueWarning,
             style: OutlinedButton.styleFrom(
-              side: BorderSide(color: const Color(0xFFFF6B6B).withValues(alpha: 0.4)),
+              side: BorderSide(
+                color: const Color(0xFFFF6B6B).withValues(alpha: 0.4),
+              ),
               foregroundColor: const Color(0xFFFF6B6B),
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),
@@ -460,7 +462,9 @@ class _OperatorDetailScreenState extends State<OperatorDetailScreen> {
         IconButton(
           onPressed: _isBusy ? null : _deleteAccount,
           style: IconButton.styleFrom(
-            side: BorderSide(color: const Color(0xFFFF6B6B).withValues(alpha: 0.3)),
+            side: BorderSide(
+              color: const Color(0xFFFF6B6B).withValues(alpha: 0.3),
+            ),
             padding: const EdgeInsets.all(12),
           ),
           icon: const Icon(

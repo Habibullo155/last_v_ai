@@ -1,18 +1,20 @@
-import 'package:ai_last_v/models/voice_settings.dart';
+import 'package:LOMALU/models/voice_settings.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 
 void main() {
   group('VoiceSettings defaults', () {
-    test('default constructor uses safe defaults (voice on, auto-read off)', () {
-      const settings = VoiceSettings();
-      expect(settings.autoReadEnabled, isFalse);
-      expect(settings.voiceUiEnabled, isTrue);
-      expect(settings.rate, 0.5);
-      expect(settings.pitch, 1.0);
-      expect(settings.voiceName, isNull);
-      expect(settings.cloudVoiceName, 'baya');
-    });
+    test(
+      'default constructor uses safe defaults (voice on, auto-read off)',
+      () {
+        const settings = VoiceSettings();
+        expect(settings.autoReadEnabled, isFalse);
+        expect(settings.voiceUiEnabled, isTrue);
+        expect(settings.rate, 0.5);
+        expect(settings.pitch, 1.0);
+        expect(settings.voiceName, isNull);
+        expect(settings.cloudVoiceName, 'baya');
+      },
+    );
   });
 
   group('VoiceSettings.copyWith', () {
@@ -31,8 +33,14 @@ void main() {
     });
 
     test('setting a new voice overrides the previous one', () {
-      const original = VoiceSettings(voiceName: 'OldVoice', voiceLocale: 'en-US');
-      final updated = original.copyWith(voiceName: 'NewVoice', voiceLocale: 'ru-RU');
+      const original = VoiceSettings(
+        voiceName: 'OldVoice',
+        voiceLocale: 'en-US',
+      );
+      final updated = original.copyWith(
+        voiceName: 'NewVoice',
+        voiceLocale: 'ru-RU',
+      );
       expect(updated.voiceName, 'NewVoice');
       expect(updated.voiceLocale, 'ru-RU');
     });

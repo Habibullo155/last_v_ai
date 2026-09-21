@@ -387,16 +387,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chatMenuBlog => 'Блог';
 
   @override
-  String get chatSuggestion1 => 'Объясни квантовую физику простыми словами';
-
   @override
-  String get chatSuggestion2 => 'Напиши план тренировок на неделю';
-
+  String get chatSuggestion1 =>
+      'Мне тяжело, и я чувствую эмоциональное выгорание';
   @override
-  String get chatSuggestion3 => 'Помоги придумать название для проекта';
-
+  String get chatSuggestion2 => 'Как справиться с тревогой прямо сейчас?';
   @override
-  String get chatSuggestion4 => 'Как улучшить свой код на Dart?';
+  String get chatSuggestion3 =>
+      'Помоги мне разобраться в конфликте с близким человеком';
+  @override
+  String get chatSuggestion4 =>
+      'Хочу лучше понять свои истинные желания и цели';
 
   @override
   String get chatWhatCanIHelpWith => 'Чем помочь сегодня?';

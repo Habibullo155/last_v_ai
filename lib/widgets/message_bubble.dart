@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 import '../models/chat_message.dart';
 import '../models/chat_source.dart';
 import '../services/ad_service.dart';
@@ -956,7 +956,9 @@ class _ModelDowngradedNotice extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
         color: const Color(0xFFFFD166).withValues(alpha: 0.08),
-        border: Border.all(color: const Color(0xFFFFD166).withValues(alpha: 0.3)),
+        border: Border.all(
+          color: const Color(0xFFFFD166).withValues(alpha: 0.3),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

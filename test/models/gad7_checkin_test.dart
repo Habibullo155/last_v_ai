@@ -1,6 +1,5 @@
-
-import 'package:ai_last_v/l10n/app_localizations.dart';
-import 'package:ai_last_v/models/gad7_checkin.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
+import 'package:LOMALU/models/gad7_checkin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -60,7 +59,11 @@ void main() {
           answers[i] = take;
           remaining -= take;
         }
-        return Gad7Checkin(id: '1', date: DateTime(2026, 1, 1), answers: answers).severityLabel(l10n);
+        return Gad7Checkin(
+          id: '1',
+          date: DateTime(2026, 1, 1),
+          answers: answers,
+        ).severityLabel(l10n);
       }
 
       expect(labelFor(2), 'минимальная выраженность');

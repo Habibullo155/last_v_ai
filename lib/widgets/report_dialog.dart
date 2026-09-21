@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 import '../services/reports_service.dart';
 import '../state/auth_store.dart';
 import 'glass_panel.dart';

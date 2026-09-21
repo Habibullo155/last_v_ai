@@ -1,4 +1,4 @@
-import 'package:ai_last_v/models/usage_info.dart';
+import 'package:LOMALU/models/usage_info.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

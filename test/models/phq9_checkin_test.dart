@@ -1,6 +1,5 @@
-
-import 'package:ai_last_v/l10n/app_localizations.dart';
-import 'package:ai_last_v/models/phq9_checkin.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
+import 'package:LOMALU/models/phq9_checkin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -60,7 +59,11 @@ void main() {
           answers[i] = take;
           remaining -= take;
         }
-        return Phq9Checkin(id: '1', date: DateTime(2026, 1, 1), answers: answers).severityLabel(l10n);
+        return Phq9Checkin(
+          id: '1',
+          date: DateTime(2026, 1, 1),
+          answers: answers,
+        ).severityLabel(l10n);
       }
 
       expect(labelFor(2), 'минимальная выраженность');
@@ -79,15 +82,18 @@ void main() {
       expect(checkin.hasRiskSignal, isTrue);
     });
 
-    test('hasRiskSignal false when item 9 answered zero, even with high total elsewhere', () {
-      final checkin = Phq9Checkin(
-        id: '1',
-        date: DateTime(2026, 1, 1),
-        answers: [3, 3, 3, 3, 3, 3, 3, 3, 0],
-      );
-      expect(checkin.rawScore, 24);
-      expect(checkin.hasRiskSignal, isFalse);
-    });
+    test(
+      'hasRiskSignal false when item 9 answered zero, even with high total elsewhere',
+      () {
+        final checkin = Phq9Checkin(
+          id: '1',
+          date: DateTime(2026, 1, 1),
+          answers: [3, 3, 3, 3, 3, 3, 3, 3, 0],
+        );
+        expect(checkin.rawScore, 24);
+        expect(checkin.hasRiskSignal, isFalse);
+      },
+    );
 
     test('toJson/fromJson round-trip preserves data', () {
       final original = Phq9Checkin(

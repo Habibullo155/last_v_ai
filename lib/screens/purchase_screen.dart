@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 import '../models/billing_plan.dart';
 import '../models/usage_info.dart';
 import '../services/ad_service.dart';
@@ -597,7 +597,9 @@ class _PurchaseScreenState extends State<PurchaseScreen>
                           ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: const Color(0xFF00E6A0).withValues(alpha: 0.18),
+                            color: const Color(
+                              0xFF00E6A0,
+                            ).withValues(alpha: 0.18),
                           ),
                           child: Text(
                             l10n.purchaseCurrentBadge,

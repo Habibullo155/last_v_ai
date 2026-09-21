@@ -1,4 +1,4 @@
-# ai_last_v
+# LOMALU
 
 A new Flutter project.
 

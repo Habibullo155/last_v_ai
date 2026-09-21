@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 import '../models/wellbeing_checkin.dart';
 import '../services/wellbeing_service.dart';
 import '../state/auth_store.dart';
@@ -349,7 +349,8 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
           subtitle: l10n.wellbeingCustomTestsSubtitle,
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) => CustomTestListScreen(authStore: widget.authStore!),
+              builder: (_) =>
+                  CustomTestListScreen(authStore: widget.authStore!),
             ),
           ),
         ),

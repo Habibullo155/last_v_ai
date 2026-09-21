@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 import '../models/custom_test.dart';
 import '../services/custom_tests_service.dart';
 import '../state/auth_store.dart';

@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 import '../models/sound_asset.dart';
 import '../services/sounds_service.dart';
 import '../state/auth_store.dart';
@@ -420,7 +420,8 @@ class _EnvelopeSlicePainter extends CustomPainter {
       );
       canvas.drawRRect(
         RRect.fromRectAndRadius(letterRect, const Radius.circular(6)),
-        Paint()..color = const Color(0xFFF3E5C8).withValues(alpha: letterOpacity),
+        Paint()
+          ..color = const Color(0xFFF3E5C8).withValues(alpha: letterOpacity),
       );
       final textPainter = TextPainter(
         text: TextSpan(

@@ -1,7 +1,5 @@
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-
-
 
 /// Даёт доступ к текущему BuildContext из мест, где его нет напрямую -
 /// в первую очередь из ChangeNotifier-хранилищ (AuthStore и т.п.),

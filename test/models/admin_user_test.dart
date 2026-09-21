@@ -1,6 +1,5 @@
-import 'package:ai_last_v/models/admin_user.dart';
+import 'package:LOMALU/models/admin_user.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 
 AdminUser _makeUser({
   DateTime? lastActiveAt,
@@ -22,12 +21,16 @@ AdminUser _makeUser({
 void main() {
   group('AdminUser.isOnlineNow', () {
     test('true when last active less than 15 minutes ago', () {
-      final user = _makeUser(lastActiveAt: DateTime.now().subtract(const Duration(minutes: 5)));
+      final user = _makeUser(
+        lastActiveAt: DateTime.now().subtract(const Duration(minutes: 5)),
+      );
       expect(user.isOnlineNow, isTrue);
     });
 
     test('false when last active more than 15 minutes ago', () {
-      final user = _makeUser(lastActiveAt: DateTime.now().subtract(const Duration(minutes: 20)));
+      final user = _makeUser(
+        lastActiveAt: DateTime.now().subtract(const Duration(minutes: 20)),
+      );
       expect(user.isOnlineNow, isFalse);
     });
 
@@ -44,22 +47,34 @@ void main() {
       expect(user.isTariffExpired, isFalse);
     });
 
-    test('isTariffExpired true for a date in the past, even less than 24h ago', () {
-      // Регрессия: daysUntilExpiry через Duration.inDays округляет К НУЛЮ,
-      // а не вниз — 30 минут назад раньше давало inDays=0, из-за чего
-      // isTariffExpired ошибочно говорила "не истекло" почти сутки.
-      final user = _makeUser(tariffExpiresAt: DateTime.now().subtract(const Duration(minutes: 30)));
-      expect(user.isTariffExpired, isTrue);
-    });
+    test(
+      'isTariffExpired true for a date in the past, even less than 24h ago',
+      () {
+        // Регрессия: daysUntilExpiry через Duration.inDays округляет К НУЛЮ,
+        // а не вниз — 30 минут назад раньше давало inDays=0, из-за чего
+        // isTariffExpired ошибочно говорила "не истекло" почти сутки.
+        final user = _makeUser(
+          tariffExpiresAt: DateTime.now().subtract(const Duration(minutes: 30)),
+        );
+        expect(user.isTariffExpired, isTrue);
+      },
+    );
 
-    test('isTariffExpired true for a date clearly in the past (several days)', () {
-      final user = _makeUser(tariffExpiresAt: DateTime.now().subtract(const Duration(days: 5)));
-      expect(user.isTariffExpired, isTrue);
-      expect(user.daysUntilExpiry, lessThan(0));
-    });
+    test(
+      'isTariffExpired true for a date clearly in the past (several days)',
+      () {
+        final user = _makeUser(
+          tariffExpiresAt: DateTime.now().subtract(const Duration(days: 5)),
+        );
+        expect(user.isTariffExpired, isTrue);
+        expect(user.daysUntilExpiry, lessThan(0));
+      },
+    );
 
     test('isTariffExpired false for a date in the future', () {
-      final user = _makeUser(tariffExpiresAt: DateTime.now().add(const Duration(days: 10)));
+      final user = _makeUser(
+        tariffExpiresAt: DateTime.now().add(const Duration(days: 10)),
+      );
       expect(user.isTariffExpired, isFalse);
       expect(user.daysUntilExpiry, greaterThan(0));
     });

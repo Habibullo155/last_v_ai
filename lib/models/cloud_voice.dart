@@ -1,4 +1,4 @@
-import 'package:ai_last_v/l10n/app_localizations.dart';
+import 'package:LOMALU/l10n/app_localizations.dart';
 
 /// Стандартные голоса из библиотеки ElevenLabs - доступны на любом
 /// аккаунте по умолчанию, без клонирования или дополнительной настройки.
