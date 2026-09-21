@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'AI Glass Chat';
+  String get appTitle => 'LOMALU';
 
   @override
   String get commonCancel => 'Cancel';

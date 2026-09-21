@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'config.dart';
-
 import 'navigation.dart';
 import 'screens/auth_screen.dart';
 import 'screens/chat_screen.dart';
@@ -120,11 +119,16 @@ class _GlassChatAppState extends State<GlassChatApp> {
     // "не нужен" - ни при каком последующем восстановлении сети
     // человек уже не увидел бы его снова, даже если бы хотел пройти
     for (final delaySeconds in [0, 2, 5]) {
-      if (delaySeconds > 0) await Future.delayed(Duration(seconds: delaySeconds));
+      if (delaySeconds > 0)
+        await Future.delayed(Duration(seconds: delaySeconds));
       if (!mounted) return;
       try {
-        final status = await _onboardingService.getStatus(baseUrl: AppConfig.backendUrl, token: token);
-        if (mounted) setState(() => _needsOnboardingSurvey = status == 'pending');
+        final status = await _onboardingService.getStatus(
+          baseUrl: AppConfig.backendUrl,
+          token: token,
+        );
+        if (mounted)
+          setState(() => _needsOnboardingSurvey = status == 'pending');
         return;
       } catch (_) {
         // пробуем ещё раз (если попытки остались) - см. цикл выше
@@ -143,9 +147,14 @@ class _GlassChatAppState extends State<GlassChatApp> {
     final store = ChatStore(
       getAuthToken: () => _authStore.token,
       onSessionExpired: _authStore.logout,
-      onAssistantTextChunk: ({required messageId, required fullContent, required isDone}) {
-        voice.onIncomingText(messageId: messageId, fullContent: fullContent, isDone: isDone);
-      },
+      onAssistantTextChunk:
+          ({required messageId, required fullContent, required isDone}) {
+            voice.onIncomingText(
+              messageId: messageId,
+              fullContent: fullContent,
+              isDone: isDone,
+            );
+          },
     );
     store.init(userId);
     _chatStore = store;
@@ -167,7 +176,7 @@ class _GlassChatAppState extends State<GlassChatApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: navigatorKey,
-      title: 'AI Glass Chat',
+      title: 'LOMALU',
       debugShowCheckedModeBanner: false,
       // null (режим "system" в LocaleStore) - Flutter сам подхватывает
       // системный язык устройства, как было раньше всегда. Явный
@@ -180,10 +189,7 @@ class _GlassChatAppState extends State<GlassChatApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('ru'),
-        Locale('en'),
-      ],
+      supportedLocales: const [Locale('ru'), Locale('en')],
       themeMode: switch (_themeStore.mode) {
         AppThemeMode.light => ThemeMode.light,
         AppThemeMode.dark => ThemeMode.dark,
@@ -232,7 +238,8 @@ class _GlassChatAppState extends State<GlassChatApp> {
       case AuthStatus.authenticated:
         final chatStore = _chatStore;
         final voiceStore = _voiceStore;
-        if (chatStore == null || voiceStore == null) return const _LoadingScreen();
+        if (chatStore == null || voiceStore == null)
+          return const _LoadingScreen();
         // опросник - ПОСЛЕ того, как chatStore/voiceStore готовы (не
         // блокирует их инициализацию), но ДО основного экрана - null
         // означает "ещё проверяем", тогда просто ждём (не мигаем
@@ -269,9 +276,7 @@ class _LoadingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: Color(0xFF0B0F1E),
-      body: Center(
-        child: CircularProgressIndicator(color: Color(0xFF6C5CE7)),
-      ),
+      body: Center(child: CircularProgressIndicator(color: Color(0xFF6C5CE7))),
     );
   }
 }

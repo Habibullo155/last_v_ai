@@ -353,19 +353,6 @@ class _WellbeingScreenState extends State<WellbeingScreen> {
             ),
           ),
         ),
-        if (widget.authStore != null) ...[
-          const SizedBox(height: 10),
-          _buildToolTile(
-            icon: Icons.support_agent_rounded,
-            title: l10n.wellbeingLiveHelpTitle,
-            subtitle: l10n.wellbeingLiveHelpSubtitle,
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => MyHelpScreen(authStore: widget.authStore!),
-              ),
-            ),
-          ),
-        ],
         if (_history.isNotEmpty) ...[
           const SizedBox(height: 22),
           Text(

@@ -13,6 +13,7 @@ import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 import '../widgets/telegram_code_dialog.dart';
+import 'company_requisites_screen.dart';
 
 class PurchaseScreen extends StatefulWidget {
   final AuthStore authStore;
@@ -186,6 +187,14 @@ class _PurchaseScreenState extends State<PurchaseScreen>
   Future<void> _buy(BillingPlan plan) async {
     final token = widget.authStore.token;
     if (token == null || !plan.isPurchasable) return;
+    // защита от быстрых повторных тапов - раньше _startingCheckoutFor
+    // выставлялся только ПОСЛЕ выбора способа оплаты в диалоге ниже,
+    // значит между первым тапом и этим выбором (или пока сам диалог
+    // ещё не успел появиться на экране) флаг ещё null - второй тап
+    // по той же кнопке в этом окне успевал бы запустить параллельный
+    // вызов checkout для того же тарифа
+    if (_startingCheckoutFor != null) return;
+    setState(() => _startingCheckoutFor = plan.tariff);
 
     // список РЕАЛЬНО доступных способов - если доступен только один,
     // не спрашиваем, сразу используем его; если больше одного - даём
@@ -203,16 +212,16 @@ class _PurchaseScreenState extends State<PurchaseScreen>
         builder: (context) =>
             _PaymentMethodSheet(availableProviders: available),
       );
-      if (choice == null) return;
+      if (choice == null) {
+        if (mounted) setState(() => _startingCheckoutFor = null);
+        return;
+      }
       provider = choice;
     } else {
       provider = available.first;
     }
 
-    setState(() {
-      _startingCheckoutFor = plan.tariff;
-      _error = null;
-    });
+    setState(() => _error = null);
     try {
       final (checkoutUrl, orderId) = await _billingService.createCheckoutUrl(
         baseUrl: widget.authStore.baseUrl,
@@ -336,6 +345,23 @@ class _PurchaseScreenState extends State<PurchaseScreen>
           )
         else
           ..._plans.map(_buildPlanTile),
+        const SizedBox(height: 8),
+        Center(
+          child: TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const CompanyRequisitesScreen(),
+              ),
+            ),
+            child: Text(
+              'Реквизиты компании',
+              style: TextStyle(
+                color: context.onSurfaceFaded(0.5),
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

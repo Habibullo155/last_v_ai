@@ -1,5 +1,5 @@
 name: ai_last_v
-description: "AI чат (Gemma 4 E2B через локальный Ollama + FastAPI) с эффектом глазморфизма, адаптивный для мобильных, планшетов, десктопа и веба."
+description: "Ваш карманный психолог"
 publish_to: "none"
 version: 1.0.0+1
 

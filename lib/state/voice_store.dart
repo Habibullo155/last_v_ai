@@ -310,6 +310,7 @@ class VoiceStore extends ChangeNotifier {
     isSpeaking = true;
     lastError = null;
     notifyListeners();
+    var fallbackToDevice = false;
     try {
       final bytes = await _cloudTtsService.synthesize(
         baseUrl: _baseUrl,
@@ -320,12 +321,25 @@ class VoiceStore extends ChangeNotifier {
       await _playAndWait(bytes);
     } on CloudTtsException catch (e) {
       lastError = e.message;
+      fallbackToDevice = true;
     } catch (e) {
       lastError = '$e';
+      fallbackToDevice = true;
     } finally {
       isSpeaking = false;
       notifyListeners();
     }
+    // Раньше сбой облачного голоса (ElevenLabs недоступен/таймаут)
+    // просто оставлял человека без звука вообще - lastError записывался,
+    // но ничего не произносилось. Плавная деградация - если облачный
+    // голос настроен, но именно сейчас не сработал, всё равно
+    // озвучиваем текст локальным голосом устройства, а не молчим.
+    // ВНЕ try/finally выше специально: _speakOnDevice сам управляет
+    // isSpeaking через асинхронные колбэки flutter_tts (completion/
+    // cancel/error handler) - если вызвать его ДО finally, тот сразу
+    // сбросил бы isSpeaking в false, хотя локальная речь только
+    // началась и продолжает идти.
+    if (fallbackToDevice) await _speakOnDevice(text);
   }
 
   // временная подписка на каждый вызов, не постоянный слушатель на весь

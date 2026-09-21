@@ -1175,7 +1175,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 : Icon(
                     _playingNoiseId != null
                         ? Icons.graphic_eq_rounded
-                        : Icons.music_note,
+                        : Icons.spa_outlined,
                     color: _playingNoiseId != null
                         ? const Color(0xFF00E6A0)
                         : context.onSurfaceFaded(0.7),
@@ -1304,7 +1304,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           _menuItem(
             'sleep_music',
-            Icons.my_library_music_rounded,
+            Icons.music_note_rounded,
             l10n.chatMenuSleepMusic,
           ),
         ],
@@ -1315,13 +1315,13 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         _menuItem('settings', Icons.settings_outlined, l10n.settingsTitle),
         _menuItem('my_reports', Icons.flag_outlined, l10n.chatMenuMyReports),
+        _menuItem('my_help', Icons.support_rounded, l10n.chatMenuLiveHelp),
         if (isOperator)
           _menuItem(
             'operator',
             Icons.headset_mic_rounded,
             l10n.chatMenuOperatorCabinet,
           ),
-        _menuItem('support', Icons.support_agent_rounded, l10n.chatMenuSupport),
         _menuItem('blog', Icons.article_outlined, l10n.chatMenuBlog),
       ],
     );
